@@ -73,7 +73,7 @@ flowchart LR
 
 The numbers below are illustrative. They show the shape of what each node produces, not measured output.
 
-**Node 1** builds 8 units from 11 elements (the `badge` and `cta` groups each become one unit) and returns roughly:
+**Node 1** builds 9 units from 11 elements (the `badge` and `cta` groups each become one unit) and returns roughly:
 
 | rank | unit | elements | role |
 |---|---|---|---|
