@@ -37,3 +37,11 @@ def l3() -> dict:
 @pytest.fixture
 def targets() -> list[dict]:
     return json.loads(TARGETS_PATH.read_text())
+
+
+@pytest.fixture(scope="session")
+def measurer():
+    # Imported here so a broken textmeasure module can't stop unrelated test files from collecting.
+    from engine.pipeline.textmeasure import TextMeasurer
+
+    return TextMeasurer()
