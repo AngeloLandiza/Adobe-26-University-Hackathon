@@ -16,7 +16,7 @@ from cr_renderer.fonts import FONT_WEIGHTS
 from renderer.converter.brand_fonts import load_brand_font_manager
 from renderer.converter.wrap import char_widths, wrap_text
 
-_BOLD_WEIGHTS = {"bold", "semibold", "extrabold", "black"}
+BOLD_WEIGHTS = {"bold", "semibold", "extrabold", "black"}
 _DEFAULT_LINE_HEIGHT = 1.2
 
 
@@ -53,7 +53,7 @@ class TextMeasurer:
     def _font(self, el: dict) -> tuple[str, str, str]:
         weight = _normalize_weight(el.get("font_weight"))
         italic = _is_italic(el.get("font_style") or el.get("italic"))
-        return el.get("font_family", "Montserrat"), weight, _font_style(weight in _BOLD_WEIGHTS, italic)
+        return el.get("font_family", "Montserrat"), weight, _font_style(weight in BOLD_WEIGHTS, italic)
 
     def _char_widths(self, el: dict, font_size: float) -> list[float]:
         family, weight, style = self._font(el)
