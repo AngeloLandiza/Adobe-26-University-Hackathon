@@ -116,5 +116,12 @@ def test_group_id_clashing_with_an_element_id_gets_a_distinct_unit_id():
     assert len(ids) == len(set(ids)) == 2 and "logo" in ids
 
 
+def test_features_carry_unit_flags(l3):
+    # heuristic_roles(features) needs the hard signals (Task 4 ruling)
+    feats = feats_by_id(l3)
+    assert feats["bg"]["flags"] == ["background"] and feats["ribbon"]["flags"] == ["rotated"]
+    assert feats["holiday_watermark"]["flags"] == ["missing_asset"] and feats["headline"]["flags"] == []
+
+
 def test_missing_asset_flag_in_l3_features(l3):
     assert feats_by_id(l3)["holiday_watermark"]["missing_asset"] is True

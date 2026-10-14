@@ -49,6 +49,7 @@ def unit_features(source: dict, units: list[Unit]) -> list[dict]:
         features.append({
             "unit_id": unit.unit_id,
             "kind": unit.kind,
+            "flags": list(unit.flags),
             "types": [m["type"] for m in members],
             "bbox": [x / width, y / height, w / width, h / height],
             "area_pct": area_pct,

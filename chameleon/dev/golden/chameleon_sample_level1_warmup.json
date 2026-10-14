@@ -1,0 +1,4 @@
+{
+  "roles": {"bg": "background", "logo": "logo", "headline": "headline", "cta": "cta"},
+  "ranking": ["headline", "cta", "logo"]
+}
