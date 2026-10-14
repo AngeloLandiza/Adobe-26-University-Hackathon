@@ -1,2 +1,6 @@
 Pillow>=10.0
 git+https://github.com/CyberAgentAILab/cr-renderer
+numpy
+# Hosted LLM providers for node 1 (unused at stage-one scoring: no network there)
+anthropic
+google-genai<3.0.0
