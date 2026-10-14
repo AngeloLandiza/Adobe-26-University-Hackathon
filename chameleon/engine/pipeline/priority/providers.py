@@ -5,10 +5,12 @@ with neither, so there node 1 falls back to the heuristic ranker. Clients
 are created on first use, so building a provider never needs a key.
 """
 
+import hashlib
 import json
 import os
 import time
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+from pathlib import Path
 
 import anthropic
 from google import genai
@@ -118,6 +120,27 @@ class GeminiProvider:
             input_tokens=input_tokens, output_tokens=output_tokens,
             cost_usd=cost_usd(self.model, input_tokens, output_tokens),
         ))
+
+
+def cached_complete(provider, system: str, user: str, schema: dict) -> LLMResult:
+    """`provider.complete`, memoised on disk when env CHAMELEON_LLM_CACHE names
+    a directory, so repeated dev runs over the same designs don't pay again.
+    Only successful answers are stored. A hit reports zero cost and latency
+    (this call spent nothing) but keeps the original token counts."""
+    cache_dir = os.environ.get("CHAMELEON_LLM_CACHE")
+    if not cache_dir:
+        return provider.complete(system, user, schema)
+    key = "|".join([provider.name, provider.model, system, user, json.dumps(schema, sort_keys=True)])
+    path = Path(cache_dir) / f"{hashlib.sha256(key.encode('utf-8')).hexdigest()}.json"
+    if path.exists():
+        stored = json.loads(path.read_text(encoding="utf-8"))
+        stats = LLMCallStats(**stored["stats"])
+        stats.cached, stats.cost_usd, stats.latency_s = True, 0.0, 0.0
+        return LLMResult(stored["data"], stats)
+    result = provider.complete(system, user, schema)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"data": result.data, "stats": asdict(result.stats)}), encoding="utf-8")
+    return result
 
 
 def get_provider(name: str | None = None) -> ClaudeProvider | GeminiProvider | None:
