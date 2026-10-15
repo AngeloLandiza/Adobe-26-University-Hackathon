@@ -17,12 +17,50 @@ output: <task>_output.json  (schema-valid resized design)
 
 Both the JSON and the PNG are what get evaluated — see `RULES.md`.
 
+## Our engine (work in progress)
+
+We're replacing the baseline with a three-node pipeline:
+
+1. a **priority** node works out what each element is and ranks them;
+2. a **resize engine** builds candidate layouts from that ranking;
+3. a **grading** node picks the best candidate.
+
+Design: [`docs/pipeline/`](../docs/pipeline/README.md). Implementation plan and status: [`docs/superpowers/plans/`](../docs/superpowers/plans/2026-10-13-stage1-three-node-pipeline.md).
+
+**Status:** the priority node and shared foundations are built (`engine/pipeline/`). The resize engine and grading node are next. **`engine/resize.py` still runs the stretch baseline** until the nodes are connected.
+
+**Run the tests** from this folder:
+
+```bash
+.venv/Scripts/python -m pip install -r requirements.txt -r requirements-dev.txt
+.venv/Scripts/python -m pytest -q
+```
+
+(On macOS/Linux, use `.venv/bin/python`.)
+
+**LLM settings for the priority node** (optional; without them it uses its built-in rule-based ranker, which is also what runs in the no-network scored Docker run):
+
+- `ANTHROPIC_API_KEY` and/or `GEMINI_API_KEY` enable Claude or Gemini.
+- `CHAMELEON_LLM` = `auto` (default), `claude`, `gemini` or `heuristic`.
+- `CHAMELEON_LLM_CACHE=<dir>` caches LLM answers between runs.
+
+The full list is in [`docs/pipeline/README.md` §8](../docs/pipeline/README.md#8-development-loop). Live API tests are opt-in:
+
+```bash
+.venv/Scripts/python -m pytest tests/test_providers.py -m live -s
+```
+
+Never commit API keys. `.env` is gitignored, and keys must not be baked into the Docker image.
+
 ## Repo layout
 
 ```
 engine/
   resize.py        <- implement your approach here
   main.py           <- orchestrator (input -> resize() -> output). Don't need to edit this.
+  pipeline/         <- ours: shared types/geometry/text measurement + priority/ (node 1); layout/ and grading/ to come
+tests/              <- ours: pytest suite (run from this folder)
+dev/                <- ours, dev-only (not in the Docker image): target sizes, golden labels, metrics
 renderer/           <- the real renderer (transformer-convertor + cr-renderer), already vendored
 brand_kit/
   assets/           <- image files referenced by asset_id in the sample designs

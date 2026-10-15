@@ -1,5 +1,7 @@
 # Node 3: Grading
 
+**Status:** ⏳ designed, not built yet (plan Tasks 10–11). The text measurement and render helper it relies on are built (`engine/pipeline/textmeasure.py`, `render.py`). Where the [stage-1 plan](../superpowers/plans/2026-10-13-stage1-three-node-pipeline.md) simplifies this design, the differences are noted inline.
+
 **Job:** take every candidate from node 2, throw out the ones that break a rule, score the rest the way the official judge is likely to, and return the best one.
 
 **Input:** `source`, `PriorityPlan`, `list[Candidate]`.
@@ -32,7 +34,7 @@ These mirror what the official structural check is described as doing, plus the 
 | G4 | in canvas | every element's **rotated** bounding box inside `[0, W] × [0, H]`, with 0.5 px tolerance (same as `main.py`'s self-check) |
 | G5 | image aspect | non-`cover` images: `|(w/h) / (w₀/h₀) − 1| ≤ 0.02` (the official limit is ~5%) |
 | G6 | frozen fields | `content`, `font_family`, `font_weight`, `font_style`, `type`, `asset_id`, `fit`, `z_index`, `rotation`, `opacity`, colours and `style_runs` unchanged from the source |
-| G7 | text fits | re-measured with the renderer's wrap: `lines × font_size × line_height ≤ height + 1 px`, no word wider than `width`, `max_lines` respected |
+| G7 | text fits | `TextMeasurer.fits()` for every text element. That checks the renderer's wrap; the measured block height (`(lines − 1) × font_size × line_height` + glyph height, as cr-renderer draws it) ≤ `height + 1 px`; every line's drawn width, including letter spacing, ≤ `width + 0.5 px`; and `max_lines` |
 | G8 | groups intact | each label stays inside its shape; the members of a rigid group keep their relative layout within tolerance of a uniform scale |
 | G9 | nothing hidden | no element is fully covered by a higher-`z` non-decoration element |
 
@@ -60,12 +62,9 @@ Each metric is in `[0, 1]`, where 1 is best. Unit weights come from the plan: `w
 
 The official judge looks at pixels, so we do too, but only for the top **K = 6** candidates by geometry, because rendering is the expensive step.
 
-**Renders per candidate** go through `engine/pipeline/render.py`, which calls the vendored `render_design_to_png` into a temp file and reads it back:
+**Renders per candidate** go through `render_to_image()` in `engine/pipeline/render.py` (built), which renders through the vendored `render_design_to_png` and returns the pixels. The renderer only downscales, to `max_size` (default 1024) on the long side, so the pixel scale is `image width / canvas width`.
 
-- the full design;
-- the same design with all text elements removed, to see what's *behind* the text.
-
-Render at a reduced `max_size` (e.g. 1024) for speed, and scale boxes to match.
+> **Stage-1 simplification:** each top-K candidate is rendered **once**, with its text elements removed, to see what's *behind* the text. Contrast and busyness come from that render. The `placeholder` metric is computed from geometry (missing-asset boxes) rather than from pixels. Full renders are only made for the debug contact sheet.
 
 | Metric | How | Start weight (within pixel score) |
 |---|---|---|
@@ -94,7 +93,7 @@ The weights above are guesses. We calibrate them against a reference judge that 
 
 1. **Judged set.** For each source × target in the dev matrix ([README §8](README.md#8-development-loop)), render the top ~8 candidates.
 2. **Reference judge.**
-   - Claude via the Anthropic Python SDK (`claude-opus-5-5`) gets the source render, two candidate renders and a rubric that mirrors the official one. It answers with structured outputs (`client.messages.parse()` / `output_config.format`): which candidate is better, per-criterion scores (legibility, hierarchy, faithfulness, layout quality) and a one-line reason.
+   - Claude via the Anthropic Python SDK (`claude-opus-5-5`, already a dependency for node 1) gets the source render, two candidate renders and a rubric that mirrors the official one. It answers with structured outputs (`client.messages.parse()` / `output_config.format`): which candidate is better, per-criterion scores (legibility, hierarchy, faithfulness, layout quality) and a one-line reason.
    - Pairwise questions, asked in both orders, are more stable than absolute 1–10 scores.
    - Teammates make quick pairwise picks on a subset, to check the judge itself.
 3. **Fit the weights.** Choose non-negative weights that maximise pairwise agreement between our `total` and the judge, e.g. logistic regression on metric differences or a coarse grid search. Keep them readable, with no metric weighted near zero without a reason.
@@ -109,7 +108,7 @@ When the full official rubric is published (open question 6 in the README), the 
 ## 6. Outputs
 
 - `resize()` returns the winner's `design` only. `main.py` writes it and renders the official PNG.
-- With `CHAMELEON_DEBUG=1`, write the following to `output/debug/<task>/`:
+- With `CHAMELEON_DEBUG=1`, write the following to `output/debug/<first 10 hex chars of sha1(source + target)>/`. `resize()` isn't told the task's file name, so the folder is keyed by content:
   - every `GradeReport`;
   - the top K renders as a labelled contact sheet;
   - the plan.

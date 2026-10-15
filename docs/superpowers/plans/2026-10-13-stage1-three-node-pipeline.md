@@ -20,9 +20,48 @@
 
 **Spec:** [docs/pipeline/README.md](../../pipeline/README.md), [01-priority-node.md](../../pipeline/01-priority-node.md), [02-resize-engine.md](../../pipeline/02-resize-engine.md), [03-grading-node.md](../../pipeline/03-grading-node.md)
 
-**Branch:** `stage1-three-node`, already created from `main`. Committing this plan was its first commit; implement every task on this branch.
+**Branch:** `stage1-three-node`. The plan was merged to `main` in PR #3. Tasks 1–6 are in [PR #4](https://github.com/AngeloLandiza/Adobe-26-University-Hackathon/pull/4). Implement every task on this branch.
 
-**Status:** approved for planning only. **Do not start implementing** until the team has reviewed this plan and picked an execution approach (see "Execution approach" below).
+**Status:** in progress. The team chose **native execution** (one implementer, test-first, one whole-branch review at the end). See "Execution status" below.
+
+## Execution status (as of 2026-10-14)
+
+| Task | Status | Commit | Tests after the task |
+|---|---|---|---|
+| 1 Scaffolding, types, geometry | ✅ done | `490f1ae` | 10 |
+| 2 Text measurement + render helper | ✅ done | `93244fa` | 19 |
+| 3 Units, hard signals, features | ✅ done | `a937af4` | 34 |
+| 4 Heuristic ranker, golden labels | ✅ done | `b0208af` | 50 |
+| 5 Claude + Gemini providers | ✅ done (live tests not run: no keys) | `31eb2b4` | 66 (+2 live skipped) |
+| 6 Validate/repair, `plan()`, cache | ✅ done | `722b29f` | 83 (+2 live skipped) |
+| 7–9 Node 2 (resize engine) | ⏳ next | | |
+| 10–11 Node 3 (grading) | ⏳ | | |
+| 12 Wire `resize()` | ⏳ | | |
+| 13–15 Matrix, benchmark, Docker | ⏳ | | |
+| Final whole-branch review | ⏳ | | |
+
+Each task went test-first: every test was seen failing before its code was written. Each important decision was also broken on purpose, to confirm a test catches it. Most tasks ended up with more tests than the plan lists.
+
+### Deviations in Tasks 1–6 that later tasks must follow
+
+These change interfaces or facts the later task text assumes. **Where this list and a task's text disagree, this list wins.**
+
+1. **Text height model (Task 2).**
+   - `TextMeasurer.block_height` = `(lines − 1) × font_size × line_height + glyph height`, where glyph height is descent − ascent of the font cr-renderer draws, at the whole-number font size it uses.
+   - The plan's `lines × font_size × line_height` failed a real-render test, and the plan's test pinning `72.0` was replaced.
+   - Tasks 7–11 just call the measurer and need no change. Never hand-compute text height.
+2. **`fits()` checks drawn line widths, including `letter_spacing`** (Task 2), not only the longest word. A new public method, `TextMeasurer.line_widths(el, font_size, width)`, returns each line's drawn width.
+3. **No new `text_width` method in Task 7.** Single-line width is `max(measurer.line_widths(el, f, float("inf")))`. The pre-flight plan to add one is superseded.
+4. **Unit features gained `aspect` (pixel w/h) and `flags`** (Tasks 3–4).
+5. **Detected buttons** need exactly one text covering ≥ 25% of the shape (Task 3).
+6. **Clashing group ids:** a `group_id` equal to another element's id gets unit id `<group_id>#group` (Task 3).
+7. **`_assemble` returns new `Unit` copies** and never changes the units it's given (Task 4).
+8. **Background is a hard signal in `repair()`** (Task 6). The LLM can't label a unit `background`, and leaving background units out isn't counted as a repair.
+9. **`plan()` never raises,** even on a design it can't analyse: it returns one unranked unit per element (Task 6). Task 12 can still keep its own fallback.
+10. **`textmeasure.BOLD_WEIGHTS`** is public (renamed from `_BOLD_WEIGHTS`) and reused by `features.py`.
+11. **`requirements.txt` already lists** `numpy`, `anthropic` and `google-genai<3.0.0` (Task 5). Task 15 only pins versions.
+
+All the rulings with their reasons are in [docs/pipeline/01-priority-node.md](../../pipeline/01-priority-node.md) and the [PR #4 description](https://github.com/AngeloLandiza/Adobe-26-University-Hackathon/pull/4).
 
 ## Stage-1 reality check (read first)
 
@@ -126,21 +165,22 @@ At these sizes API cost is small for development. The real questions are ranking
 
 ### Unverified details, checked during execution
 
-| Item | Where it's checked | If wrong |
+| Item | Where it's checked | Result |
 |---|---|---|
-| Gemini `usage_metadata` field names (`prompt_token_count`, `candidates_token_count`, `thoughts_token_count`) | Task 5, live test step | Fix the field names in `GeminiProvider`; the fake-client test follows |
-| Unit of the Gemini SDK's HTTP timeout (`types.HttpOptions(timeout=...)`, believed to be milliseconds) | Task 5 | Convert seconds accordingly |
-| Whether the installed `anthropic` SDK accepts `fallbacks="default"` on `client.beta.messages.create` | Task 5, live test step | Upgrade `anthropic`. If it's still unsupported, remove the fallback; refusals still fall back to the heuristic. |
-| cr-renderer's vertical text placement matches `lines × font_size × line_height` | Task 2, `test_rendered_text_stays_inside_box` | Adjust `block_height`; never loosen the test |
-| Template slot fractions and readability floors produce good layouts | Task 13 contact sheets | Tune the values in Tasks 7 and 9 and update this plan's tables |
+| Gemini `usage_metadata` field names (`prompt_token_count`, `candidates_token_count`, `thoughts_token_count`) | Task 5 | ✅ **Confirmed** in the installed `google-genai` 2.30.1, and by a real-SDK test against a canned API response |
+| Unit of the Gemini SDK's HTTP timeout (`types.HttpOptions(timeout=...)`) | Task 5 | ✅ **Milliseconds**, per the SDK's field description; `GeminiProvider` converts seconds |
+| Whether the installed `anthropic` SDK accepts `fallbacks="default"` on `client.beta.messages.create` | Task 5 | ✅ **Yes**: `anthropic` 1.13.0 types it as a list of fallbacks or the literal `"default"`. A real-SDK test confirms it's sent in the request body. |
+| cr-renderer's vertical text placement matches `lines × font_size × line_height` | Task 2 | ❌ **It doesn't.** The last line reaches the full glyph height and nothing is clipped. Fixed in `block_height` (see "Execution status"). |
+| The live APIs accept our schema (Claude: enums under structured output; Gemini: `additionalProperties: false`), plus real latency and cost | Task 5 live tests, Task 14 | ⏳ **Not run yet** (no keys). Run `pytest tests/test_providers.py -m live -s` with keys. If an API rejects the schema, `plan()` falls back to the heuristic. |
+| Template slot fractions and readability floors produce good layouts | Task 13 contact sheets | ⏳ Tune the values in Tasks 7 and 9 and update this plan's tables |
 
 ### Execution approach
 
-**Recommended: Native.** One person (or Claude in one session) implements the tasks in order, and one fresh reviewer checks the whole branch at the end.
+**Chosen: Native** (team decision, 2026-10-14). One person (or Claude in one session) implements the tasks in order, and one fresh reviewer checks the whole branch at the end.
 - It's the cheaper option, which fits a cost-conscious team.
 - Every task's tests pin the interfaces the next task depends on.
 
-The alternative is **subagent-driven**: a fresh agent implements each task and a fresh reviewer checks it before the next starts. It's more thorough, at the cost of a new context per task and per review. The team picks one before implementation starts.
+The alternative is **subagent-driven**: a fresh agent implements each task and a fresh reviewer checks it before the next starts. It's more thorough, at the cost of a new context per task and per review. It wasn't chosen.
 
 ---
 
