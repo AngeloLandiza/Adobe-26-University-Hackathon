@@ -27,7 +27,7 @@ We're replacing the baseline with a three-node pipeline:
 
 Design: [`docs/pipeline/`](../docs/pipeline/README.md). Implementation plan and status: [`docs/superpowers/plans/`](../docs/superpowers/plans/2026-10-13-stage1-three-node-pipeline.md).
 
-**Status:** the priority node and shared foundations are built (`engine/pipeline/`). The resize engine and grading node are next. **`engine/resize.py` still runs the stretch baseline** until the nodes are connected.
+**Status:** all three nodes are built and wired into `engine/resize.py`, so `python -m engine.main` now produces real layouts instead of the stretch baseline. Each task prints one `[priority] …` line saying whether the LLM or the rule-based ranker ranked it. Still to come: the provider benchmark, the Docker no-network check and a final review. What's missing: [`docs/pipeline/README.md` §11](../docs/pipeline/README.md#11-whats-missing-as-of-2026-10-16).
 
 **Run the tests** from this folder:
 
@@ -37,6 +37,14 @@ Design: [`docs/pipeline/`](../docs/pipeline/README.md). Implementation plan and 
 ```
 
 (On macOS/Linux, use `.venv/bin/python`.)
+
+**See the results across 10 real ad sizes** (renders and one contact sheet per input, written to `output/matrix/`; about 80 s):
+
+```bash
+.venv/Scripts/python -m dev.run_matrix
+```
+
+For one task's candidates and scores, set `CHAMELEON_DEBUG=1` before `python -m engine.main`; results go to `output/debug/`.
 
 **LLM settings for the priority node** (optional; without them it uses its built-in rule-based ranker, which is also what runs in the no-network scored Docker run):
 
@@ -58,9 +66,9 @@ Never commit API keys. `.env` is gitignored, and keys must not be baked into the
 engine/
   resize.py        <- implement your approach here
   main.py           <- orchestrator (input -> resize() -> output). Don't need to edit this.
-  pipeline/         <- ours: shared types/geometry/text measurement + priority/ (node 1); layout/ and grading/ to come
+  pipeline/         <- ours: shared types/geometry/text measurement, priority/ (node 1), layout/ (node 2), grading/ (node 3)
 tests/              <- ours: pytest suite (run from this folder)
-dev/                <- ours, dev-only (not in the Docker image): target sizes, golden labels, metrics
+dev/                <- ours, dev-only (not in the Docker image): target sizes, golden labels, metrics, run_matrix
 renderer/           <- the real renderer (transformer-convertor + cr-renderer), already vendored
 brand_kit/
   assets/           <- image files referenced by asset_id in the sample designs

@@ -1,6 +1,42 @@
 # Node 3: Grading
 
-**Status:** ⏳ designed, not built yet (plan Tasks 10–11). The text measurement and render helper it relies on are built (`engine/pipeline/textmeasure.py`, `render.py`). Where the [stage-1 plan](../superpowers/plans/2026-10-13-stage1-three-node-pipeline.md) simplifies this design, the differences are noted inline.
+**Status:** ✅ built (plan Tasks 10–11, [PR #4](https://github.com/AngeloLandiza/Adobe-26-University-Hackathon/pull/4)). Code is in `chameleon/engine/pipeline/grading/`, plus `occlusion.py`. The design below still describes the approach; the list right after this section records where the code differs and pins the formulas the design only sketched.
+
+## As built: differences from the design below
+
+**Gates** (`gates.py`):
+- `check_gates` never raises. Elements that fail G2 (schema) are skipped by the geometry gates.
+- **G6** compares every non-editable field both ways, so an *added* field fails too.
+- **G8** checks button labels (`container_label`) only. The rigid-group check isn't built; rigid placement preserves it by construction.
+- **G9** uses cr-renderer's paint order: a stable sort by `z_index`, so at equal z the element listed later is on top. Covers are opaque images and shapes outside the background and decoration roles (`occlusion.py`, shared with node 2).
+
+**Geometry metrics** (`metrics.py`): the weights are the starting values in §2.
+- **hierarchy:** text against text by largest font, image against image by area. Text-vs-image pairs are skipped, since a hero image is normally bigger than the headline above it. Equal sizes count half.
+- **legibility:** each unit's *smallest* text, `clamp((size − floor) / (0.6 × floor))`.
+- **overlap:** only the overlap fraction *beyond* what the same pair had in the source, so deliberate text-on-photo isn't penalised.
+- **degradation:** a unit counts if node 2 flagged it **or any of its text is below its role's floor**. Before this change, the safe fallback scored 1.0 here and came within 0.015 of winning Level 3.
+- **faithfulness:** the mean of (a) reading-order agreement with the source (centres within 0.1 × height count as one row) and (b) font-size order agreement.
+- **space_use:** 1 inside the band [0.45, 0.85] of content bounding box ÷ canvas, falling linearly to 0 outside it.
+- **alignment:** share of units sharing a left/centre/right or top/middle/bottom line with another, within 0.005 × the long side.
+- **spacing:** ½ (units ≥ 0.02 × the short side from every edge) + ½ (1 − coefficient of variation of nearest-neighbour gaps).
+- **balance:** 1 − (distance of the area-weighted centroid from the centre) ÷ (0.5 × √2).
+
+**Pixel metrics** (`pixels.py`): one render per top-K candidate, with its text removed.
+- **text_contrast:** the WCAG ratio between the alpha-composited text colour and the backdrop at **both** the 10th and 90th luminance percentile inside the box; the worse one counts. Light text is at risk from the light end, dark text from the dark end.
+- **busyness:** 1 − mean(Sobel on 0–255 grey) ÷ 64.
+- **placeholder:** 1 − the canvas share of missing-asset images, from geometry.
+
+**Picking** (`score.py`):
+- Only the top 6 by geometry are rendered and eligible.
+- A candidate whose metrics or render fails is skipped or scores 0 on pixels; it never stops the pick.
+- One report per candidate, in input order.
+
+**Results:**
+- Level 1 picks the reflow (0.973).
+- Level 2 picks a row banner (0.904).
+- Level 3 picks a strip banner (0.737, against the fallback's 0.607).
+
+**Not built:** the VLM judge (§4) and weight calibration (§5).
 
 **Job:** take every candidate from node 2, throw out the ones that break a rule, score the rest the way the official judge is likely to, and return the best one.
 

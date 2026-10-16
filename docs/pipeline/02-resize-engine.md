@@ -1,6 +1,44 @@
 # Node 2: Resize engine
 
-**Status:** ⏳ designed, not built yet (plan Tasks 7–9). It builds on what's already in place: the text measurement it relies on (`engine/pipeline/textmeasure.py`, §5.2), the geometry helpers, and node 1's `PriorityPlan`. Where the [stage-1 plan](../superpowers/plans/2026-10-13-stage1-three-node-pipeline.md) simplifies this design for stage 1, the differences are noted inline.
+**Status:** ✅ built (plan Tasks 7–9, [PR #4](https://github.com/AngeloLandiza/Adobe-26-University-Hackathon/pull/4)). Code is in `chameleon/engine/pipeline/layout/`. The design below still describes the approach; the list right after this section records where the code differs, and wins where they disagree.
+
+## As built: differences from the design below
+
+**Placement** (`place.py`):
+- Rotated units are fitted by the union of their members' **rotated** outlines. A rotated single element shrinks until its rotated bounds fit the slot.
+- Units with text never scale past **1.5×** (`MAX_TEXT_GROWTH`).
+- A re-fitted label keeps its visual centre where the source had it.
+- Text fitting re-checks with letter spacing scaled to the chosen size.
+- `place_unit` takes **`max_font`**: minor and leftover units are capped at their role's floor size, so they stay small however much room they get.
+- **Condensed pills** (§5.4):
+  - compress vertically to fit short slots, down to the label plus 0.2 × font of padding above and below;
+  - also work for **rotated** pills, checking their rotated bounds.
+
+**Templates and assignment** (`templates.py`, `generate.py`):
+- Fixed fractional slots, as planned. Slots carry an `align`; in strips the logo aligns to the **top**, so the space it leaves forms one usable block.
+- Logos never grow past 1.5× their source size (§3.5).
+- Text roles never cluster into a row; only other same-role consecutive units do.
+- **Text stacks** give each unit the height it needs at its role's floor. While they don't all fit, the lowest-ranked units drop to the 6 px hard floor, then out to the free-space pass. Spare height is shared by priority weight.
+- **The minor zone flows** units left to right at their natural width, instead of equal cells.
+- **Free space** (§4 step 5): a coarse occupancy grid, scanned for the largest *distinct* empty rectangles (any rectangle inside a kept one is dropped). Leftovers are placed **biggest footprint first** (their smallest form at the hard floor). Leftover images are capped at a third of the canvas each way.
+- **Decorations** that would be fully covered by content try the other corners (`place_decoration(..., corner=)`), so gate G9 never discards a layout over a hidden circle.
+- **Reflow** doesn't push units apart. Proportional centre mapping with sizes scaled by s = min(W/Ws, H/Hs) can't create overlaps the source didn't have; a test checks this on every sample × target.
+- One template variant failing to build is skipped, never fatal.
+
+**Finalising and the fallback** (`normalize.py`, `layers.py`, `fallback.py`):
+- `finalize` rounds box sizes **up** and font size and letter spacing **down**, so rounding can never re-wrap text.
+- A non-cover background image keeps its aspect: it's fitted inside the canvas, not stretched.
+- The safe fallback pulls bleeding elements in **one unit at a time** (a button and its label move together), and re-fits any text that overflows its box.
+
+**Results** (dev matrix, 3 samples × 10 sizes):
+- Every generated candidate passes every gate.
+- Level 3 → 728×90 builds 12 real layouts (none before these changes).
+- Real layouts win 29 of 30 cells; Level 3 → 300×250 picks the fallback.
+
+**Known gaps** (see [README §11](README.md#11-whats-missing-as-of-2026-10-16)):
+- short text CTAs wrap one word per line in narrow columns;
+- the missing-asset placeholder can be prominent;
+- a multi-shape decoration group is placed per element.
 
 **Job:** given the source design, the target canvas and the `PriorityPlan`, generate many valid candidate layouts. Important units get space first; minor units get what's left. Node 2 doesn't pick a winner. That's node 3's job.
 

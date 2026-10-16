@@ -1,6 +1,6 @@
 # CHAMELEON three-node pipeline: architecture
 
-**Status (2026-10-14):** node 1 (priority) and the shared foundations are built ([PR #4](https://github.com/AngeloLandiza/Adobe-26-University-Hackathon/pull/4), plan Tasks 1–6). Nodes 2 and 3 are designed but not built yet. Until plan Task 12 connects the nodes, `engine/resize.py` still runs the starter's stretch baseline.
+**Status (2026-10-16):** all three nodes are built and wired into `engine/resize.py` ([PR #4](https://github.com/AngeloLandiza/Adobe-26-University-Hackathon/pull/4), plan Tasks 1–13). `python -m engine.main` produces real layouts for all three samples, and the dev matrix covers 10 real ad sizes. Still to do: the provider benchmark (Task 14), the Docker no-network check (Task 15), and a whole-branch review. See §11 for what's missing.
 **Builds on:** [Angelo's ideas](../architecture.md) (the candidate-and-score loop), reorganised around a priority step.
 **Implementation plan:** [stage-1 plan](../superpowers/plans/2026-10-13-stage1-three-node-pipeline.md), with per-task status.
 
@@ -8,8 +8,8 @@
 |---|---|---|
 | this file | the pipeline end to end, shared data contracts, failure policy, code layout, build changes, decisions, open questions | — |
 | [01-priority-node.md](01-priority-node.md) | node 1: grouping elements, labelling and ranking them (LLM or rule-based) | ✅ Tasks 3–6 |
-| [02-resize-engine.md](02-resize-engine.md) | node 2: turning a ranking into candidate layouts | ⏳ Tasks 7–9 |
-| [03-grading-node.md](03-grading-node.md) | node 3: rejecting, scoring and picking a candidate | ⏳ Tasks 10–11 |
+| [02-resize-engine.md](02-resize-engine.md) | node 2: turning a ranking into candidate layouts | ✅ Tasks 7–9 |
+| [03-grading-node.md](03-grading-node.md) | node 3: rejecting, scoring and picking a candidate | ✅ Tasks 10–11 |
 
 ---
 
@@ -37,11 +37,11 @@ flowchart LR
         LLM -. "no key, error, refusal,<br/>or > 30% repaired" .-> HEU
     end
 
-    subgraph N2["Node 2 · Resize engine ⏳"]
+    subgraph N2["Node 2 · Resize engine ✅"]
         TPL["templates for<br/>target aspect"] --> PACK["assign units to slots<br/>by rank"] --> FIT["size + fit text"] --> NORM["normalise"]
     end
 
-    subgraph N3["Node 3 · Grading ⏳"]
+    subgraph N3["Node 3 · Grading ✅"]
         GATE{"hard gates"} -- pass --> GEO["geometry score<br/>(all candidates)"] --> PIX["render top K<br/>pixel score"] --> PICK["pick best"]
         GATE -- fail --> DROP["discard"]
     end
@@ -72,7 +72,7 @@ flowchart LR
 
 ## 3. Running example (Level 2: 1080×1080 → 1600×400)
 
-The node 1 output below is what the rule-based ranker actually produces today. The node 2 and 3 descriptions are still design intent.
+This is what the engine actually does today (no API key, so node 1 uses the rule-based ranker).
 
 **Node 1** builds 9 units from 11 elements (the `badge` and `cta` groups each become one unit):
 
@@ -87,9 +87,9 @@ The node 1 output below is what the rule-based ranker actually produces today. T
 | 5 | `subhead` | subhead | subheadline |
 | 6 | `badge` | badge_bg, badge_label | badge |
 
-**Node 2** sees aspect 4.0 → class `wide`, tries the wide templates (e.g. *image | text stack | CTA*, mirrored, with several margin and split settings) and returns about 20–40 candidates plus the safe fallback.
+**Node 2** sees aspect 4.0 → class `wide` and builds the 36 `row` variants (margin × image split × mirror × rank cutoff), plus the proportional reflow and the safe fallback: 38 candidates, all of which pass every gate.
 
-**Node 3** drops any candidate with overflowing text or an off-canvas element, scores the rest on hierarchy, overlap, spacing, alignment and faithfulness, renders the top few to check text contrast against the background, and returns the winner.
+**Node 3** scores all 38 on geometry, renders the top 6 to check text contrast and background busyness, and picks `row/cutoff=None/margin=0.07/mirror=False/split=0.55` (total 0.904 = 0.7 × geometry + 0.3 × pixels): bottle on the left, logo, two-colour headline and subhead in the middle, CTA pill on the right.
 
 ---
 
@@ -160,30 +160,34 @@ Invariants:
 
 ## 5. Orchestration and failure policy
 
-This is the planned `resize()` (plan Task 12). Node 1's part already exists as `plan()`.
+As built in `engine/resize.py` (plan Task 12):
 
 ```python
-def resize(source, target_canvas):
-    plan = priority.plan(source)                  # never raises: LLM -> heuristic fallback inside (built)
-
-    candidates = [layout.safe_fallback(source, target_canvas, plan)]   # always first, always valid
+def resize_with_report(source, target_canvas):
+    plan = priority_plan(source)                  # never raises: LLM -> heuristic fallback inside
+    candidates = [safe_fallback(source, target_canvas, plan, measurer)]   # always first, always valid
     try:
-        candidates += layout.generate_candidates(source, target_canvas, plan, measurer)
+        candidates += generate_candidates(source, target_canvas, plan, measurer)
     except Exception:
         pass                                      # a node 2 bug never sinks the task
-
     try:
-        best, reports = grading.pick_best(source, target_canvas, plan, candidates, measurer)
+        best, reports = pick_best(source, target_canvas, plan, candidates, measurer)
     except Exception:
-        best = candidates[0]                      # the safe fallback
-    return best.design
+        best, reports = candidates[0], []         # the safe fallback
+    return best.design, plan, best, reports
+
+def resize(source, target_canvas):
+    try:    return resize_with_report(source, target_canvas)[0]
+    except: ...  # then safe_fallback(source, target_canvas, heuristic_plan(source)).design
+                 # then _last_resort(): the starter's stretch, pulled inside the canvas
 ```
 
 The rules:
 
-- **Never crash, never return invalid JSON.** Each layer catches its own failures and degrades to something simpler. The last resort is the safe fallback candidate (uniform scale-to-fit, centred, background cover-filled), which node 2 guarantees passes every hard gate.
+- **Never crash, never return invalid JSON.** Each layer catches its own failures and degrades to something simpler: the safe fallback candidate (uniform scale-to-fit, centred, background cover-filled; passes every gate on all samples × targets), then the fallback rebuilt from a heuristic plan, then a dependency-free last resort that keeps every element's rotated bounds inside the canvas.
+- **One status line per task** on stderr: `[priority] source=… provider=… model=… latency=… cost=$… error=…`.
 - **Deterministic.** Templates and parameter grids are enumerated in a fixed order and ties are broken by `candidate_id`. The rule-based ranker is fully deterministic. LLM answers can vary between calls; the response cache (§8) makes repeated development runs repeatable.
-- **Debug output is opt-in.** With `CHAMELEON_DEBUG=1`, the plan, every candidate's scores and a contact sheet of renders go to `output/debug/<hash of source + target>/`. It's off by default so the scored output folder only holds the expected files.
+- **Debug output is opt-in.** With `CHAMELEON_DEBUG=1`, `plan.json`, `reports.json` (best first) and a contact sheet of the rendered top candidates go to `output/debug/<hash of source + target>/`. It's off by default so the scored output folder only holds the expected files, and a failing dump never changes the result.
 
 ---
 
@@ -195,12 +199,13 @@ The rules:
 chameleon/
   engine/
     main.py                  # unchanged starter orchestrator
-    resize.py                # ⏳ still the starter baseline; wires the three nodes in Task 12
+    resize.py                # ✅ runs the three nodes with the failure policy (§5)
     pipeline/
       types.py               # ✅ PriorityPlan, Unit, LLMCallStats, Candidate, GradeReport
       geometry.py            # ✅ boxes, rotated bounds, overlap, union, fit-to-aspect, in-canvas check
       textmeasure.py         # ✅ TextMeasurer: wrap, line count, block height, line widths, fits, fit_font_size
       render.py              # ✅ render_to_image(design) via the vendored renderer
+      occlusion.py           # ✅ "is this element hidden?" rules, shared by node 2 and gate G9
       priority/              # node 1 ✅
         __init__.py          #   plan() (LLM + fallback), heuristic_plan(), _assemble()
         units.py             #   build_units(): groups, detected buttons, hard-signal flags
@@ -210,14 +215,25 @@ chameleon/
         providers.py         #   ClaudeProvider, GeminiProvider, get_provider(), cached_complete()
         pricing.py           #   per-model token prices for cost tracking
         validate.py          #   repair() of LLM answers
-      layout/                # node 2 ⏳ aspect, place, layers, normalize, fallback, templates, generate
-      grading/               # node 3 ⏳ gates, metrics, pixels, score
+      layout/                # node 2 ✅
+        aspect.py            #   aspect classes (very_tall … strip)
+        place.py             #   place_unit(): one unit into a slot (images, text, rigid groups, condensed pills)
+        layers.py            #   background, decorations, fit_inside()
+        normalize.py         #   finalize(): editable fields only, safe rounding, in-canvas check
+        fallback.py          #   safe_fallback()
+        templates.py         #   stack / columns / row slot layouts and the parameter grid
+        generate.py          #   generate_candidates(): assignment, stacks, minor zone, free space, reflow
+      grading/               # node 3 ✅
+        gates.py             #   check_gates(): the nine hard gates
+        metrics.py           #   nine geometry metrics
+        pixels.py            #   text contrast, busyness, placeholder share (rendered)
+        score.py             #   pick_best()
   tests/                     # ✅ pytest suite (run from chameleon/); live API tests are opt-in
   dev/                       # dev-only tooling, not copied into the Docker image
     targets.json             # ✅ 10 real platform sizes for local testing
     golden/                  # ✅ hand-labelled roles and rankings for the 3 samples (team judgements)
     priority_metrics.py      # ✅ role accuracy, Kendall tau, top-3 recall
-    run_matrix.py            # ⏳ every source × every target -> contact sheet (Task 13)
+    run_matrix.py            # ✅ every source × every target -> contact sheets (Task 13)
     bench_priority.py        # ⏳ Claude vs Gemini vs heuristic: cost, latency, quality (Task 14)
 ```
 
@@ -257,7 +273,9 @@ A render-based test confirms text sized this way stays inside its box. We import
 | `CHAMELEON_LLM` | `auto` (default: Claude if its key is set, else Gemini, else heuristic), `claude`, `gemini` or `heuristic` |
 | `CHAMELEON_CLAUDE_MODEL` / `CHAMELEON_GEMINI_MODEL` | override the default models (`claude-opus-5-5`, `gemini-3.8-flash`) |
 | `CHAMELEON_LLM_CACHE` | a directory: successful LLM answers are cached there, so repeated runs don't pay again |
-| `CHAMELEON_DEBUG` | `1` writes debug output (from Task 12) |
+| `CHAMELEON_DEBUG` | `1` writes debug output to `output/debug/` (§5) |
+
+Tests always use the rule-based ranker (an autouse fixture sets `CHAMELEON_LLM=heuristic`), so a key in your environment never costs money during a normal test run. The suite takes about a minute because the end-to-end tests render real images.
 
 **Live API tests** are skipped by default. With keys set, run:
 
@@ -267,7 +285,7 @@ A render-based test confirms text sized this way stays inside its box. We import
 
 **The rest of the loop:**
 
-1. **More targets than the three samples.** `dev/targets.json` lists real formats (scoring targets are "real platform formats", per RULES): Instagram post 1080×1080, portrait 1080×1350, story 1080×1920, YouTube thumbnail 1280×720, LinkedIn banner 1584×396, Facebook cover 820×312, leaderboard 728×90, medium rectangle 300×250, wide skyscraper 160×600, billboard 970×250. `dev/run_matrix.py` (Task 13) will run every input against every target and build a contact sheet. That's our main way to look at results.
+1. **More targets than the three samples.** `dev/targets.json` lists real formats (scoring targets are "real platform formats", per RULES): Instagram post 1080×1080, portrait 1080×1350, story 1080×1920, YouTube thumbnail 1280×720, LinkedIn banner 1584×396, Facebook cover 820×312, leaderboard 728×90, medium rectangle 300×250, wide skyscraper 160×600, billboard 970×250. `python -m dev.run_matrix` runs every input against every target (about 80 s for 3 × 10) and writes one render per cell, a labelled contact sheet per input and `winners.json` to `output/matrix/`. That's our main way to look at results.
 2. **More sources.** Hand-write more source designs in the schema: different element counts, a design with no groups, one with no images. Give each a golden label file in `dev/golden/`. Three samples are too few to judge the LLM against the heuristic.
 3. **Provider benchmark** (Task 14): Claude vs Gemini vs heuristic on the golden set, measuring cost, latency, role accuracy, Kendall τ and top-3 recall.
 4. **Claude as a development helper.** Beyond being a node 1 provider, it can draft golden labels for new designs (a teammate reviews them), and act as a rubric judge to calibrate node 3's weights ([03-grading-node.md §5](03-grading-node.md)).
@@ -296,6 +314,14 @@ A render-based test confirms text sized this way stays inside its box. We import
 10. **Detected buttons need exactly one text covering ≥ 25% of the shape,** so a backdrop panel behind copy isn't mistaken for a button.
 11. **Background is a code decision only.** The LLM can't label a unit "background", because node 2 stretches background units over the whole canvas.
 12. **LLM output that needed > 30% repairs is discarded** in favour of the heuristic. `stats.error` records why.
+13. **Rotated units are fitted by their rotated outline,** and units with text never grow past 1.5× (node 2).
+14. **Tight banners get condensed buttons:** a pill is rebuilt around a one-line label, compressing to short slots and keeping its rotation (node 2).
+15. **Below its floor, a unit is squeezed to a 6 px hard floor and marked degraded instead of dropping the layout.** Minor and leftover units are capped at their floor size so they stay small (node 2).
+16. **Leftover units go to the largest distinct empty rectangles, biggest first.** The minor zone flows units at their natural width, and text stacks shrink the lowest-ranked unit first. Together these took Level 3 → 728×90 from no layout to 12 (node 2).
+17. **Decorations move to another corner rather than end up hidden** behind content (node 2, for gate G9).
+18. **Rounding never re-wraps text:** box sizes round up, text sizes round down (node 2).
+19. **The gates follow the renderer:** at equal `z_index` the element listed later is on top; an added field counts as changing a frozen field (node 3).
+20. **Metrics judge what's on the canvas.** Hierarchy compares like with like; overlap ignores overlap the source already had; contrast takes the worse end of the backdrop; degradation counts any text below its floor, so the safe fallback can't win on a technicality (node 3).
 
 ---
 
@@ -310,3 +336,37 @@ For the team or the organisers, most important first:
 4. **Exact reference hardware** (cores, RAM, whether Docker runs amd64 under emulation). This decides local-model latency.
 5. **Will hidden tasks reference assets outside `brand_kit/`?** It affects whether the missing-asset path is an edge case or a common one.
 6. **The full scoring rubric** (main brief, Section 3). Node 3's weights should mirror its rows.
+
+---
+
+## 11. What's missing (as of 2026-10-16)
+
+**Not done yet:**
+
+- **Provider benchmark (Task 14).** Claude vs Gemini vs heuristic hasn't been measured. It needs API keys.
+- **Live API tests.** The Claude and Gemini request shapes were checked against the real SDKs offline, but never against the live APIs. Still to confirm:
+  - Claude accepting the schema's enums;
+  - Gemini accepting `additionalProperties: false`;
+  - real latency and cost.
+
+  Run `pytest tests/test_providers.py -m live -s` with keys set.
+- **Docker no-network check (Task 15)** and exact dependency pins.
+- **Whole-branch review** before merging.
+
+**Known quality gaps** (from the Task 13 contact sheets):
+
+- **Short plain-text CTAs wrap one word per line** in narrow columns (Level 1 at Facebook cover and billboard sizes). Text fitting always maximises the font; short labels should prefer one line.
+- **The missing-asset placeholder can be prominent** (Level 3, Facebook cover and Instagram sizes). It must stay visible, but as the lowest-ranked unit it could be capped smaller.
+- **Level 3 → 300×250 picks the safe fallback,** because no template beats it.
+- **Grader weights are uncalibrated** starting guesses (calibration plan: [03-grading-node.md §5](03-grading-node.md)).
+
+**Deliberately not built:**
+
+- the flexbox slot solver (stage 1 uses fixed fractions);
+- a local LLM (waits on the benchmark);
+- a VLM judge;
+- the "push apart" step in reflow (it can't create new overlaps, and a test proves it);
+- G8's check that generic groups keep their relative layout (rigid placement preserves it by construction);
+- moving a multi-shape decoration group as one unit (no sample has one; such groups are placed per element).
+
+**Open questions** for the organisers are in §10. Number 0, network access during scoring, decides whether the LLM path can count in stage 1.

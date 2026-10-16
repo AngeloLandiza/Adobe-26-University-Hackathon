@@ -24,7 +24,7 @@
 
 **Status:** in progress. The team chose **native execution** (one implementer, test-first, one whole-branch review at the end). See "Execution status" below.
 
-## Execution status (as of 2026-10-14)
+## Execution status (as of 2026-10-16)
 
 | Task | Status | Commit | Tests after the task |
 |---|---|---|---|
@@ -34,15 +34,20 @@
 | 4 Heuristic ranker, golden labels | ✅ done | `b0208af` | 50 |
 | 5 Claude + Gemini providers | ✅ done (live tests not run: no keys) | `31eb2b4` | 66 (+2 live skipped) |
 | 6 Validate/repair, `plan()`, cache | ✅ done | `722b29f` | 83 (+2 live skipped) |
-| 7–9 Node 2 (resize engine) | ⏳ next | | |
-| 10–11 Node 3 (grading) | ⏳ | | |
-| 12 Wire `resize()` | ⏳ | | |
-| 13–15 Matrix, benchmark, Docker | ⏳ | | |
+| 7 Aspect classes, per-unit placement | ✅ done | `ae40d9f` | 108 (+2) |
+| 8 Layers, normalisation, safe fallback | ✅ done | `6475c8e` | 183 (+2) |
+| 9 Templates, assignment, generation, reflow | ✅ done | `e4ac1a2` | 269 (+2) |
+| 10 Grading gates | ✅ done | `4413363` | 348 (+2) |
+| 11 Metrics, pixels, `pick_best` | ✅ done | `9e19a79` | 365 (+2) |
+| 12 Wire `resize()` | ✅ done; `python -m engine.main` produces real layouts | `eadfa9a` | 375 (+2) |
+| 13 Dev matrix + contact sheets | ✅ done; 29/30 cells won by real layouts | `c4f4d15` | 376 (+2) |
+| 14 Provider benchmark | ⏳ next; the real comparison needs API keys | | |
+| 15 Docker no-network check | ⏳ | | |
 | Final whole-branch review | ⏳ | | |
 
 Each task went test-first: every test was seen failing before its code was written. Each important decision was also broken on purpose, to confirm a test catches it. Most tasks ended up with more tests than the plan lists.
 
-### Deviations in Tasks 1–6 that later tasks must follow
+### Deviations that later tasks must follow
 
 These change interfaces or facts the later task text assumes. **Where this list and a task's text disagree, this list wins.**
 
@@ -60,8 +65,26 @@ These change interfaces or facts the later task text assumes. **Where this list 
 9. **`plan()` never raises,** even on a design it can't analyse: it returns one unranked unit per element (Task 6). Task 12 can still keep its own fallback.
 10. **`textmeasure.BOLD_WEIGHTS`** is public (renamed from `_BOLD_WEIGHTS`) and reused by `features.py`.
 11. **`requirements.txt` already lists** `numpy`, `anthropic` and `google-genai<3.0.0` (Task 5). Task 15 only pins versions.
+12. **`place_unit` has `max_font`** (Task 9 extension of Task 7). Minor and free-space units are capped at their role floor.
+13. **Condensed pills compress to short slots and work rotated** (Task 9). Task 7 skipped rotated pills and required the source height ratio.
+14. **`place_decoration(..., corner=)` and `Slot.align` exist** (Tasks 9–10). Strip logos align to the top; decorations move corners rather than be hidden.
+15. **`engine/pipeline/occlusion.py`** holds the hidden-element rules, shared by gate G9 and the generator (Task 10).
+16. **The minor zone flows, stacks allocate minimum heights first, and leftovers go biggest-first into distinct free rectangles** (Task 9). These replace the brief's equal cells, weighted split and rank-order free scan, none of which could place Level 3 in 728×90.
+17. **Degradation counts any text below its floor** as well as node 2's flags (Task 11). Without this the safe fallback nearly won Level 3.
+18. **`safe_fallback(..., measurer=None)`** re-fits overflowing text and moves bleeding units whole (Task 8).
+19. **Tests force `CHAMELEON_LLM=heuristic`** (autouse fixture, Task 12), so a developer's API key is never used by accident. **Task 14's benchmark must set its own provider explicitly.**
 
-All the rulings with their reasons are in [docs/pipeline/01-priority-node.md](../../pipeline/01-priority-node.md) and the [PR #4 description](https://github.com/AngeloLandiza/Adobe-26-University-Hackathon/pull/4).
+The rulings with their reasons are recorded in the "As built" sections of [01](../../pipeline/01-priority-node.md), [02](../../pipeline/02-resize-engine.md) and [03](../../pipeline/03-grading-node.md), and the pipeline README lists what's missing ([§11](../../pipeline/README.md#11-whats-missing-as-of-2026-10-16)).
+
+### Open items found during execution
+
+- **Live API tests not run** (no keys in the build environment).
+- **Tuning, from the Task 13 contact sheets:**
+  - short text CTAs wrap one word per line in narrow columns;
+  - the missing-asset placeholder is prominent in some layouts;
+  - Level 3 → 300×250 picks the fallback.
+- **Grader weights uncalibrated;** the golden set is still only the 3 samples.
+- **The full test suite takes about a minute,** because the end-to-end tests render real images.
 
 ## Stage-1 reality check (read first)
 
