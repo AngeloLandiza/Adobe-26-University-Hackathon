@@ -1,6 +1,6 @@
 # CHAMELEON three-node pipeline: architecture
 
-**Status (2026-10-16):** all three nodes are built and wired into `engine/resize.py` ([PR #4](https://github.com/AngeloLandiza/Adobe-26-University-Hackathon/pull/4), plan Tasks 1–13). `python -m engine.main` produces real layouts for all three samples, and the dev matrix covers 10 real ad sizes. Still to do: the provider benchmark (Task 14), the Docker no-network check (Task 15), and a whole-branch review. See §11 for what's missing.
+**Status (2026-10-16):** all three nodes are built and wired into `engine/resize.py` ([PR #4](https://github.com/AngeloLandiza/Adobe-26-University-Hackathon/pull/4), plan Tasks 1–15). `python -m engine.main` produces real layouts for all three samples, and the dev matrix covers 10 real ad sizes. The provider benchmark is built, and the Docker image passes the no-network run. Still to do: the benchmark with real API keys and a whole-branch review. See §11 for what's missing.
 **Builds on:** [Angelo's ideas](../architecture.md) (the candidate-and-score loop), reorganised around a priority step.
 **Implementation plan:** [stage-1 plan](../superpowers/plans/2026-10-13-stage1-three-node-pipeline.md), with per-task status.
 
@@ -248,11 +248,13 @@ A render-based test confirms text sized this way stays inside its box. We import
 
 ## 7. Build and runtime changes
 
-- **`requirements.txt`** now adds `numpy`, `anthropic` and `google-genai<3.0.0`. They're installed at build time, like everything else, and pinned to exact versions in plan Task 15. The SDKs sit unused in the scored run (no network), but keep the image able to use the API path where network exists.
+- **`requirements.txt`** now adds `numpy==2.4.6`, `anthropic==1.13.0` and `google-genai==2.30.1`, installed at build time like everything else. numpy stays on 2.4.x because 2.5 needs Python 3.12 and the image runs 3.11. The SDKs sit unused in the scored run (no network), but keep the image able to use the API path where network exists.
+- **`.dockerignore`** keeps `.venv/`, `.env`, `output/`, `tests/` and `dev/` out of the build context.
 - **`requirements-dev.txt`** adds `pytest` for local development only.
 - **`Dockerfile`** is unchanged. It copies `engine/`, `renderer/` and `brand_kit/`; `tests/` and `dev/` stay out of the image.
 - **API keys never go in the image or in git.** They come from environment variables only, and `.env` is gitignored.
-- **Smoke test** (Task 15): `docker run --network none` on the three samples must pass, and node 1 must report `source=heuristic`.
+- **Smoke test** (Task 15, ✅ passed 2026-10-16): `docker run --network none` runs all three samples, and node 1 reports `source=heuristic provider=none` for each. The tasks take 3.3 s, 2.4 s and 1.7 s. All 30 sample × size outputs pass every hard gate inside the container.
+- **Linux output differs from Windows.** Skia measures text in whole pixels on Linux and in fractions of a pixel on Windows, where widths come out up to about 6% narrower. So text can wrap differently, and Level 3 places 13 elements differently. Line breaks still match the renderer on each platform, because node 2 calls the renderer's own wrap code. Scoring runs on Linux, so judge final layouts in the container, and run the test suite there too: it caught an image-sizing bug that Windows hid (deviation 22 in the plan). The matrix in the container: real layouts win 28 of 30 cells (29 on Windows), and 28 cells pick the same winner as on Windows. The command is in [`chameleon/README.md`](../../chameleon/README.md).
 - **If we later ship a local model:** add `llama-cpp-python` and download pinned GGUF weights at build time. Image size and emulated CPU speed (open questions 3–4) decide whether that's viable.
 
 ---
@@ -343,21 +345,21 @@ For the team or the organisers, most important first:
 
 **Not done yet:**
 
-- **Provider benchmark (Task 14).** Claude vs Gemini vs heuristic hasn't been measured. It needs API keys.
+- **Provider benchmark numbers (Task 14).** The tool is built (`python -m dev.bench_priority --runs 3`), but Claude vs Gemini vs heuristic hasn't been measured: that needs API keys. The heuristic scores 1.00 on the current golden set, but its rules were written against those 3 samples, so 1.00 is a ceiling. Add at least 5 new labelled designs before comparing providers.
 - **Live API tests.** The Claude and Gemini request shapes were checked against the real SDKs offline, but never against the live APIs. Still to confirm:
   - Claude accepting the schema's enums;
   - Gemini accepting `additionalProperties: false`;
   - real latency and cost.
 
   Run `pytest tests/test_providers.py -m live -s` with keys set.
-- **Docker no-network check (Task 15)** and exact dependency pins.
+- **The API path inside the container** (Task 15, optional step 4): needs a key.
 - **Whole-branch review** before merging.
 
 **Known quality gaps** (from the Task 13 contact sheets):
 
 - **Short plain-text CTAs wrap one word per line** in narrow columns (Level 1 at Facebook cover and billboard sizes). Text fitting always maximises the font; short labels should prefer one line.
 - **The missing-asset placeholder can be prominent** (Level 3, Facebook cover and Instagram sizes). It must stay visible, but as the lowest-ranked unit it could be capped smaller.
-- **Level 3 → 300×250 picks the safe fallback,** because no template beats it.
+- **Level 3 → 300×250 picks the safe fallback,** because no template beats it. In the Linux container, Level 3 → 160×600 drops to the fallback as well (on Windows a stack wins); the wider Linux text leaves no template room there.
 - **Grader weights are uncalibrated** starting guesses (calibration plan: [03-grading-node.md §5](03-grading-node.md)).
 
 **Deliberately not built:**

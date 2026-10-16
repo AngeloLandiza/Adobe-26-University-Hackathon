@@ -27,7 +27,7 @@ We're replacing the baseline with a three-node pipeline:
 
 Design: [`docs/pipeline/`](../docs/pipeline/README.md). Implementation plan and status: [`docs/superpowers/plans/`](../docs/superpowers/plans/2026-10-13-stage1-three-node-pipeline.md).
 
-**Status:** all three nodes are built and wired into `engine/resize.py`, so `python -m engine.main` now produces real layouts instead of the stretch baseline. Each task prints one `[priority] …` line saying whether the LLM or the rule-based ranker ranked it. Still to come: the provider benchmark, the Docker no-network check and a final review. What's missing: [`docs/pipeline/README.md` §11](../docs/pipeline/README.md#11-whats-missing-as-of-2026-10-16).
+**Status:** all three nodes are built and wired into `engine/resize.py`, so `python -m engine.main` now produces real layouts instead of the stretch baseline. Each task prints one `[priority] …` line saying whether the LLM or the rule-based ranker ranked it. The provider benchmark and the Docker no-network check are done; still to come: a final review. What's missing: [`docs/pipeline/README.md` §11](../docs/pipeline/README.md#11-whats-missing-as-of-2026-10-16).
 
 **Run the tests** from this folder:
 
@@ -45,6 +45,12 @@ Design: [`docs/pipeline/`](../docs/pipeline/README.md). Implementation plan and 
 ```
 
 For one task's candidates and scores, set `CHAMELEON_DEBUG=1` before `python -m engine.main`; results go to `output/debug/`.
+
+**Compare the priority providers** (ranking quality, latency, cost per call and projected cost per 1,000 designs; writes `output/bench/priority.csv`). The rule-based ranker always runs; Claude and Gemini only run when their API key is set:
+
+```bash
+.venv/Scripts/python -m dev.bench_priority --runs 3
+```
 
 **LLM settings for the priority node** (optional; without them it uses its built-in rule-based ranker, which is also what runs in the no-network scored Docker run):
 
@@ -137,6 +143,30 @@ docker run --rm --network none \
 engine needs must be installed at **build** time (add it to
 `requirements.txt`), not fetched at run time. If you're using a locally
 hosted model, bake its weights into the image during the build step.
+
+**Our engine in Docker (checked 2026-10-16, Docker 29.8.1).** The build takes about 80 s from scratch. With `--network none`, each task prints `[priority] source=heuristic provider=none`: no API can be reached, so the rule-based ranker takes over. The three samples take 3.3 s, 2.4 s and 1.7 s, about 14 s for the whole run including container start. All 30 sample × size outputs pass every hard gate inside the container.
+
+On Windows (Git Bash), turn off path conversion and use Windows paths for the mounts:
+
+```bash
+MSYS_NO_PATHCONV=1 docker run --rm --network none -v "$(pwd -W)/input:/app/input" -v "$(pwd -W)/output:/app/output" my-chameleon-engine
+```
+
+**Linux output differs from Windows output.** Skia measures text in whole pixels on Linux and in fractions of a pixel on Windows. The Linux widths can be up to about 6% wider (a badge label measures 120.6 px on Windows and 127 px on Linux). Text can therefore wrap differently, and the engine may pick a different layout. Line breaks still match the renderer on each platform, because our measurer calls the renderer's own wrap code. Scoring runs on Linux, so check final layouts in the container. `dev/` isn't in the image, so mount it:
+
+```bash
+docker run --rm --network none -v "$(pwd)/input:/app/input:ro" -v "$(pwd)/dev:/app/dev:ro" -v "$(pwd)/output:/app/output" --entrypoint python my-chameleon-engine -m dev.run_matrix --out output/matrix_linux
+```
+
+Run the test suite there too. It needs network to install pytest, so this run isn't the scored setup. On Linux the suite caught a bug that Windows had hidden: an image shrunk to a speck.
+
+```bash
+docker run --rm -v "$(pwd)/input:/app/input:ro" -v "$(pwd)/dev:/app/dev:ro" -v "$(pwd)/tests:/app/tests:ro" -v "$(pwd)/pytest.ini:/app/pytest.ini:ro" -v "$(pwd)/requirements-dev.txt:/app/requirements-dev.txt:ro" --entrypoint sh my-chameleon-engine -c "pip install -q -r requirements-dev.txt && python -m pytest -q"
+```
+
+Only mount files that exist: Docker creates an empty folder on the host for a missing mount source.
+
+Never pass API keys to the scored image. For a local check of the LLM path, leave out `--network none` and add `-e ANTHROPIC_API_KEY` (or `-e GEMINI_API_KEY`).
 
 ## See also
 

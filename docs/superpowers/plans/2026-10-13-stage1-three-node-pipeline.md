@@ -41,8 +41,8 @@
 | 11 Metrics, pixels, `pick_best` | ✅ done | `9e19a79` | 365 (+2) |
 | 12 Wire `resize()` | ✅ done; `python -m engine.main` produces real layouts | `eadfa9a` | 375 (+2) |
 | 13 Dev matrix + contact sheets | ✅ done; 29/30 cells won by real layouts | `c4f4d15` | 376 (+2) |
-| 14 Provider benchmark | ⏳ next; the real comparison needs API keys | | |
-| 15 Docker no-network check | ⏳ | | |
+| 14 Provider benchmark | ✅ tool done; the real comparison still needs API keys | `dfb6fc6` | 380 (+2) |
+| 15 Docker no-network check | ✅ done; 30/30 outputs pass every gate in the container (Linux text widths differ from Windows) | see PR | 380 (+2) |
 | Final whole-branch review | ⏳ | | |
 
 Each task went test-first: every test was seen failing before its code was written. Each important decision was also broken on purpose, to confirm a test catches it. Most tasks ended up with more tests than the plan lists.
@@ -73,6 +73,9 @@ These change interfaces or facts the later task text assumes. **Where this list 
 17. **Degradation counts any text below its floor** as well as node 2's flags (Task 11). Without this the safe fallback nearly won Level 3.
 18. **`safe_fallback(..., measurer=None)`** re-fits overflowing text and moves bleeding units whole (Task 8).
 19. **Tests force `CHAMELEON_LLM=heuristic`** (autouse fixture, Task 12), so a developer's API key is never used by accident. **Task 14's benchmark must set its own provider explicitly.**
+20. **`numpy==2.4.6`, not the venv's newer version** (Task 15). numpy 2.5 needs Python 3.12 and the image runs 3.11, so the first build failed. Keep the venv on the same pins as `requirements.txt`.
+21. **Layouts are platform-dependent** (Task 15). Linux skia measures text in whole pixels and Windows in fractions, so the same input can wrap and lay out differently. Run the suite on both and judge tuning in the container (Linux), which is what scoring runs.
+22. **Images have a hard floor** (Task 15). `place_unit` returns `None` for an image under 6 px on its short side (or its own thickness, if the source is thinner). Running the suite in the container caught the minor-zone flow shrinking the Level 3 watermark to 0.04 × 0.02 px.
 
 The rulings with their reasons are recorded in the "As built" sections of [01](../../pipeline/01-priority-node.md), [02](../../pipeline/02-resize-engine.md) and [03](../../pipeline/03-grading-node.md), and the pipeline README lists what's missing ([§11](../../pipeline/README.md#11-whats-missing-as-of-2026-10-16)).
 
