@@ -1,5 +1,46 @@
 # Node 2: Resize engine
 
+**Status:** ✅ built (plan Tasks 7–9, [PR #4](https://github.com/AngeloLandiza/Adobe-26-University-Hackathon/pull/4)). Code is in `chameleon/engine/pipeline/layout/`. The design below still describes the approach; the list right after this section records where the code differs, and wins where they disagree.
+
+## As built: differences from the design below
+
+**Placement** (`place.py`):
+- Rotated units are fitted by the union of their members' **rotated** outlines. A rotated single element shrinks until its rotated bounds fit the slot.
+- Units with text never scale past **1.5×** (`MAX_TEXT_GROWTH`).
+- A re-fitted label keeps its visual centre where the source had it.
+- Text fitting re-checks with letter spacing scaled to the chosen size.
+- `place_unit` takes **`max_font`**: minor and leftover units are capped at their role's floor size, so they stay small however much room they get.
+- **Images have a hard floor too** (Task 15): `place_unit` returns `None` when an image would end up under 6 px (`HARD_FLOOR`) on its short side. An image whose source is thinner than that keeps its own thickness. Callers then treat the image like text that doesn't fit, and it moves on to the free-space pass. Without this, the minor-zone flow handed the Level 3 watermark a sliver of leftover room, and it came out 0.04 × 0.02 px in the Linux container and 1.6 × 0.7 px on Windows.
+- **Condensed pills** (§5.4):
+  - compress vertically to fit short slots, down to the label plus 0.2 × font of padding above and below;
+  - also work for **rotated** pills, checking their rotated bounds.
+
+**Templates and assignment** (`templates.py`, `generate.py`):
+- Fixed fractional slots, as planned. Slots carry an `align`; in strips the logo aligns to the **top**, so the space it leaves forms one usable block.
+- Logos never grow past 1.5× their source size (§3.5).
+- Text roles never cluster into a row; only other same-role consecutive units do.
+- **Text stacks** give each unit the height it needs at its role's floor. While they don't all fit, the lowest-ranked units drop to the 6 px hard floor, then out to the free-space pass. Spare height is shared by priority weight.
+- **The minor zone flows** units left to right at their natural width, instead of equal cells.
+- **Free space** (§4 step 5): a coarse occupancy grid, scanned for the largest *distinct* empty rectangles (any rectangle inside a kept one is dropped). Leftovers are placed **biggest footprint first** (their smallest form at the hard floor). Leftover images are capped at a third of the canvas each way.
+- **Decorations** that would be fully covered by content try the other corners (`place_decoration(..., corner=)`), so gate G9 never discards a layout over a hidden circle.
+- **Reflow** doesn't push units apart. Proportional centre mapping with sizes scaled by s = min(W/Ws, H/Hs) can't create overlaps the source didn't have; a test checks this on every sample × target.
+- One template variant failing to build is skipped, never fatal.
+
+**Finalising and the fallback** (`normalize.py`, `layers.py`, `fallback.py`):
+- `finalize` rounds box sizes **up** and font size and letter spacing **down**, so rounding can never re-wrap text.
+- A non-cover background image keeps its aspect: it's fitted inside the canvas, not stretched.
+- The safe fallback pulls bleeding elements in **one unit at a time** (a button and its label move together), and re-fits any text that overflows its box.
+
+**Results** (dev matrix, 3 samples × 10 sizes):
+- Every generated candidate passes every gate, on Windows and in the Linux container.
+- Level 3 → 728×90 builds 12 real layouts (none before these changes).
+- Real layouts win 29 of 30 cells on Windows; Level 3 → 300×250 picks the fallback. In the Linux container (what scoring runs), they win 28: Level 3 → 160×600 picks the fallback too, because Linux text measures wider.
+
+**Known gaps** (see [README §11](README.md#11-whats-missing-as-of-2026-10-16)):
+- short text CTAs wrap one word per line in narrow columns;
+- the missing-asset placeholder can be prominent;
+- a multi-shape decoration group is placed per element.
+
 **Job:** given the source design, the target canvas and the `PriorityPlan`, generate many valid candidate layouts. Important units get space first; minor units get what's left. Node 2 doesn't pick a winner. That's node 3's job.
 
 **Input:** `source`, `target_canvas`, `PriorityPlan`.
@@ -132,12 +173,15 @@ This is the best answer for Level 1 (1080² → 1080×1350): same composition, w
 1. Walk content units in rank order. Each takes the first open slot that accepts its role.
 2. **Cutoff `k`** (a grid parameter): only the top `k` units may take regular slots. Everything ranked below `k` goes to the minor zone. Low `k` gives big, clean top units; high `k` shows more.
 3. **Minor zone:** units are laid out in a row (or stack) in rank order and shrunk together until they fit, but never below their readability floor (§5.2).
-4. **Free-space pass:** whatever still doesn't fit is placed at floor size in the largest empty rectangle that doesn't cover a higher-ranked unit. It's marked in `degraded_unit_ids`, so node 3 penalises it in proportion to its rank.
-5. **Never hide.** No zero sizes, no `opacity` changes, no tucking under other elements. If a unit genuinely can't be placed at floor size, the candidate is dropped. The safe fallback still exists.
+4. **Hard-floor retry:** if a unit doesn't fit its slot at its role's floor, the same slot is retried at the **6 px hard floor**, and the unit goes into `degraded_unit_ids`. This keeps a candidate alive when a long headline can't meet the 14 px floor. Level 3's 150-character headline in 728×90 is the case that forced it.
+5. **Free-space pass:** whatever still doesn't fit is placed at the hard floor in the first empty spot (a 4 px grid scan) that doesn't cover a placed content unit. It's also marked degraded, so node 3 penalises it in proportion to its rank.
+6. **Never hide.** No zero sizes, no `opacity` changes, no tucking under other elements. If a unit genuinely can't be placed, the candidate is dropped. The safe fallback still exists.
 
 ## 5. Sizing
 
 ### 5.1 Slot boxes (flex-style)
+
+> **Stage-1 simplification:** the plan builds templates with **fixed fractional slot layouts** (exact fractions in plan Task 9) instead of a flexbox solver. Stack slots split their height by priority weight. The flex model below is the target if fixed fractions prove too rigid.
 
 Each container shares its main axis between its children the way CSS flexbox does:
 
@@ -153,16 +197,21 @@ Each container shares its main axis between its children the way CSS flexbox doe
 
 ### 5.2 Text fitting
 
-Text must fit exactly the way the official renderer will wrap it.
+Text must fit exactly the way the official renderer will wrap and draw it. The measurement half of this is **built and verified**: `TextMeasurer` in `engine/pipeline/textmeasure.py`, tested against real renders.
 
-- **Measurement:** `engine/pipeline/textmeasure.py` calls `renderer.converter.wrap.char_widths` / `wrap_text` with the brand-kit `FontManager`. It normalises weight and style exactly like `renderer/converter/convert.py` does: `_normalize_weight` and `_weight_style_to_font_style` are mirrored, not imported, because they're private.
-- **Rendered height** = `lines × font_size × line_height`. **Before relying on this, verify against cr-renderer**: check how it places the first line within the box and what happens on vertical overflow (whether it clips or spills). Do it with a quick render test on a known string.
-- **Search:** binary-search `font_size` in `[floor(role), cap]` (0.5 px steps) for the largest size where:
-  - the wrapped text fits the slot's height,
-  - no single word is wider than the slot (the renderer never breaks words),
-  - `max_lines` is respected when set.
+- **Line breaks:** the renderer's own `wrap_text` / `char_widths`, with the brand-kit fonts and the same weight/style lookup as `renderer/converter/convert.py` (mirrored, since those helpers are private).
+- **Rendered height** (from cr-renderer's `text_utils.render_text`):
+  - line *i* starts at `i × font_size × line_height`, with `line_height` defaulting to 1.2;
+  - each line's glyphs reach down to the font's descent, so `block_height = (lines − 1) × font_size × line_height + glyph height`, where glyph height is descent − ascent;
+  - cr-renderer **doesn't clip**, so overflow really shows in the PNG.
+
+  The plan's original `lines × font_size × line_height` under-measures by about 0.1–0.2 × font size, and a render test showed it overflowing.
+- **Widths:** each wrapped line's *drawn* width, including `letter_spacing`, must be ≤ the box width. The renderer adds letter spacing per glyph, but the converter's wrap ignores it. This also covers "no word wider than the box", since the renderer never breaks words.
+- **Glyph size:** cr-renderer truncates `font_size` to a whole number when drawing glyphs, though line spacing uses the exact value. Fitting in 0.5 px steps stays safe, because drawn text is never larger than measured.
+- **Search:** `fit_font_size(el, w, h, lo=floor(role), hi=cap)` returns the largest 0.5 px step in `[lo, hi]` that fits (height, line widths, `max_lines`), or `None` if even `lo` doesn't. It always lands on a fit/no-fit boundary, even where wrapping makes fit non-monotonic.
+- **Single-line width** (for condensed buttons, §5.4): `max(measurer.line_widths(el, size, float("inf")))`.
 - **cap** = source `font_size` × `max_text_growth` (default 1.5), so text never balloons.
-- **floor(role):** tunable readability floors. Starting values, to be tuned on renders: headline 14 px, cta 11, subheadline 10, badge 9, legal 7. Scaled up on large canvases by `max(1, min(W, H) / 600)`.
+- **floor(role):** tunable readability floors. Starting values, to be tuned on renders: headline 14 px, cta 11, subheadline 10, badge 9, legal 7, others 9. Scaled up on large canvases by `max(1, min(W, H) / 600)`. Below that sits a **6 px hard floor** that marks the unit degraded (§4).
 - **Keep the size ordering.** If the source's headline font was larger than its subheadline font, the output keeps that order (lower-ranked text is clamped to ≤ 0.85× the text above it).
 - **Tight box:** after fitting, the text box height shrinks to the measured block and is aligned in its slot. Width stays at the slot width so `text_align` still means something.
 - `content`, `font_family`, `font_weight`, `font_style`, `line_height`, `text_align`, `style_runs` are **never changed**. `letter_spacing` (px) scales with the font-size ratio.
@@ -176,7 +225,10 @@ The box is the largest box **with the source box's aspect ratio** that fits the 
 - **Rigid uniform scale** of the whole unit around its bbox: `k = min(slot_w / unit_w, slot_h / unit_h)`. Member positions and sizes scale by `k`, and so do `corner_radius` and `stroke_width`.
 - **Labels:** start at source `font_size × k`, then run the text-fit check inside the label's scaled box; shrink if needed.
 - **Rotation** is preserved. Member offsets are scaled about the unit's origin, and the in-canvas check uses each element's **rotated** bounds (the Level 3 ribbon is at −12°).
-- Optional, behind a flag: let a pill shrink in width only when its label still fits. This saves space in `strip` layouts.
+- **Condensed mode** for `container_label` units, used when rigid scaling would push the label below its floor. The source label box is often far wider than its text (Level 3's CTA box is 420 px for about 230 px of text), so rigid scaling into a 158 px banner slot would shrink the label to about 8 px.
+  - The pill is rebuilt around a **one-line label** instead: the largest label font `f` where the shape height (`f` × the source ratio of shape height to label font) fits the slot height, and the label width plus `1.6 f` of padding fits the slot width.
+  - `corner_radius` scales with the new shape height.
+  - If no `f` reaches the floor, the unit falls back to the hard-floor retry (§4).
 
 ## 6. Parameter grid
 
@@ -231,7 +283,7 @@ It's ugly on extreme targets (Level 3 comes out at ~7% scale) but always valid. 
 - **Property tests** over every source × every `dev/targets.json` size, plus random aspect ratios:
   - every emitted candidate passes node 3's gates;
   - the safe fallback passes on every input.
-- **Text-fit agreement:** for a handful of fitted texts, render and check that the inked pixel bounds sit inside the box. This guards against our measurement drifting from cr-renderer.
+- **Text-fit agreement** (✅ already in `tests/test_textmeasure.py`): fitted texts are rendered, and the inked pixels must sit inside the box. That covers a long serif headline and a one-line sans CTA whose fit is limited by height. This guards against our measurement drifting from cr-renderer.
 - **Unit tests:**
   - slot assignment (rank order, clustering, cutoff, the CTA always placed);
   - flex resolution;

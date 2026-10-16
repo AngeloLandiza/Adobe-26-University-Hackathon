@@ -1,0 +1,8 @@
+{
+  "roles": {
+    "bg": "background", "deco_circle_1": "decoration", "deco_circle_2": "decoration",
+    "logo": "logo", "product": "hero_image", "headline": "headline",
+    "subhead": "subheadline", "badge": "badge", "cta": "cta"
+  },
+  "ranking": ["headline", "product", "cta", "logo", "subhead", "badge"]
+}

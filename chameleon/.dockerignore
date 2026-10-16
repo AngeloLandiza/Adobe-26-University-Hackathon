@@ -1,0 +1,11 @@
+# Keep the build context small and free of secrets; the Dockerfile only
+# copies engine/, renderer/, brand_kit/ and the schema anyway.
+.venv/
+venv/
+.env
+.cache/
+output/
+tests/
+dev/
+**/__pycache__/
+.pytest_cache/

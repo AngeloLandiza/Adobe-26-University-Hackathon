@@ -20,3 +20,7 @@ venv/
 # Generated run artifacts
 output/*
 !output/.gitkeep
+
+# LLM response cache (CHAMELEON_LLM_CACHE) and local API keys
+.cache/
+.env
