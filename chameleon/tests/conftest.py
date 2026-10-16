@@ -10,6 +10,15 @@ INPUT_DIR = Path("input")
 TARGETS_PATH = Path("dev/targets.json")
 
 
+@pytest.fixture(autouse=True)
+def _no_llm_calls(request, monkeypatch):
+    """Keep every non-live test on the heuristic, so a developer with an API
+    key set never pays for (or waits on) LLM calls during a normal test run.
+    Tests that exercise provider selection set their own environment."""
+    if request.node.get_closest_marker("live") is None:
+        monkeypatch.setenv("CHAMELEON_LLM", "heuristic")
+
+
 def _load(stem: str) -> dict:
     return json.loads((INPUT_DIR / f"{stem}.json").read_text())
 
