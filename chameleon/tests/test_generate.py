@@ -1,0 +1,169 @@
+import json
+import pytest
+from pathlib import Path
+from engine.pipeline.geometry import inside_canvas, overlap_area, rotated_aabb, union_box
+from engine.pipeline.layout.generate import assign, generate_candidates, reflow_candidate
+from engine.pipeline.layout.place import floor_px
+from engine.pipeline.layout.templates import Slot, build_slots, PARAM_GRID
+from engine.pipeline.priority import heuristic_plan
+from engine.pipeline.types import PriorityPlan, Unit
+from tests.conftest import assert_valid
+
+SAMPLES = sorted(Path("input").glob("*.json"))
+TARGETS = json.loads(Path("dev/targets.json").read_text())
+
+
+@pytest.mark.parametrize("path", SAMPLES, ids=lambda p: p.stem)
+@pytest.mark.parametrize("target", TARGETS, ids=lambda t: t["name"])
+def test_candidates_are_valid_and_text_fits(path, target, measurer):
+    src = json.loads(path.read_text())["source"]
+    for c in generate_candidates(src, target, heuristic_plan(src), measurer):
+        assert_valid(src, c.design, target)
+        for el in c.design["elements"]:
+            if el["type"] == "text":
+                assert measurer.fits(el, el["font_size"], el["width"], el["height"]), (c.candidate_id, el["id"])
+
+
+def test_ids_unique_and_deterministic(l2, measurer):
+    run = lambda: [c.candidate_id for c in generate_candidates(l2["source"], l2["target_canvas"], heuristic_plan(l2["source"]), measurer)]
+    a = run()
+    assert a == run() and len(a) == len(set(a)) and any(i.startswith("row/") for i in a)
+
+
+def test_cta_never_degraded(l3, measurer):
+    for c in generate_candidates(l3["source"], l3["target_canvas"], heuristic_plan(l3["source"]), measurer):
+        assert "cta" not in c.degraded_unit_ids
+
+
+def test_reflow_present_for_l1(l1, measurer):
+    cands = generate_candidates(l1["source"], l1["target_canvas"], heuristic_plan(l1["source"]), measurer)
+    assert cands[0].candidate_id == "reflow"
+
+
+@pytest.mark.parametrize("template", ["stack", "columns", "row"])
+@pytest.mark.parametrize("w,h", [(728, 90), (1080, 1350), (1600, 400)])
+def test_slots_inside_canvas(template, w, h):
+    for params in PARAM_GRID[template]:
+        assert all(inside_canvas(s.box, w, h) for s in build_slots(template, w, h, params))
+
+
+# --- beyond the brief ---
+
+def unit(uid, role, rank):
+    return Unit(uid, [uid], "single", role=role, rank=rank)
+
+
+def test_assign_by_rank_with_cutoff_clusters_and_cta_exemption():
+    slots = [Slot("text", (0, 0, 10, 10), ("headline", "subheadline", "other_text"), stack=True),
+             Slot("cta", (0, 0, 10, 10), ("cta",)), Slot("minor", (0, 0, 10, 10), (), minor=True)]
+    h, s, b1, b2, c = unit("h", "headline", 1), unit("s", "subheadline", 2), unit("b1", "badge", 3), unit("b2", "badge", 4), unit("c", "cta", 5)
+    got = assign(PriorityPlan("heuristic", [h, s, b1, b2, c]), slots, cutoff=2)
+    ids = {i: [[u.unit_id for u in item] for item in items] for i, items in got.items()}
+    assert ids == {0: [["h"], ["s"]], 1: [["c"]], 2: [["b1", "b2"]]}
+
+
+def test_only_consecutive_same_role_units_cluster():
+    slots = [Slot("minor", (0, 0, 10, 10), (), minor=True)]
+    plan = PriorityPlan("heuristic", [unit("b1", "badge", 1), unit("o", "other_text", 2), unit("b2", "badge", 3)])
+    assert [[u.unit_id for u in item] for item in assign(plan, slots, cutoff=None)[0]] == [["b1"], ["o"], ["b2"]]
+    texts = PriorityPlan("heuristic", [unit("s1", "subheadline", 1), unit("s2", "subheadline", 2)])
+    assert [[u.unit_id for u in item] for item in assign(texts, slots, cutoff=None)[0]] == [["s1"], ["s2"]]  # text stacks, never clusters
+
+
+def test_leaderboard_gets_real_candidates_for_level_3(l3, measurer):
+    # 17 elements into 728x90: the 150-character headline can't meet its 14px floor, so it's degraded, not dropped
+    cands = generate_candidates(l3["source"], l3["target_canvas"], heuristic_plan(l3["source"]), measurer)
+    rows = [c for c in cands if c.template == "row"]
+    assert rows and all("headline" in c.degraded_unit_ids for c in rows)
+
+
+def test_minor_units_stay_at_or_below_their_floor(l3, measurer):
+    for c in generate_candidates(l3["source"], l3["target_canvas"], heuristic_plan(l3["source"]), measurer):
+        legal = next(e for e in c.design["elements"] if e["id"] == "legal_text")
+        assert legal["font_size"] <= floor_px("legal", 728, 90) + 1e-9, c.candidate_id
+        mark = next(e for e in c.design["elements"] if e["id"] == "holiday_watermark")
+        assert mark["height"] <= 90 / 3 + 0.01, c.candidate_id  # a leftover image stays small
+
+
+def test_logo_never_grows_past_one_and_a_half(l1, measurer):
+    story = {"width": 1080, "height": 1920}
+    for c in generate_candidates(l1["source"], story, heuristic_plan(l1["source"]), measurer):
+        logo = next(e for e in c.design["elements"] if e["id"] == "logo")
+        assert logo["width"] <= 320 * 1.5 + 0.01, c.candidate_id
+
+
+@pytest.mark.parametrize("path", SAMPLES, ids=lambda p: p.stem)
+@pytest.mark.parametrize("target", TARGETS, ids=lambda t: t["name"])
+def test_reflow_adds_no_new_overlaps(path, target, measurer):
+    src = json.loads(path.read_text())["source"]
+    plan = heuristic_plan(src)
+    c = reflow_candidate(src, target, plan, measurer)
+    if c is None:
+        return
+    src_els = {e["id"]: e for e in src["elements"]}
+    out_els = {e["id"]: e for e in c.design["elements"]}
+    box = lambda els, u: union_box([rotated_aabb(els[i]) for i in u.element_ids])
+    content = plan.ranked_units()
+    for i, a in enumerate(content):
+        for b in content[i + 1:]:
+            if overlap_area(box(src_els, a), box(src_els, b)) == 0:
+                assert overlap_area(box(out_els, a), box(out_els, b)) < 1.0, (a.unit_id, b.unit_id)
+
+
+def test_design_with_missing_optional_fields(measurer):
+    src = {"canvas": {"width": 1080, "height": 1080}, "elements": [
+        {"id": "t", "type": "text", "content": "Fresh summer flavours", "font_family": "Solstice Serif", "font_size": 60,
+         "color": "rgba(0,0,0,1)", "x": 100, "y": 600, "width": 880, "height": 100},
+        {"id": "i", "type": "image", "asset_id": "solstice_bottle.png", "x": 290, "y": 60, "width": 500, "height": 500}]}
+    for target in ({"width": 728, "height": 90}, {"width": 1080, "height": 1920}, {"width": 1280, "height": 720}):
+        cands = generate_candidates(src, target, heuristic_plan(src), measurer)
+        assert cands
+        for c in cands:
+            assert_valid(src, c.design, target)
+
+
+def test_stack_shrinks_lowest_rank_first_so_everything_fits(l3, measurer):
+    # a weighted split gives the headline 76% of a 299x58 column and leaves the subhead too little;
+    # both fit if the subhead drops to its minimum first and the headline gets the rest
+    from engine.pipeline.layout.generate import _Builder
+    plan = heuristic_plan(l3["source"])
+    units = {u.unit_id: u for u in plan.units}
+    b = _Builder(l3["source"], l3["target_canvas"], plan, measurer)
+    b.place_stack([units["headline"], units["subhead"]], (266.7, 3.6, 299.1, 58.0))
+    assert b.leftover == [] and {"headline", "subhead"} <= set(b.placed)
+    head, sub = b.placed["headline"], b.placed["subhead"]
+    assert head["font_size"] >= sub["font_size"] and head["y"] + head["height"] <= sub["y"] + 0.01
+
+
+def test_strip_logos_align_to_the_top():
+    logo = next(s for s in build_slots("row", 728, 90, PARAM_GRID["row"][0]) if s.name == "logo")
+    assert logo.align == "top"
+
+
+def builder(task, target, measurer):
+    from engine.pipeline.layout.generate import _Builder
+    plan = heuristic_plan(task["source"])
+    return _Builder(task["source"], target, plan, measurer), {u.unit_id: u for u in plan.units}
+
+
+def test_leftovers_go_biggest_first(l3, measurer):
+    # one 200x30 gap fits the legal text, one 80x25 gap fits a badge; in rank order the badge
+    # would take the big gap first and the legal text would have nowhere to go
+    b, units = builder(l3, {"width": 400, "height": 100}, measurer)
+    b.boxes = [(200, 0, 200, 60), (0, 30, 300, 70), (380, 60, 20, 40), (300, 85, 80, 15)]
+    b.leftover = [units["badge1"], units["legal_text"]]
+    assert b.place_leftovers(margin=0) is True
+
+
+def test_free_rects_are_distinct_regions(l3, measurer):
+    b, _ = builder(l3, {"width": 728, "height": 90}, measurer)
+    b.boxes = [(4, 30, 100, 30), (150, 4, 80, 82), (300, 4, 250, 50)]
+    rects = b.free_rects(margin=4)
+    inside = lambda o, i: o[0] <= i[0] and o[1] <= i[1] and i[0] + i[2] <= o[0] + o[2] and i[1] + i[3] <= o[1] + o[3]
+    assert rects and not any(inside(a, c) for a in rects for c in rects if a is not c)
+
+
+def test_leftover_images_stay_small(l3, measurer):
+    b, units = builder(l3, {"width": 728, "height": 90}, measurer)
+    b.leftover = [units["holiday_watermark"]]
+    assert b.place_leftovers(margin=4) and b.placed["holiday_watermark"]["height"] <= 90 / 3 + 0.01

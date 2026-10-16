@@ -141,3 +141,31 @@ def test_group_with_text_below_floor_returns_none(measurer):
            "color": "rgba(0,0,0,1)", "x": 50, "y": 5, "width": 400, "height": 30, "group_id": "perk"}
     unit = Unit("perk", ["icon", "cap"], "group", role="subheadline")
     assert place_unit(unit, {"icon": icon, "cap": cap}, (0, 0, 45, 5), measurer, floor=10) is None
+
+
+def test_max_font_caps_text_and_whole_buttons(l2, measurer):
+    # minor and free-space units must stay small, however much room there is
+    els, units = setup(l2)
+    head = place_unit(units["headline"], els, (0, 0, 1000, 400), measurer, floor=6, max_font=10)["headline"]
+    assert head["font_size"] == 10
+    btn = place_unit(units["cta"], els, (0, 0, 1000, 400), measurer, floor=6, max_font=9)
+    assert btn["cta_label"]["font_size"] <= 9 and btn["cta_bg"]["height"] <= 90 * 9 / 22 + 1e-6
+
+
+def test_condensed_pill_compresses_to_a_short_slot(l3, measurer):
+    # at 6px the source pill ratio (50/15) wants a 20px shape; an 18px gap still holds the label plus padding
+    els, units = setup(l3)
+    out = place_unit(units["badge1"], els, (0, 0, 100, 18), measurer, floor=6, max_font=6)
+    assert out is not None
+    bg, lab = out["badge1_bg"], out["badge1_label"]
+    assert bg["height"] <= 18 and bg["y"] <= lab["y"] and lab["y"] + lab["height"] <= bg["y"] + bg["height"]
+
+
+def test_rotated_pill_condenses_inside_its_slot(l3, measurer):
+    # the -12deg ribbon at 6px: its rotated bounds must fit the slot, not just the unrotated pill
+    els, units = setup(l3)
+    slot = (0, 0, 100, 26)
+    out = place_unit(units["ribbon"], els, slot, measurer, floor=6, max_font=6)
+    assert out is not None and out["ribbon_label"]["font_size"] == 6
+    for el in out.values():
+        assert inside_canvas(rotated_aabb(el), 100, 26) and el["rotation"] == -12

@@ -18,6 +18,7 @@ HARD_FLOOR = 6            # last resort; a unit placed at it is marked degraded
 MAX_TEXT_GROWTH = 1.5     # text never grows past 1.5x its source size
 STEP = 0.5                # font-size search step, px
 CONDENSED_PADDING = 0.8   # condensed pill: label inset per side, in label font sizes
+CONDENSED_VPAD = 0.2      # condensed pill: least room above and below the label, in font sizes
 
 
 def floor_px(role: str, width: float, height: float) -> float:
@@ -75,10 +76,12 @@ def _place_box(el: dict, slot: Box, align: str) -> dict:
     return dict(el, x=x, y=y, width=w, height=h)
 
 
-def _place_text(el: dict, slot: Box, measurer: TextMeasurer, floor: float, align: str) -> dict | None:
+def _place_text(el: dict, slot: Box, measurer: TextMeasurer, floor: float, align: str,
+                max_font: float | None) -> dict | None:
     angle = el.get("rotation") or 0
     x, y, w, h = _rotated_fit(_aspect(el), slot, angle, align) if angle else slot
-    size = _fit_text(el, w, h, floor, el["font_size"] * MAX_TEXT_GROWTH, measurer)
+    hi = el["font_size"] * MAX_TEXT_GROWTH
+    size = _fit_text(el, w, h, floor, hi if max_font is None else min(hi, max_font), measurer)
     if size is None:
         return None
     text = resize_text(el, size)
@@ -87,14 +90,18 @@ def _place_text(el: dict, slot: Box, measurer: TextMeasurer, floor: float, align
     return dict(text, x=x, y=top, width=w, height=block)
 
 
-def _place_rigid(members: list[dict], slot: Box, measurer: TextMeasurer, floor: float, align: str) -> dict[str, dict] | None:
+def _place_rigid(members: list[dict], slot: Box, measurer: TextMeasurer, floor: float, align: str,
+                 max_font: float | None) -> dict[str, dict] | None:
     """Scale the whole unit uniformly by k (its rotated bounds fit the slot),
     then re-fit each label inside its scaled box, keeping the label's visual
     centre where the source design had it."""
     ux, uy, uw, uh = union_box([rotated_aabb(m) for m in members])
     k = min(slot[2] / uw, slot[3] / uh)
-    if any(m["type"] == "text" for m in members):
+    text_sizes = [m["font_size"] for m in members if m["type"] == "text"]
+    if text_sizes:
         k = min(k, MAX_TEXT_GROWTH)
+        if max_font is not None:  # scale the whole unit down so its largest label stays within max_font
+            k = min(k, max_font / max(text_sizes))
     ox, oy = align_in(slot, uw * k, uh * k, align)
     out = {}
     for m in members:
@@ -116,25 +123,34 @@ def _place_rigid(members: list[dict], slot: Box, measurer: TextMeasurer, floor: 
     return out
 
 
-def _place_condensed(members: list[dict], slot: Box, measurer: TextMeasurer, floor: float, align: str) -> dict[str, dict] | None:
+def _place_condensed(members: list[dict], slot: Box, measurer: TextMeasurer, floor: float, align: str,
+                     max_font: float | None) -> dict[str, dict] | None:
     """Rebuild a pill around a one-line label when rigid scaling would shrink
     the label below its floor (the source label box is often far wider than
-    its text). Not used for rotated pills."""
-    if any(m.get("rotation") for m in members):
-        return None
+    its text). The pill keeps the source's height-to-font ratio where the
+    slot allows, and compresses to the label plus a little padding where it
+    doesn't. A rotated pill keeps its angle; its rotated bounds must fit."""
     shape = next(m for m in members if m["type"] == "shape")
     label = next(m for m in members if m["type"] == "text")
-    unit_h = union_box([rotated_aabb(m) for m in members])[3]
+    rad = math.radians(shape.get("rotation") or 0)
+    cos, sin = abs(math.cos(rad)), abs(math.sin(rad))
     ratio = shape["height"] / label["font_size"]
-    hi = label["font_size"] * min(MAX_TEXT_GROWTH, slot[3] / unit_h)
+    hi = label["font_size"] * MAX_TEXT_GROWTH
+    if max_font is not None:
+        hi = min(hi, max_font)
     size = math.floor(hi / STEP) * STEP
     while size >= floor:
         text = resize_text(label, size)
         text_w = max(measurer.line_widths(text, size, float("inf")))
-        shape_w, shape_h = text_w + 2 * CONDENSED_PADDING * size, size * ratio
         block = measurer.block_height(text, size, text_w)
-        if shape_w <= slot[2] and shape_h <= slot[3] and block <= shape_h + 1:
-            sx, sy = align_in(slot, shape_w, shape_h, align)
+        shape_w = text_w + 2 * CONDENSED_PADDING * size
+        # Tallest pill whose rotated bounds still fit the slot height.
+        shape_h = min(size * ratio, (slot[3] - shape_w * sin) / cos)
+        rot_w, rot_h = shape_w * cos + shape_h * sin, shape_w * sin + shape_h * cos
+        if rot_w <= slot[2] and shape_h >= block + 2 * CONDENSED_VPAD * size:
+            # Place by rotated bounds; pill and label share a centre, so the label stays inside after rotating.
+            rx, ry = align_in(slot, rot_w, rot_h, align)
+            sx, sy = rx + (rot_w - shape_w) / 2, ry + (rot_h - shape_h) / 2
             scale = shape_h / shape["height"]
             new_shape = dict(shape, x=sx, y=sy, width=shape_w, height=shape_h)
             for key in ("corner_radius", "stroke_width"):
@@ -147,17 +163,19 @@ def _place_condensed(members: list[dict], slot: Box, measurer: TextMeasurer, flo
 
 
 def place_unit(unit: Unit, elements: dict[str, dict], box: Box, measurer: TextMeasurer,
-               floor: float, align: str = "center") -> dict[str, dict] | None:
+               floor: float, align: str = "center", max_font: float | None = None) -> dict[str, dict] | None:
     """Fit `unit` into `box`. Returns {element_id: updated copy}, or None when
-    it can't fit at `floor` (the caller may retry at HARD_FLOOR)."""
+    it can't fit at `floor` (the caller may retry at HARD_FLOOR). `max_font`
+    caps text size, for minor units that must stay small however much room
+    they get."""
     members = [elements[i] for i in unit.element_ids]
     if len(members) == 1:
         el = members[0]
         if el["type"] == "text":
-            placed = _place_text(el, box, measurer, floor, align)
+            placed = _place_text(el, box, measurer, floor, align, max_font)
             return None if placed is None else {el["id"]: placed}
         return {el["id"]: _place_box(el, box, align)}
-    rigid = _place_rigid(members, box, measurer, floor, align)
+    rigid = _place_rigid(members, box, measurer, floor, align, max_font)
     if rigid is not None or unit.kind != "container_label":
         return rigid
-    return _place_condensed(members, box, measurer, floor, align)
+    return _place_condensed(members, box, measurer, floor, align, max_font)
