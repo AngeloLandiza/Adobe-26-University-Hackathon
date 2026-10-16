@@ -39,6 +39,22 @@ def targets() -> list[dict]:
     return json.loads(TARGETS_PATH.read_text())
 
 
+def assert_valid(source: dict, design: dict, target: dict) -> None:
+    """The structural rules every output must meet (same ids in order, in canvas, image aspect, font >= 1)."""
+    from engine.pipeline.geometry import inside_canvas, rotated_aabb
+
+    assert design["canvas"] == {"width": target["width"], "height": target["height"]}
+    assert [e["id"] for e in design["elements"]] == [e["id"] for e in source["elements"]]
+    src = {e["id"]: e for e in source["elements"]}
+    for el in design["elements"]:
+        assert inside_canvas(rotated_aabb(el), target["width"], target["height"]), el["id"]
+        if el["type"] == "image" and el.get("fit", "contain") != "cover":
+            s = src[el["id"]]
+            assert (el["width"] / el["height"]) / (s["width"] / s["height"]) == pytest.approx(1, abs=0.02), el["id"]
+        if el["type"] == "text":
+            assert el["font_size"] >= 1
+
+
 @pytest.fixture(scope="session")
 def measurer():
     # Imported here so a broken textmeasure module can't stop unrelated test files from collecting.

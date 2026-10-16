@@ -25,7 +25,7 @@ def floor_px(role: str, width: float, height: float) -> float:
     return FLOORS.get(role, DEFAULT_FLOOR) * max(1, min(width, height) / 600)
 
 
-def _resized_text(el: dict, font_size: float) -> dict:
+def resize_text(el: dict, font_size: float) -> dict:
     """`el` at a new font size; letter spacing (px) scales with it."""
     out = dict(el, font_size=font_size)
     if el.get("letter_spacing"):
@@ -41,7 +41,7 @@ def _fit_text(el: dict, w: float, h: float, lo: float, hi: float, measurer: Text
         return None
     size = measurer.fit_font_size(el, w, h, lo, hi)
     while size is not None:
-        if measurer.fits(_resized_text(el, size), size, w, h):
+        if measurer.fits(resize_text(el, size), size, w, h):
             return size
         size = size - STEP if size - STEP >= lo else None
     return None
@@ -81,7 +81,7 @@ def _place_text(el: dict, slot: Box, measurer: TextMeasurer, floor: float, align
     size = _fit_text(el, w, h, floor, el["font_size"] * MAX_TEXT_GROWTH, measurer)
     if size is None:
         return None
-    text = _resized_text(el, size)
+    text = resize_text(el, size)
     block = measurer.block_height(text, size, w)
     top = y if align == "top" else y + h - block if align == "bottom" else y + (h - block) / 2
     return dict(text, x=x, y=top, width=w, height=block)
@@ -107,7 +107,7 @@ def _place_rigid(members: list[dict], slot: Box, measurer: TextMeasurer, floor: 
             if size is None:
                 return None
             centre = new["y"] + measurer.block_height(m, m["font_size"], m["width"]) / 2 * k
-            text = _resized_text(m, size)
+            text = resize_text(m, size)
             block = measurer.block_height(text, size, new["width"])
             new.update(font_size=size, y=centre - block / 2, height=block)
             if "letter_spacing" in text:
@@ -129,7 +129,7 @@ def _place_condensed(members: list[dict], slot: Box, measurer: TextMeasurer, flo
     hi = label["font_size"] * min(MAX_TEXT_GROWTH, slot[3] / unit_h)
     size = math.floor(hi / STEP) * STEP
     while size >= floor:
-        text = _resized_text(label, size)
+        text = resize_text(label, size)
         text_w = max(measurer.line_widths(text, size, float("inf")))
         shape_w, shape_h = text_w + 2 * CONDENSED_PADDING * size, size * ratio
         block = measurer.block_height(text, size, text_w)
