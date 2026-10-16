@@ -45,13 +45,19 @@ def place_background(el: dict, width: float, height: float) -> dict:
     return fit_inside([out], width, height)[0]
 
 
-def place_decoration(el: dict, src_canvas: dict, width: float, height: float) -> dict:
+def place_decoration(el: dict, src_canvas: dict, width: float, height: float, corner: str | None = None) -> dict:
     """Scale uniformly by s = min(W/Ws, H/Hs), keep the gap to the source's
-    nearest corner (scaled by s), then pull it fully inside the canvas."""
+    nearest corner (scaled by s), then pull it fully inside the canvas.
+    `corner` ("tl", "tr", "bl", "br") anchors that gap at another corner instead."""
     src_w, src_h = src_canvas["width"], src_canvas["height"]
     s = min(width / src_w, height / src_h)
     new = scale_about(el, s, 0, 0)
-    cx, cy = el["x"] + el["width"] / 2, el["y"] + el["height"] / 2
-    new["x"] = el["x"] * s if cx < src_w / 2 else width - (src_w - el["x"]) * s
-    new["y"] = el["y"] * s if cy < src_h / 2 else height - (src_h - el["y"]) * s
+    near_left = el["x"] + el["width"] / 2 < src_w / 2
+    near_top = el["y"] + el["height"] / 2 < src_h / 2
+    gap_x = el["x"] if near_left else src_w - el["x"] - el["width"]
+    gap_y = el["y"] if near_top else src_h - el["y"] - el["height"]
+    left = near_left if corner is None else corner[1] == "l"
+    top = near_top if corner is None else corner[0] == "t"
+    new["x"] = gap_x * s if left else width - gap_x * s - new["width"]
+    new["y"] = gap_y * s if top else height - gap_y * s - new["height"]
     return fit_inside([new], width, height)[0]

@@ -144,3 +144,10 @@ def test_fallback_fixes_a_source_text_box_that_is_too_tight(measurer):
          "color": "rgba(0,0,0,1)", "x": 100, "y": 100, "width": 600, "height": 30}]}
     el = safe_fallback(src, {"width": 800, "height": 400}, heuristic_plan(src), measurer).design["elements"][0]
     assert el["font_size"] < 40 and measurer.fits(el, el["font_size"], el["width"], el["height"])
+
+
+def test_decoration_can_be_anchored_to_another_corner(l2):
+    # deco_circle_2's nearest corner is bottom-right; forced to top-left it keeps its 80px gap (scaled)
+    d = place_decoration(l2["source"]["elements"][2], l2["source"]["canvas"], 1600, 400, corner="tl")
+    s = 400 / 1080
+    assert (d["x"], d["y"]) == (pytest.approx(80 * s), pytest.approx(80 * s))

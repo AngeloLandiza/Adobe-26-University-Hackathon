@@ -15,6 +15,7 @@ from engine.pipeline.layout.layers import fit_inside, place_background, place_de
 from engine.pipeline.layout.normalize import finalize
 from engine.pipeline.layout.place import CONDENSED_PADDING, CONDENSED_VPAD, HARD_FLOOR, floor_px, place_unit
 from engine.pipeline.layout.templates import PARAM_GRID, TEMPLATES_BY_CLASS, Slot, build_slots
+from engine.pipeline.occlusion import is_covered, paint_order
 from engine.pipeline.textmeasure import TextMeasurer
 from engine.pipeline.types import Candidate, PriorityPlan, Unit
 
@@ -70,6 +71,7 @@ class _Builder:
         self.source, self.plan, self.measurer = source, plan, measurer
         self.width, self.height = target["width"], target["height"]
         self.els = {el["id"]: el for el in source["elements"]}
+        self._source_index = {el["id"]: i for i, el in enumerate(source["elements"])}
         self.placed: dict[str, dict] = {}
         self.boxes: list[Box] = []
         self.degraded: list[str] = []
@@ -275,8 +277,20 @@ class _Builder:
             if unit.role == "background":
                 self.placed.update((m["id"], place_background(m, self.width, self.height)) for m in self._members(unit))
             elif unit.role == "decoration":
-                self.placed.update((m["id"], place_decoration(m, self.source["canvas"], self.width, self.height))
-                                   for m in self._members(unit))
+                for m in self._members(unit):
+                    self.placed[m["id"]] = self._visible_decoration(m)
+
+    def _visible_decoration(self, el: dict) -> dict:
+        """The decoration at its nearest corner, or the first other corner
+        where placed content doesn't fully cover it (G9: nothing hidden)."""
+        content = [self.placed[e["id"]] for e in self.source["elements"] if e["id"] in self.placed]
+        for corner in (None, "tl", "tr", "bl", "br"):
+            candidate = place_decoration(el, self.source["canvas"], self.width, self.height, corner)
+            elements = content + [candidate]
+            ordered = sorted(elements, key=lambda e: self._source_index[e["id"]])
+            if not is_covered(candidate, content, paint_order(ordered)):
+                return candidate
+        return place_decoration(el, self.source["canvas"], self.width, self.height)
 
     def finish(self, candidate_id: str, template: str, params: dict) -> Candidate | None:
         self.place_layers()
