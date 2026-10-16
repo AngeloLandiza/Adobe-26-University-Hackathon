@@ -46,15 +46,20 @@ def inside_canvas(box: Box, width: float, height: float, tol: float = 0.5) -> bo
     return x >= -tol and y >= -tol and x + w <= width + tol and y + h <= height + tol
 
 
-def fit_aspect(aspect: float, slot: Box, align: str = "center") -> Box:
-    """Largest box with width/height == `aspect` inside `slot`. `align` picks
-    which edge it sits against on the axis with spare room: left/right
-    horizontally, top/bottom vertically; anything else centres it."""
+def align_in(slot: Box, w: float, h: float, align: str = "center") -> tuple[float, float]:
+    """Top-left corner for a w x h box inside `slot`: left/right set the
+    horizontal edge, top/bottom the vertical one; otherwise it's centred."""
     sx, sy, sw, sh = slot
+    x = sx if align == "left" else sx + sw - w if align == "right" else sx + (sw - w) / 2
+    y = sy if align == "top" else sy + sh - h if align == "bottom" else sy + (sh - h) / 2
+    return x, y
+
+
+def fit_aspect(aspect: float, slot: Box, align: str = "center") -> Box:
+    """Largest box with width/height == `aspect` inside `slot`, aligned by `align_in`."""
+    _, _, sw, sh = slot
     if sw / sh > aspect:
         w, h = sh * aspect, sh
     else:
         w, h = sw, sw / aspect
-    x = sx if align == "left" else sx + sw - w if align == "right" else sx + (sw - w) / 2
-    y = sy if align == "top" else sy + sh - h if align == "bottom" else sy + (sh - h) / 2
-    return (x, y, w, h)
+    return (*align_in(slot, w, h, align), w, h)
