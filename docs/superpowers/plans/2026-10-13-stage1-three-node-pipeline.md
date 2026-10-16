@@ -42,7 +42,7 @@
 | 12 Wire `resize()` | ✅ done; `python -m engine.main` produces real layouts | `eadfa9a` | 375 (+2) |
 | 13 Dev matrix + contact sheets | ✅ done; 29/30 cells won by real layouts | `c4f4d15` | 376 (+2) |
 | 14 Provider benchmark | ✅ tool done; the real comparison still needs API keys | `dfb6fc6` | 380 (+2) |
-| 15 Docker no-network check | ✅ done; 30/30 outputs pass every gate in the container (Linux text widths differ from Windows) | see PR | 380 (+2) |
+| 15 Docker no-network check | ✅ done; 30/30 outputs pass every gate in the container. Running the suite on Linux caught an image-sizing bug, now fixed (deviation 22). Linux text widths differ from Windows (deviation 21) | `b00192f`, `2397e75` | 382 (+2), on Windows and in the container |
 | Final whole-branch review | ⏳ | | |
 
 Each task went test-first: every test was seen failing before its code was written. Each important decision was also broken on purpose, to confirm a test catches it. Most tasks ended up with more tests than the plan lists.

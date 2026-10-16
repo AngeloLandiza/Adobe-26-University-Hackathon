@@ -228,13 +228,14 @@ chameleon/
         metrics.py           #   nine geometry metrics
         pixels.py            #   text contrast, busyness, placeholder share (rendered)
         score.py             #   pick_best()
-  tests/                     # ✅ pytest suite (run from chameleon/); live API tests are opt-in
+  tests/                     # ✅ pytest suite (run from chameleon/, on Windows and in the container); live API tests are opt-in
+  .dockerignore              # ✅ keeps .venv, .env, output, tests and dev out of the build context
   dev/                       # dev-only tooling, not copied into the Docker image
     targets.json             # ✅ 10 real platform sizes for local testing
     golden/                  # ✅ hand-labelled roles and rankings for the 3 samples (team judgements)
     priority_metrics.py      # ✅ role accuracy, Kendall tau, top-3 recall
     run_matrix.py            # ✅ every source × every target -> contact sheets (Task 13)
-    bench_priority.py        # ⏳ Claude vs Gemini vs heuristic: cost, latency, quality (Task 14)
+    bench_priority.py        # ✅ Claude vs Gemini vs heuristic: cost, latency, quality (Task 14; real numbers need keys)
 ```
 
 **Text measurement matches the renderer.** It reuses the vendored renderer's own wrap code and brand-kit fonts, and its height model follows cr-renderer's drawing code:
@@ -289,7 +290,7 @@ Tests always use the rule-based ranker (an autouse fixture sets `CHAMELEON_LLM=h
 
 1. **More targets than the three samples.** `dev/targets.json` lists real formats (scoring targets are "real platform formats", per RULES): Instagram post 1080×1080, portrait 1080×1350, story 1080×1920, YouTube thumbnail 1280×720, LinkedIn banner 1584×396, Facebook cover 820×312, leaderboard 728×90, medium rectangle 300×250, wide skyscraper 160×600, billboard 970×250. `python -m dev.run_matrix` runs every input against every target (about 80 s for 3 × 10) and writes one render per cell, a labelled contact sheet per input and `winners.json` to `output/matrix/`. That's our main way to look at results.
 2. **More sources.** Hand-write more source designs in the schema: different element counts, a design with no groups, one with no images. Give each a golden label file in `dev/golden/`. Three samples are too few to judge the LLM against the heuristic.
-3. **Provider benchmark** (Task 14): Claude vs Gemini vs heuristic on the golden set, measuring cost, latency, role accuracy, Kendall τ and top-3 recall.
+3. **Provider benchmark** (Task 14): Claude vs Gemini vs heuristic on the golden set, measuring cost, latency, role accuracy, Kendall τ and top-3 recall. Run `python -m dev.bench_priority --runs 3`; it writes `output/bench/priority.csv` and prints a summary with each provider's fallback rate and projected cost per 1,000 designs. A provider without its API key is skipped with a note.
 4. **Claude as a development helper.** Beyond being a node 1 provider, it can draft golden labels for new designs (a teammate reviews them), and act as a rubric judge to calibrate node 3's weights ([03-grading-node.md §5](03-grading-node.md)).
 
 ---

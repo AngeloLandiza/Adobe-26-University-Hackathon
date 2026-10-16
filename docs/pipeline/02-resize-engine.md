@@ -32,9 +32,9 @@
 - The safe fallback pulls bleeding elements in **one unit at a time** (a button and its label move together), and re-fits any text that overflows its box.
 
 **Results** (dev matrix, 3 samples × 10 sizes):
-- Every generated candidate passes every gate.
+- Every generated candidate passes every gate, on Windows and in the Linux container.
 - Level 3 → 728×90 builds 12 real layouts (none before these changes).
-- Real layouts win 29 of 30 cells; Level 3 → 300×250 picks the fallback.
+- Real layouts win 29 of 30 cells on Windows; Level 3 → 300×250 picks the fallback. In the Linux container (what scoring runs), they win 28: Level 3 → 160×600 picks the fallback too, because Linux text measures wider.
 
 **Known gaps** (see [README §11](README.md#11-whats-missing-as-of-2026-10-16)):
 - short text CTAs wrap one word per line in narrow columns;

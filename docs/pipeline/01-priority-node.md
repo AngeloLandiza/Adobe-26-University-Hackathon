@@ -218,7 +218,9 @@ Within a role, units are ordered by prominence (`font_size × text length` for a
   - role accuracy;
   - Kendall τ between the predicted and golden ranking;
   - **top-3 recall**: the golden top 3 all within the predicted top 4. This matters most, because it decides what gets space.
-- **Benchmark** (plan Task 14): heuristic vs each provider and model on the golden set, recording quality, latency and cost. The LLM path only earns a place in a scored run if it clearly beats the heuristic; the threshold and next steps are in the plan's "Decision point after Task 14".
+- **Benchmark** (plan Task 14, ✅ tool built: `python -m dev.bench_priority --runs 3`): heuristic vs each provider and model on the golden set, recording quality, latency and cost. The LLM path only earns a place in a scored run if it clearly beats the heuristic; the threshold and next steps are in the plan's "Decision point after Task 14".
+  - **As built:** the response cache is off during the run, so every call is real. The summary adds a **fallback rate**: the share of LLM runs that ended on the heuristic (errors, refusals, more than 30% repaired). Without it, a provider that kept falling back would look like the heuristic.
+  - **Not measured yet:** Claude and Gemini need API keys. Without keys, the heuristic scores 1.00 / τ 0.98 / top-3 1.00 at $0 on the 3 samples. That's a ceiling, not a result: its rules were written against those samples. Add at least 5 new labelled designs first.
 
 ## 8. Upgrade paths
 
