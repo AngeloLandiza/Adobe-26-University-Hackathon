@@ -3,7 +3,7 @@ import pytest
 from pathlib import Path
 from engine.pipeline.geometry import inside_canvas, overlap_area, rotated_aabb, union_box
 from engine.pipeline.layout.generate import assign, generate_candidates, reflow_candidate
-from engine.pipeline.layout.place import floor_px
+from engine.pipeline.layout.place import HARD_FLOOR, floor_px
 from engine.pipeline.layout.templates import Slot, build_slots, PARAM_GRID
 from engine.pipeline.priority import heuristic_plan
 from engine.pipeline.types import PriorityPlan, Unit
@@ -16,12 +16,20 @@ TARGETS = json.loads(Path("dev/targets.json").read_text())
 @pytest.mark.parametrize("path", SAMPLES, ids=lambda p: p.stem)
 @pytest.mark.parametrize("target", TARGETS, ids=lambda t: t["name"])
 def test_candidates_are_valid_and_text_fits(path, target, measurer):
+    """Also: no placed image is shrunk below the hard floor (6 px short side,
+    or its own thickness if thinner), so no unit is hidden as a speck."""
     src = json.loads(path.read_text())["source"]
-    for c in generate_candidates(src, target, heuristic_plan(src), measurer):
+    by_id = {e["id"]: e for e in src["elements"]}
+    plan = heuristic_plan(src)
+    layered = {i for u in plan.units if u.unit_id in plan.background_unit_ids() + plan.decoration_unit_ids() for i in u.element_ids}
+    for c in generate_candidates(src, target, plan, measurer):
         assert_valid(src, c.design, target)
         for el in c.design["elements"]:
             if el["type"] == "text":
                 assert measurer.fits(el, el["font_size"], el["width"], el["height"]), (c.candidate_id, el["id"])
+            elif el["type"] == "image" and el["id"] not in layered:
+                s = by_id[el["id"]]
+                assert min(el["width"], el["height"]) >= min(HARD_FLOOR, s["width"], s["height"]), (c.candidate_id, el["id"])
 
 
 def test_ids_unique_and_deterministic(l2, measurer):

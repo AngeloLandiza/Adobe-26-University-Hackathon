@@ -10,6 +10,7 @@
 - A re-fitted label keeps its visual centre where the source had it.
 - Text fitting re-checks with letter spacing scaled to the chosen size.
 - `place_unit` takes **`max_font`**: minor and leftover units are capped at their role's floor size, so they stay small however much room they get.
+- **Images have a hard floor too** (Task 15): `place_unit` returns `None` when an image would end up under 6 px (`HARD_FLOOR`) on its short side. An image whose source is thinner than that keeps its own thickness. Callers then treat the image like text that doesn't fit, and it moves on to the free-space pass. Without this, the minor-zone flow handed the Level 3 watermark a sliver of leftover room, and it came out 0.04 × 0.02 px in the Linux container and 1.6 × 0.7 px on Windows.
 - **Condensed pills** (§5.4):
   - compress vertically to fit short slots, down to the label plus 0.2 × font of padding above and below;
   - also work for **rotated** pills, checking their rotated bounds.

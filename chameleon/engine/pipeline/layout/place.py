@@ -174,7 +174,13 @@ def place_unit(unit: Unit, elements: dict[str, dict], box: Box, measurer: TextMe
         if el["type"] == "text":
             placed = _place_text(el, box, measurer, floor, align, max_font)
             return None if placed is None else {el["id"]: placed}
-        return {el["id"]: _place_box(el, box, align)}
+        placed = _place_box(el, box, align)
+        # An image has a hard floor too: a sliver of room would otherwise
+        # shrink it to an invisible speck. A source thinner than the floor
+        # keeps its own thickness.
+        if el["type"] == "image" and min(placed["width"], placed["height"]) < min(HARD_FLOOR, el["width"], el["height"]):
+            return None
+        return {el["id"]: placed}
     rigid = _place_rigid(members, box, measurer, floor, align, max_font)
     if rigid is not None or unit.kind != "container_label":
         return rigid

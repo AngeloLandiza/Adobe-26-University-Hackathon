@@ -1,7 +1,7 @@
 import pytest
 from engine.pipeline.geometry import inside_canvas, rotated_aabb
 from engine.pipeline.layout.aspect import aspect_class
-from engine.pipeline.layout.place import place_unit, floor_px, MAX_TEXT_GROWTH
+from engine.pipeline.layout.place import place_unit, floor_px, HARD_FLOOR, MAX_TEXT_GROWTH
 from engine.pipeline.priority import heuristic_plan
 from engine.pipeline.types import Unit
 
@@ -169,3 +169,19 @@ def test_rotated_pill_condenses_inside_its_slot(l3, measurer):
     assert out is not None and out["ribbon_label"]["font_size"] == 6
     for el in out.values():
         assert inside_canvas(rotated_aabb(el), 100, 26) and el["rotation"] == -12
+
+
+def test_image_never_shrinks_below_the_hard_floor(l3, measurer):
+    """A sliver of room must not turn an image into an invisible speck (found
+    in the Linux container: the L3 watermark placed at 0.04 x 0.02 px)."""
+    els, units = setup(l3)  # holiday_watermark is 180 x 80: 6 px tall at 13.5 px wide
+    assert place_unit(units["holiday_watermark"], els, (0, 0, 13.4, 40), measurer, floor=0) is None
+    out = place_unit(units["holiday_watermark"], els, (0, 0, 13.6, 40), measurer, floor=0)["holiday_watermark"]
+    assert min(out["width"], out["height"]) >= HARD_FLOOR
+
+
+def test_image_thinner_than_the_floor_keeps_its_own_thickness(measurer):
+    el = {"id": "rule", "type": "image", "asset_id": "solstice_bottle.png", "x": 0, "y": 0, "width": 400, "height": 4}
+    unit = Unit("rule", ["rule"], "single", role="secondary_image")
+    assert place_unit(unit, {"rule": el}, (0, 0, 400, 100), measurer, floor=0)["rule"]["height"] == 4
+    assert place_unit(unit, {"rule": el}, (0, 0, 300, 100), measurer, floor=0) is None
