@@ -72,14 +72,18 @@ def test_metrics_stay_in_range_and_total_is_the_weighted_sum(l3, measurer):
         assert geometry_total(m) == pytest.approx(sum(WEIGHTS[k] * m[k] for k in WEIGHTS))
 
 
-def test_legibility_is_zero_at_the_floor_and_one_at_comfort():
-    # on a 600px canvas the headline floor is exactly 14px; comfort is 1.6 x 14 = 22.4px
+def test_legibility_grows_with_size_up_to_comfort():
+    # on a 600px canvas the headline floor is exactly 14px; comfort is 1.6 x 14 = 22.4px. Below the
+    # floor it still tells 9px from 3px: on a small canvas no layout meets the floors, and a score of
+    # 0 for both let the uniformly shrunk fallback win on faithfulness alone (L3 -> 300x250)
     plan = PriorityPlan("heuristic", [single("h", "headline", 1)])
     src = {"canvas": {"width": 600, "height": 600}, "elements": [text_el("h", 50, 50, 500, 100, 30)]}
-    at_floor = cand([text_el("h", 50, 50, 500, 100, 14)], 600, 600)
-    comfy = cand([text_el("h", 50, 50, 500, 100, 22.4)], 600, 600)
-    assert geometry_metrics(src, at_floor, plan)["legibility"] == pytest.approx(0)
-    assert geometry_metrics(src, comfy, plan)["legibility"] == pytest.approx(1)
+    legibility = lambda size: geometry_metrics(src, cand([text_el("h", 50, 50, 500, 100, size)], 600, 600), plan)["legibility"]
+    assert 0 < legibility(3) < legibility(9) < legibility(14) < legibility(18) < legibility(22.4)
+    # below the floor up to a quarter, in proportion to size; from floor to comfort, the rest
+    assert legibility(9) == pytest.approx(0.25 * 9 / 14) and legibility(14) == pytest.approx(0.25)
+    assert legibility(18) == pytest.approx(0.25 + 0.75 * (18 - 14) / (22.4 - 14))
+    assert legibility(22.4) == pytest.approx(1) and legibility(30) == pytest.approx(1)
 
 
 def test_degradation_is_the_weight_share_of_degraded_units():

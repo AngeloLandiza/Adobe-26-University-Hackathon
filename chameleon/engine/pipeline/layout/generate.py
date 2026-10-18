@@ -113,11 +113,23 @@ class _Builder:
         return place_unit(unit, self.els, box, self.measurer, HARD_FLOOR, align=align, max_font=max_font), True
 
     def place_row(self, units: list[Unit], box: Box, minor: bool, align: str = "center") -> None:
-        """Units side by side in equal-width cells."""
+        """Units side by side in equal-width cells. If some can't reach their
+        floor in one line, the row wraps onto as few lines as lets every unit
+        reach it (four badges in a half-width slot); if none does, it stays
+        on one line."""
         x, y, w, h = box
-        cell = w / len(units)
-        for i, unit in enumerate(units):
-            geometry, degraded = self.try_place(unit, (x + i * cell, y, cell, h), minor, align)
+        first = None
+        for lines in range(1, len(units) + 1):
+            per_line = math.ceil(len(units) / lines)
+            cw, ch = w / per_line, h / lines
+            placed = [self.try_place(unit, (x + (i % per_line) * cw, y + (i // per_line) * ch, cw, ch), minor, align)
+                      for i, unit in enumerate(units)]
+            first = first or placed
+            if all(geometry is not None and not degraded for geometry, degraded in placed):
+                break
+        else:
+            placed = first
+        for unit, (geometry, degraded) in zip(units, placed):
             if geometry is None:
                 self.leftover.append(unit)
             else:

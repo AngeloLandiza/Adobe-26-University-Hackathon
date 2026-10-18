@@ -16,6 +16,7 @@ from engine.pipeline.types import Candidate, PriorityPlan, Unit
 WEIGHTS = {"hierarchy": 0.20, "legibility": 0.20, "overlap": 0.15, "degradation": 0.10, "faithfulness": 0.08,
            "space_use": 0.08, "alignment": 0.07, "spacing": 0.07, "balance": 0.05}
 COMFORT = 1.6             # legibility reaches 1 at 1.6x the role's floor
+BELOW_FLOOR_SHARE = 0.25  # legibility a unit can earn below its floor, in proportion to its size
 SPACE_BAND = (0.45, 0.85)  # content bounding box as a share of the canvas
 ALIGN_TOL = 0.005          # alignment tolerance, share of the canvas's long side
 EDGE_MARGIN = 0.02         # spacing: content should sit at least this share of the short side from the edges
@@ -59,12 +60,21 @@ def _hierarchy(units, els, boxes, w) -> float:
 
 
 def _legibility(units, els, w, width, height) -> float:
+    """Each text unit's smallest size: from the role's floor up to COMFORT x
+    the floor it scores BELOW_FLOOR_SHARE..1, and below the floor up to
+    BELOW_FLOOR_SHARE in proportion to its size. On a canvas too small for
+    any layout to meet the floors, 9 px text must still beat 3 px text, or
+    the uniformly shrunk fallback wins on faithfulness alone."""
+    def score(size: float, floor: float) -> float:
+        if size < floor:
+            return BELOW_FLOOR_SHARE * size / floor
+        return BELOW_FLOOR_SHARE + (1 - BELOW_FLOOR_SHARE) * _clamp((size - floor) / ((COMFORT - 1) * floor))
+
     pairs = []
     for u in units:
         sizes = _text_sizes(els, u)
         if sizes:
-            floor = floor_px(u.role, width, height)
-            pairs.append((w[u.unit_id], _clamp((min(sizes) - floor) / ((COMFORT - 1) * floor))))
+            pairs.append((w[u.unit_id], score(min(sizes), floor_px(u.role, width, height))))
     return _weighted(pairs)
 
 

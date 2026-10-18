@@ -78,6 +78,13 @@ def test_last_resort_keeps_image_proportions(monkeypatch, l2):
     assert (logo["width"], logo["height"]) == (pytest.approx(320 * s), pytest.approx(110 * s))
 
 
+def test_small_square_gets_a_real_layout_for_level_3(l3):
+    # 300x250: no layout meets the readability floors there, so the grader must still prefer the
+    # stack whose text is 7-15 px over the uniform fallback whose text is 2-7 px
+    _, _, best, _ = R.resize_with_report(l3["source"], {"width": 300, "height": 250})
+    assert not best.is_fallback
+
+
 def test_priority_line_on_stderr(capsys, l1):
     R.resize_with_report(l1["source"], l1["target_canvas"])
     line = capsys.readouterr().err.strip().splitlines()[-1]

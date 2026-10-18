@@ -279,3 +279,17 @@ def test_crowded_banner_gives_the_cta_room_first(l3, measurer):
     for c in cands:
         size = {e["id"]: e["font_size"] for e in c.design["elements"] if e["type"] == "text"}
         assert size["cta_label"] >= max(size["subhead"], size["legal_text"]), c.candidate_id
+
+
+def test_a_crowded_row_wraps_instead_of_shrinking(l3, measurer):
+    # 1080x1920 stack: four badges share a 464x177 slot. In one row each pill gets 116 px and its
+    # label drops to 6-8.5 px (floor 16.2); on two lines each gets 232 px and stays at its floor
+    src = l3["source"]
+    plan = heuristic_plan(src)
+    c = next(c for c in generate_candidates(src, {"width": 1080, "height": 1920}, plan, measurer)
+             if c.candidate_id == "stack/hero_first=True/margin=0.07")
+    for uid in ("badge1", "badge2", "badge3", "ribbon"):
+        assert uid not in c.degraded_unit_ids
+        members = next(u for u in plan.units if u.unit_id == uid).element_ids
+        label = next(e for e in c.design["elements"] if e["id"] in members and e["type"] == "text")
+        assert label["font_size"] >= floor_px("badge", 1080, 1920) - 1e-6, uid
