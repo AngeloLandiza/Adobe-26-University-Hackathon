@@ -66,6 +66,18 @@ def test_last_resort_when_everything_else_fails(monkeypatch, l3):
             assert el["font_size"] >= 1
 
 
+def test_last_resort_keeps_image_proportions(monkeypatch, l2):
+    # its whole job is never to be disqualified: one uniform scale, no stretched logo or product
+    boom = lambda *a, **k: (_ for _ in ()).throw(RuntimeError("boom"))
+    monkeypatch.setattr(R, "resize_with_report", boom); monkeypatch.setattr(R, "safe_fallback", boom)
+    src, tgt = l2["source"], l2["target_canvas"]
+    design = R.resize(src, tgt)
+    assert_valid(src, design, tgt)
+    s = min(tgt["width"] / 1080, tgt["height"] / 1080)  # the whole design fits: the smaller scale
+    logo = next(e for e in design["elements"] if e["id"] == "logo")
+    assert (logo["width"], logo["height"]) == (pytest.approx(320 * s), pytest.approx(110 * s))
+
+
 def test_priority_line_on_stderr(capsys, l1):
     R.resize_with_report(l1["source"], l1["target_canvas"])
     line = capsys.readouterr().err.strip().splitlines()[-1]

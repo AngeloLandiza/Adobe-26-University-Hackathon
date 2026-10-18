@@ -11,6 +11,7 @@ from renderer.converter.assets import asset_path
 INSIDE_FRACTION = 0.9      # a label's box must lie at least this much inside its shape
 MIN_LABEL_COVERAGE = 0.25  # an implicit label must cover this much of its shape; panels behind copy don't
 BACKGROUND_COVERAGE = 0.9  # share of the canvas a background must cover
+MAX_LABEL_SHAPE_AREA = 0.15  # share of the canvas; a bigger shape is a card or panel, not a button
 
 
 def _z(el: dict) -> float:
@@ -34,13 +35,15 @@ def _group_kind(members: list[dict]) -> str:
     return "group"
 
 
-def _implicit_labels(elements: list[dict]) -> dict[str, str]:
+def _implicit_labels(elements: list[dict], width: float, height: float) -> dict[str, str]:
     """shape id -> text id for ungrouped texts sitting on an ungrouped shape.
     A shape takes a label only if exactly one text sits on it and that text
     covers a real share of it, so a backdrop panel behind several lines of copy
-    (or one small line) stays a separate unit."""
+    (or one small line) stays a separate unit. A shape too big to be a
+    button (a background, a card behind a headline) never takes one."""
     order = {el["id"]: i for i, el in enumerate(elements)}
-    shapes = [el for el in elements if el["type"] == "shape" and el.get("group_id") is None]
+    shapes = [el for el in elements if el["type"] == "shape" and el.get("group_id") is None
+              and _area(element_box(el)) <= MAX_LABEL_SHAPE_AREA * width * height]
     texts = [el for el in elements if el["type"] == "text" and el.get("group_id") is None]
     on_shape: dict[str, list[dict]] = {}
     for text in texts:
@@ -74,7 +77,7 @@ def build_units(source: dict, assets_dir: str | Path = "brand_kit/assets") -> li
     for el in elements:
         if el.get("group_id") is not None:
             groups.setdefault(el["group_id"], []).append(el)
-    labels = _implicit_labels(elements)
+    labels = _implicit_labels(elements, width, height)
     shape_of_label = {text_id: shape_id for shape_id, text_id in labels.items()}
 
     units: list[Unit] = []

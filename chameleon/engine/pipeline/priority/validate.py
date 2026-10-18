@@ -14,7 +14,10 @@ def repair(raw: dict, units: list[Unit], heur_roles: dict[str, str],
 
     Background units are a hard signal, not the LLM's call: they stay
     background, the LLM may skip them, and the LLM may not label any other
-    unit "background" (node 2 would stretch it over the canvas). The fraction
+    unit "background" (node 2 would stretch it over the canvas). Nor may it
+    call text or an image "decoration" (node 2 would park it in a corner at
+    a fraction of its size): only all-shape units, which the heuristic always
+    labels decoration, can be. The fraction
     is the share of units involved in any fix; ids the design doesn't have
     are dropped without counting."""
     unit_ids = [u.unit_id for u in units]
@@ -33,6 +36,8 @@ def repair(raw: dict, units: list[Unit], heur_roles: dict[str, str],
                 fixed.add(uid)
             continue
         seen.add(uid)
+        if role == "decoration" and heur_roles.get(uid) != "decoration":
+            continue
         if uid not in pinned and role in ROLES and role != "background":
             roles[uid] = role
     for uid in unit_ids:

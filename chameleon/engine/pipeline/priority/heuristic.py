@@ -25,6 +25,10 @@ def _first_word(text: str | None) -> str:
     return match.group(1).lower() if match else ""
 
 
+def _legal_marked(f: dict) -> bool:
+    return any(marker in (f["text"] or "").lower() for marker in LEGAL_MARKERS)
+
+
 def _near_edge(f: dict) -> bool:
     cx, cy = f["center"]
     return min(cx, cy) < EDGE_BAND or max(cx, cy) > 1 - EDGE_BAND
@@ -68,10 +72,11 @@ def _assign_image_roles(images: list[dict], roles: dict[str, str]) -> None:
 
 def _assign_text_roles(texts: list[dict], roles: dict[str, str]) -> None:
     """Text units here are singles plus generic groups that carry text (an
-    icon + caption, say); only a single text can be the headline."""
+    icon + caption, say); only a single text without legal wording can be the
+    headline."""
     if not texts:
         return
-    singles = [f for f in texts if f["kind"] == "single"]
+    singles = [f for f in texts if f["kind"] == "single" and not _legal_marked(f)]
     headline = max(singles, key=lambda f: (f["font_size"], bool(f["bold"])), default=None)
     if headline is not None:
         roles[headline["unit_id"]] = "headline"
@@ -79,7 +84,7 @@ def _assign_text_roles(texts: list[dict], roles: dict[str, str]) -> None:
 
     pending = [f for f in texts if f is not headline]
     for f in pending:
-        if any(marker in f["text"].lower() for marker in LEGAL_MARKERS):
+        if _legal_marked(f):
             roles[f["unit_id"]] = "legal"
     pending = [f for f in pending if f["unit_id"] not in roles]
     smallest = min(pending, key=lambda f: f["font_size"], default=None)

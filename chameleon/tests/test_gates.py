@@ -122,3 +122,21 @@ def test_g9_ignores_see_through_and_decoration_covers(measurer):
     assert not hidden([square("small", 50, 50, 20, 1), *button("veil", 40, 40, 60, 2, fill="rgba(0,0,0,0.5)")], measurer)
     assert not hidden([square("small", 50, 50, 20, 1), *button("faded", 40, 40, 60, 2, opacity=0.4)], measurer)
     assert not hidden([square("small", 50, 50, 20, 1), square("deco", 40, 40, 60, 2)], measurer)
+
+
+def test_g2_accepts_a_zero_size_the_source_already_had(measurer):
+    # the schema allows width/height 0 and the renderer draws a line shape with height 0
+    from engine.resize import resize_with_report
+    from tests.designs import LINE_DIVIDER
+    target = {"width": 1080, "height": 1350}
+    plan = heuristic_plan(LINE_DIVIDER)
+    fallback = safe_fallback(LINE_DIVIDER, target, plan).design
+    assert "G2_schema" not in check_gates(LINE_DIVIDER, fallback, target, plan, measurer)
+    _, _, best, _ = resize_with_report(LINE_DIVIDER, target)
+    assert not best.is_fallback
+
+
+def test_g2_still_rejects_a_size_collapsed_to_zero(l2, measurer):
+    src, tgt, plan, design = base(l2)
+    bad = copy.deepcopy(design); el(bad, "logo")["height"] = 0
+    assert "G2_schema" in check_gates(src, bad, tgt, plan, measurer)

@@ -35,15 +35,18 @@ def _is_number(value) -> bool:
     return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
 
 
-def _schema_ok(el) -> bool:
+def _schema_ok(el, original: dict | None) -> bool:
     if not isinstance(el, dict) or el.get("type") not in _REQUIRED_BY_TYPE:
         return False
     if any(key not in el for key in _REQUIRED_COMMON + _REQUIRED_BY_TYPE[el["type"]]):
         return False
     if any(key in el and el[key] is not None and not _is_number(el[key]) for key in _NUMERIC):
         return False
-    if el["width"] <= 0 or el["height"] <= 0:
-        return False
+    # The schema allows a size of 0 (a line shape is drawn with height 0), so
+    # 0 only fails when the source element had a real size there.
+    for key in ("width", "height"):
+        if el[key] < 0 or (el[key] == 0 and (original or {}).get(key) != 0):
+            return False
     return el["type"] != "text" or el["font_size"] >= 1
 
 
@@ -77,7 +80,8 @@ def check_gates(source: dict, design: dict, target: dict, plan: PriorityPlan, me
 
     good = []
     for el in elements:
-        if _schema_ok(el):
+        original = src.get(el.get("id")) if isinstance(el, dict) and isinstance(el.get("id"), str) else None
+        if _schema_ok(el, original):
             good.append(el)
         else:
             failed.add("G2_schema")

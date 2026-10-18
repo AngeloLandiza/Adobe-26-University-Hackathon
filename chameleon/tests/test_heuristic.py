@@ -112,3 +112,18 @@ def test_assemble_leaves_input_units_untouched(l2):
     roles = {u.unit_id: "headline" for u in units}
     _assemble(units, roles, [u.unit_id for u in units], "llm", None)
     assert all(u.rank is None for u in units) and units[1].role is None
+
+
+def test_legal_text_is_never_the_headline():
+    # the only single text is a disclaimer (the real title sits on a pill): it stays legal
+    pill = {"id": "pill", "type": "shape", "shape_type": "rectangle", "fill_color": "rgba(0,0,0,1)",
+            "x": 300, "y": 400, "width": 400, "height": 120, "z_index": 1}
+    roles = roles_of([pill, txt("title", 420, 60, "Summer sale", x=320, w=360, h=80, z_index=2),
+                      txt("disclaimer", 900, 16, "Please enjoy responsibly.", z_index=1)])
+    assert roles["disclaimer"] == "legal"
+
+
+def test_headline_on_a_background_shape_is_the_headline():
+    from tests.designs import BG_SHAPE_HEADLINE
+    roles = {u.unit_id: u.role for u in heuristic_plan(BG_SHAPE_HEADLINE).units}
+    assert roles == {"bg": "background", "headline": "headline"}

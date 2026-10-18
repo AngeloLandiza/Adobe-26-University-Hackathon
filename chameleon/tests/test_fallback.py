@@ -151,3 +151,25 @@ def test_decoration_can_be_anchored_to_another_corner(l2):
     d = place_decoration(l2["source"]["elements"][2], l2["source"]["canvas"], 1600, 400, corner="tl")
     s = 400 / 1080
     assert (d["x"], d["y"]) == (pytest.approx(80 * s), pytest.approx(80 * s))
+
+
+def test_finalize_keeps_a_tiny_image_in_proportion():
+    # rounding both sides up to 0.01 px turned a 0.375 x 0.1125 image into 0.38 x 0.12 (aspect off by 5%)
+    icon = {"id": "icon", "type": "image", "asset_id": "solstice_bottle.png", "x": 0, "y": 0, "width": 10, "height": 3}
+    src = {"canvas": {"width": 1080, "height": 1080}, "elements": [icon]}
+    out = finalize(src, {"icon": dict(icon, x=5, y=5, width=0.375, height=0.1125)}, {"width": 320, "height": 50})
+    el = out["elements"][0]
+    assert (el["width"] / el["height"]) / (10 / 3) == pytest.approx(1, abs=0.005)
+
+
+def test_fallback_grows_a_pill_with_its_grown_label(measurer):
+    # at 320x50 a long label needs more room than its pill even at 1 px; the box grows to the text,
+    # and the pill has to grow with it or the label sticks out (gate G8)
+    from engine.pipeline.grading.gates import check_gates
+    from engine.pipeline.priority import heuristic_plan
+    from tests.designs import design, shape, text
+    src = design(shape("pill", 440, 520, 200, 40, z_index=1),
+                 text("label", "Shop the whole summer collection today", 440, 520, 200, 40, 16, z_index=2))
+    target = {"width": 320, "height": 50}
+    plan = heuristic_plan(src)
+    assert check_gates(src, safe_fallback(src, target, plan, measurer).design, target, plan, measurer) == []

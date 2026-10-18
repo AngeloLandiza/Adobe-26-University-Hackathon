@@ -9,13 +9,13 @@ first. Every candidate is finalised; ones that can't be built are dropped.
 
 import math
 
-from engine.pipeline.geometry import Box, align_in, rotated_aabb, union_box
+from engine.pipeline.geometry import Box, align_in, overlap_area, rotated_aabb, union_box
 from engine.pipeline.layout.aspect import aspect_class
 from engine.pipeline.layout.layers import fit_inside, place_background, place_decoration
 from engine.pipeline.layout.normalize import finalize
 from engine.pipeline.layout.place import CONDENSED_PADDING, CONDENSED_VPAD, HARD_FLOOR, floor_px, place_unit
 from engine.pipeline.layout.templates import PARAM_GRID, TEMPLATES_BY_CLASS, Slot, build_slots
-from engine.pipeline.occlusion import is_covered, paint_order
+from engine.pipeline.occlusion import contains, is_covered, paint_order
 from engine.pipeline.textmeasure import TextMeasurer
 from engine.pipeline.types import Candidate, PriorityPlan, Unit
 
@@ -23,6 +23,9 @@ LOGO_MAX_GROWTH = 1.5   # a logo never grows past 1.5x its source size
 FREE_MAX_SHARE = 1 / 3  # a leftover image gets at most a third of the canvas each way
 FREE_TRIES = 12         # distinct empty rectangles tried per leftover unit, largest first
 FLOW_GAP = 0.02         # space between minor units, as a share of the canvas's short side
+SAME_ASPECT_TOL = 0.02  # target aspect within 2% of the source's: the proportional layout is the answer
+LEFTOVER_FLOORS = (HARD_FLOOR, 4, 2, 1)  # px; a leftover goes below the hard floor only if nothing else fits
+BACKDROP_TOL = 1.0      # px of slack when deciding that a source shape holds a text
 # Text roles stack (or flow) one by one; only other roles cluster into a row.
 _NO_CLUSTER = {"headline", "subheadline", "other_text", "legal", None}
 
@@ -93,11 +96,16 @@ class _Builder:
         if degraded:
             self.degraded.append(unit.unit_id)
 
-    def try_place(self, unit: Unit, box: Box, minor: bool, align: str = "center") -> tuple[dict[str, dict] | None, bool]:
+    def try_place(self, unit: Unit, box: Box, minor: bool, align: str = "center",
+                  scale: float | None = None) -> tuple[dict[str, dict] | None, bool]:
         """Place at the role's floor, else at the hard floor (degraded). Minor
-        units are capped at their floor size."""
+        units are capped at their floor size; with `scale`, text is capped at
+        scale x its source size (never below the floor)."""
         floor = floor_px(unit.role, self.width, self.height)
         max_font = floor if minor else None
+        if scale is not None and not minor:
+            sizes = [m["font_size"] for m in self._members(unit) if m["type"] == "text"]
+            max_font = max(scale * max(sizes), floor) if sizes else None
         box = self._cap_logo(unit, box)
         geometry = place_unit(unit, self.els, box, self.measurer, floor, align=align, max_font=max_font)
         if geometry is not None:
@@ -254,23 +262,31 @@ class _Builder:
         """Put each leftover unit into the largest empty rectangle it fits
         (images capped in size, text at most its floor size), biggest
         footprint first so small units don't take the only space a long
-        text fits. False if any unit can't be placed anywhere."""
+        text fits. Text that fits nowhere at the hard floor tries smaller
+        sizes (LEFTOVER_FLOORS): a dense design in a small banner keeps its
+        top units readable instead of losing the whole template to the
+        fallback. False if a unit can't be placed anywhere even then."""
         for unit in sorted(self.leftover, key=lambda u: (-self._footprint(u), u.rank)):
-            has_image = any(m["type"] == "image" for m in self._members(unit))
-            for rect in self.free_rects(margin):
+            if not self._place_leftover(unit, margin):
+                return False
+        self.leftover = []
+        return True
+
+    def _place_leftover(self, unit: Unit, margin: float) -> bool:
+        has_image = any(m["type"] == "image" for m in self._members(unit))
+        floor = floor_px(unit.role, self.width, self.height)
+        rects = self.free_rects(margin)
+        for text_floor in LEFTOVER_FLOORS:
+            for rect in rects:
                 box = rect
                 if has_image:  # text and pills are already held to their floor size by max_font
                     w, h = min(rect[2], self.width * FREE_MAX_SHARE), min(rect[3], self.height * FREE_MAX_SHARE)
                     box = (*align_in(rect, w, h), w, h)
-                floor = floor_px(unit.role, self.width, self.height)
-                geometry = place_unit(unit, self.els, box, self.measurer, HARD_FLOOR, max_font=floor)
+                geometry = place_unit(unit, self.els, box, self.measurer, text_floor, max_font=floor)
                 if geometry is not None:
                     self._record(unit, geometry, degraded=True)
-                    break
-            else:
-                return False
-        self.leftover = []
-        return True
+                    return True
+        return False
 
     def place_layers(self) -> None:
         for unit in self.plan.units:
@@ -278,7 +294,55 @@ class _Builder:
                 self.placed.update((m["id"], place_background(m, self.width, self.height)) for m in self._members(unit))
             elif unit.role == "decoration":
                 for m in self._members(unit):
-                    self.placed[m["id"]] = self._visible_decoration(m)
+                    self.placed[m["id"]] = self._backdrop(m) or self._visible_decoration(m)
+
+    def _ink_box(self, el: dict) -> Box:
+        """Where a text's glyphs are drawn: its widest line, placed per
+        text_align, and its measured block. A placed text box spans its whole
+        slot, which is much wider than the words in it."""
+        if el.get("rotation"):
+            return rotated_aabb(el)
+        width = max(self.measurer.line_widths(el, el["font_size"], el["width"]), default=0.0)
+        width = min(width, el["width"])
+        align = el.get("text_align") or "left"
+        x = el["x"] + (el["width"] - width) / 2 if align == "center" else             el["x"] + el["width"] - width if align == "right" else el["x"]
+        return (x, el["y"], width, min(el["height"], self.measurer.block_height(el, el["font_size"], el["width"])))
+
+    def _backdrop(self, shape: dict) -> dict | None:
+        """A shape the source paints text on (a panel behind copy, a card under
+        a headline) follows that text: its new box is the text's new ink
+        bounds plus the source padding, scaled with the text (or no padding,
+        if the padded box would overlap other content). None, so it's parked
+        like any decoration, if it holds no text, is rotated, or would still
+        sit over content painted before it."""
+        if shape["type"] != "shape" or shape.get("rotation"):
+            return None
+        order = paint_order(self.source["elements"])
+        shape_box = rotated_aabb(shape)
+        held = [t for t in self.source["elements"] if t["type"] == "text" and order[id(t)] > order[id(shape)]
+                and contains(shape_box, rotated_aabb(t), BACKDROP_TOL)]
+        if not held or any(t["id"] not in self.placed for t in held):
+            return None
+        k = sum(self.placed[t["id"]]["font_size"] / t["font_size"] for t in held) / len(held)
+        sx, sy, sw, sh = shape_box
+        tx, ty, tw, th = union_box([self._ink_box(t) for t in held])
+        nx, ny, nw, nh = union_box([self._ink_box(self.placed[t["id"]]) for t in held])
+        held_ids = {t["id"] for t in held}
+        under = [rotated_aabb(g) for eid, g in self.placed.items()
+                 if eid not in held_ids and order[id(self.els[eid])] < order[id(shape)]
+                 and self.plan.unit_for_element(eid).role not in ("background", "decoration")]
+        for pad in (k, 0.0):
+            x0, y0 = max(0.0, nx - (tx - sx) * pad), max(0.0, ny - (ty - sy) * pad)
+            x1 = min(self.width, nx + nw + (sx + sw - tx - tw) * pad)
+            y1 = min(self.height, ny + nh + (sy + sh - ty - th) * pad)
+            box = (x0, y0, x1 - x0, y1 - y0)
+            if not any(overlap_area(box, other) > 0 for other in under):
+                out = dict(shape, x=x0, y=y0, width=box[2], height=box[3])
+                for key in ("corner_radius", "stroke_width"):
+                    if shape.get(key):
+                        out[key] = shape[key] * k
+                return out
+        return None
 
     def _visible_decoration(self, el: dict) -> dict:
         """The decoration at its nearest corner, or the first other corner
@@ -328,7 +392,10 @@ def reflow_candidate(source: dict, target: dict, plan: PriorityPlan, measurer: T
     for unit in plan.ranked_units():
         ux, uy, uw, uh = union_box([rotated_aabb(m) for m in b._members(unit)])
         cx, cy = (ux + uw / 2) * rx, (uy + uh / 2) * ry
-        geometry, degraded = b.try_place(unit, (cx - uw * s / 2, cy - uh * s / 2, uw * s, uh * s), minor=False)
+        # Text scales with the layout and sits at the top of its box, where the
+        # renderer draws it, so a same-aspect resize returns the source layout.
+        geometry, degraded = b.try_place(unit, (cx - uw * s / 2, cy - uh * s / 2, uw * s, uh * s), minor=False,
+                                         align="top", scale=s)
         if geometry is None:
             return None
         inside = fit_inside(list(geometry.values()), b.width, b.height)
@@ -339,7 +406,9 @@ def reflow_candidate(source: dict, target: dict, plan: PriorityPlan, measurer: T
 def generate_candidates(source: dict, target: dict, plan: PriorityPlan, measurer: TextMeasurer) -> list[Candidate]:
     """The reflow candidate first, then every template x parameter set for the
     target's aspect class, in a fixed order. Excludes the safe fallback. A
-    template that fails to build is skipped, so one bug can't sink the task."""
+    template that fails to build is skipped, so one bug can't sink the task.
+    When the target has the source's aspect, the proportional reflow is the
+    faithful answer and is the only candidate (templates only if it fails)."""
     candidates = []
     try:
         reflow = reflow_candidate(source, target, plan, measurer)
@@ -347,6 +416,9 @@ def generate_candidates(source: dict, target: dict, plan: PriorityPlan, measurer
         reflow = None
     if reflow is not None:
         candidates.append(reflow)
+        src_aspect = source["canvas"]["width"] / source["canvas"]["height"]
+        if abs(target["width"] / target["height"] / src_aspect - 1) <= SAME_ASPECT_TOL:
+            return candidates
     for template in TEMPLATES_BY_CLASS[aspect_class(target["width"], target["height"])]:
         for params in PARAM_GRID[template]:
             try:

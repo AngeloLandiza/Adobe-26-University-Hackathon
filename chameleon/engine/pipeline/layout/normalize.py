@@ -35,6 +35,10 @@ def finalize(source: dict, placed: dict[str, dict], target: dict) -> dict | None
         el = copy.deepcopy(src_el)
         for key in EDITABLE & geometry.keys():
             el[key] = _round(key, geometry[key])
+        if el["type"] == "image" and el.get("fit") != "cover" and geometry.get("width") and geometry.get("height"):
+            # Rounding both sides would bend a tiny image's proportions (0.375 x 0.1125
+            # -> 0.38 x 0.12 is 5% off): derive the height from the rounded width.
+            el["height"] = round(el["width"] * geometry["height"] / geometry["width"], 4)
         if not inside_canvas(rotated_aabb(el), width, height):
             return None
         elements.append(el)

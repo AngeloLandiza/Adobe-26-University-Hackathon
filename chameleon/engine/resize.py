@@ -106,26 +106,28 @@ def _debug_dump(source: dict, target: dict, plan: PriorityPlan, candidates: list
 
 
 def _last_resort(source: dict, target_canvas: dict) -> dict:
-    """The starter's stretch, with each element shrunk and moved until its
-    rotated bounds are inside the canvas. Ugly, but it depends on nothing
+    """The whole source scaled uniformly and centred (never stretched, so
+    images keep their proportions), with each element shrunk and moved until
+    its rotated bounds are inside the canvas. Ugly, but it depends on nothing
     that could fail."""
     width, height = target_canvas["width"], target_canvas["height"]
-    scale_x = width / source["canvas"]["width"]
-    scale_y = height / source["canvas"]["height"]
+    src_w, src_h = source["canvas"]["width"], source["canvas"]["height"]
+    scale = min(width / src_w, height / src_h)
+    off_x, off_y = (width - src_w * scale) / 2, (height - src_h * scale) / 2
     elements = []
     for el in source["elements"]:
         el = dict(el)
-        w, h = el["width"] * scale_x, el["height"] * scale_y
+        w, h = el["width"] * scale, el["height"] * scale
         rad = math.radians(el.get("rotation") or 0)
         cos, sin = abs(math.cos(rad)), abs(math.sin(rad))
         rot_w, rot_h = w * cos + h * sin, w * sin + h * cos
         shrink = min(1.0, width / rot_w if rot_w else 1.0, height / rot_h if rot_h else 1.0)
         w, h, rot_w, rot_h = w * shrink, h * shrink, rot_w * shrink, rot_h * shrink
-        cx = min(max(el["x"] * scale_x + w / 2, rot_w / 2), width - rot_w / 2)
-        cy = min(max(el["y"] * scale_y + h / 2, rot_h / 2), height - rot_h / 2)
+        cx = min(max(off_x + el["x"] * scale + w / 2, rot_w / 2), width - rot_w / 2)
+        cy = min(max(off_y + el["y"] * scale + h / 2, rot_h / 2), height - rot_h / 2)
         el.update(x=cx - w / 2, y=cy - h / 2, width=w, height=h)
         if el["type"] == "text":
-            el["font_size"] = max(1.0, el["font_size"] * min(scale_x, scale_y) * shrink)
+            el["font_size"] = max(1.0, el["font_size"] * scale * shrink)
         elements.append(el)
     return {"canvas": {"width": width, "height": height}, "elements": elements}
 

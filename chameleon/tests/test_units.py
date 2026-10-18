@@ -125,3 +125,17 @@ def test_features_carry_unit_flags(l3):
 
 def test_missing_asset_flag_in_l3_features(l3):
     assert feats_by_id(l3)["holiday_watermark"]["missing_asset"] is True
+
+
+def test_background_shape_never_holds_a_label():
+    # a flat-colour background with one big headline on it is not a 1080 px button
+    from tests.designs import BG_SHAPE_HEADLINE
+    units = by_id(build_units(BG_SHAPE_HEADLINE))
+    assert units["bg"].kind == "single" and "background" in units["bg"].flags
+    assert units["headline"].kind == "single"
+
+
+def test_a_card_too_big_for_a_button_holds_no_label():
+    from tests.designs import HEADLINE_CARD
+    units = by_id(build_units(HEADLINE_CARD))
+    assert units["card"].element_ids == ["card"] and units["headline"].element_ids == ["headline"]

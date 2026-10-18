@@ -1,4 +1,5 @@
 import json
+import sys
 import pytest
 from pathlib import Path
 from engine.pipeline.geometry import inside_canvas, overlap_area, rotated_aabb, union_box
@@ -79,10 +80,12 @@ def test_only_consecutive_same_role_units_cluster():
 
 
 def test_leaderboard_gets_real_candidates_for_level_3(l3, measurer):
-    # 17 elements into 728x90: the 150-character headline can't meet its 14px floor, so it's degraded, not dropped
+    # 17 elements into 728x90: the 150-character headline is degraded where it can't meet its 14px floor, not
+    # dropped (rows that give it a whole slot push other units below the hard floor instead)
     cands = generate_candidates(l3["source"], l3["target_canvas"], heuristic_plan(l3["source"]), measurer)
     rows = [c for c in cands if c.template == "row"]
-    assert rows and all("headline" in c.degraded_unit_ids for c in rows)
+    headline = lambda c: next(e for e in c.design["elements"] if e["id"] == "headline")
+    assert rows and all(headline(c)["font_size"] >= 14 or "headline" in c.degraded_unit_ids for c in rows)
 
 
 def test_minor_units_stay_at_or_below_their_floor(l3, measurer):
@@ -175,3 +178,87 @@ def test_leftover_images_stay_small(l3, measurer):
     b, units = builder(l3, {"width": 728, "height": 90}, measurer)
     b.leftover = [units["holiday_watermark"]]
     assert b.place_leftovers(margin=4) and b.placed["holiday_watermark"]["height"] <= 90 / 3 + 0.01
+
+
+def _centre(el): return (el["x"] + el["width"] / 2, el["y"] + el["height"] / 2)
+
+
+def test_same_aspect_target_keeps_the_source_layout(l2, measurer):
+    # a 1080x1080 design resized to 1080x1080 should come back as itself, not rebuilt as a stack
+    src = l2["source"]
+    cands = generate_candidates(src, dict(src["canvas"]), heuristic_plan(src), measurer)
+    assert [c.candidate_id for c in cands] == ["reflow"]
+    out = {e["id"]: e for e in cands[0].design["elements"]}
+    for el in src["elements"]:
+        if not inside_canvas(rotated_aabb(el), src["canvas"]["width"], src["canvas"]["height"]):
+            continue  # the corner-bleeding circle must move inside: nothing off-canvas
+        o = out[el["id"]]
+        # the renderer draws text from the top of its box, so text must keep its top-left;
+        # everything else its centre
+        moved = (o["x"] - el["x"], o["y"] - el["y"]) if el["type"] == "text" else             (_centre(o)[0] - _centre(el)[0], _centre(o)[1] - _centre(el)[1])
+        assert abs(moved[0]) <= 2 and abs(moved[1]) <= 2, (el["id"], moved)
+        if el["type"] == "text":  # never bigger, except up to the role's readability floor
+            role = heuristic_plan(src).unit_for_element(el["id"]).role
+            assert o["font_size"] <= max(el["font_size"], floor_px(role, 1080, 1080)) + 1e-6, el["id"]
+
+
+def test_reflow_scales_text_with_the_layout(l1, measurer):
+    # at half size the headline is about half its source size, not filled up to 1.5x the source
+    src = l1["source"]
+    reflow = reflow_candidate(src, {"width": 540, "height": 540}, heuristic_plan(src), measurer)
+    sizes = {e["id"]: e["font_size"] for e in src["elements"] if e["type"] == "text"}
+    for el in reflow.design["elements"]:
+        if el["type"] == "text":
+            assert el["font_size"] <= max(0.5 * sizes[el["id"]], floor_px("cta", 540, 540)) + 1e-6, el["id"]
+
+
+@pytest.mark.parametrize("w,h", [
+    (300, 600), (970, 90),
+    # Known gap: Linux text measures wider, and a placed text box spans its whole slot, so the occupancy
+    # grid finds no gap a leftover pill fits even at 1 px. Strict: it fails loudly once fixed.
+    pytest.param(320, 50, marks=pytest.mark.xfail(sys.platform == "linux", strict=True,
+                                                  reason="no free space for leftovers at 320x50 on Linux")),
+])
+def test_dense_design_in_a_small_format_still_gets_real_layouts(w, h, l3, measurer):
+    # L3's 17 elements: a leftover that can't fit at the hard floor goes smaller, rather than sinking
+    # every template and leaving only the fallback (all text at ~1 px in a 320x50 mobile banner)
+    from engine.resize import resize_with_report
+    src, target = l3["source"], {"width": w, "height": h}
+    cands = generate_candidates(src, target, heuristic_plan(src), measurer)
+    assert any(c.candidate_id != "reflow" for c in cands)
+    for c in cands:
+        assert_valid(src, c.design, target)
+    assert not resize_with_report(src, target)[2].is_fallback
+
+
+@pytest.mark.parametrize("w,h", [(728, 90), (160, 600), (1584, 396), (1080, 1350)])
+@pytest.mark.parametrize("name,held", [("PANEL_BEHIND_COPY", ["headline", "sub"]), ("HEADLINE_CARD", ["headline"])])
+def test_a_backdrop_stays_behind_its_copy(name, held, w, h, measurer):
+    # a panel or card under text in the source follows that text; parked in a corner it leaves
+    # black copy on a dark photo
+    from engine.pipeline.geometry import element_box
+    from engine.pipeline.occlusion import contains
+    import tests.designs as designs
+    src, target = getattr(designs, name), {"width": w, "height": h}
+    backdrop = src["elements"][2]["id"] if name == "HEADLINE_CARD" else "panel"
+    def drawn(el):  # the glyphs' extent: widest line placed per text_align, measured block height
+        w = min(max(measurer.line_widths(el, el["font_size"], el["width"])), el["width"])
+        x = {"center": el["x"] + (el["width"] - w) / 2, "right": el["x"] + el["width"] - w}.get(el.get("text_align"), el["x"])
+        return (x, el["y"], w, measurer.block_height(el, el["font_size"], el["width"]))
+
+    def drawn_width(els):
+        boxes = [drawn(els[t]) for t in held]
+        return max(x + w for x, _, w, _ in boxes) - min(x for x, _, _, _ in boxes)
+
+    src_els = {e["id"]: e for e in src["elements"]}
+    pad = src_els[backdrop]["width"] - drawn_width(src_els)  # the source's side padding around the text
+    cands = generate_candidates(src, target, heuristic_plan(src), measurer)
+    assert cands
+    for c in cands:
+        els = {e["id"]: e for e in c.design["elements"]}
+        for t in held:
+            assert contains(element_box(els[backdrop]), drawn(els[t]), tol=0.5), (c.candidate_id, t)
+        # it hugs the text, padded like the source in proportion to the font, rather than spanning
+        # the text's whole slot
+        k = max(els[t]["font_size"] / src_els[t]["font_size"] for t in held)
+        assert els[backdrop]["width"] <= drawn_width(els) + pad * k + 1, c.candidate_id

@@ -139,3 +139,12 @@ def test_missing_units_are_inserted_where_the_heuristic_puts_them(l2):
     units, hr, hk = heur(l2)
     _, ranking, frac = repair(dict(L2_GOOD, ranking=["headline", "cta", "subhead", "badge"]), units, hr, hk)
     assert ranking == ["headline", "product", "cta", "logo", "subhead", "badge"] and frac == pytest.approx(2 / 9)
+
+
+def test_llm_cannot_make_copy_or_images_decoration(l2):
+    # node 2 parks decorations in corners at source scale; the headline would shrink to a few px
+    data = dict(L2_GOOD, roles=[dict(r, role="decoration") if r["unit_id"] in ("headline", "product") else r
+                                for r in L2_GOOD["roles"]])
+    p = plan(l2["source"], provider=Fake(data))
+    assert p.unit_for_element("headline").role == "headline" and p.unit_for_element("product").role == "hero_image"
+    assert p.stats.repaired_fraction == pytest.approx(2 / 9)
