@@ -1,0 +1,15 @@
+[
+  {"name": "instagram_post", "width": 1080, "height": 1080},
+  {"name": "instagram_portrait", "width": 1080, "height": 1350},
+  {"name": "story", "width": 1080, "height": 1920},
+  {"name": "youtube_thumbnail", "width": 1280, "height": 720},
+  {"name": "linkedin_banner", "width": 1584, "height": 396},
+  {"name": "facebook_cover", "width": 820, "height": 312},
+  {"name": "leaderboard", "width": 728, "height": 90},
+  {"name": "medium_rectangle", "width": 300, "height": 250},
+  {"name": "wide_skyscraper", "width": 160, "height": 600},
+  {"name": "billboard", "width": 970, "height": 250},
+  {"name": "mobile_banner", "width": 320, "height": 50},
+  {"name": "half_page", "width": 300, "height": 600},
+  {"name": "large_leaderboard", "width": 970, "height": 90}
+]
