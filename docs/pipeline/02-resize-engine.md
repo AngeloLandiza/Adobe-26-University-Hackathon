@@ -24,7 +24,9 @@
 - **Free space** (§4 step 5): a coarse occupancy grid, scanned for the largest *distinct* empty rectangles (any rectangle inside a kept one is dropped). Leftovers are placed **biggest footprint first** (their smallest form at the hard floor). Leftover images are capped at a third of the canvas each way.
 - **Decorations** that would be fully covered by content try the other corners (`place_decoration(..., corner=)`), so gate G9 never discards a layout over a hidden circle.
 - **Backdrops** (after the whole-branch review): a decoration shape that the source paints text on, such as a panel behind copy or a card under a headline, follows that text instead of going to a corner. Its new box is the text's new *drawn* bounds (widest line per `text_align`, measured block), plus the source padding scaled with the font. If that would overlap content painted below it, it tries again with no padding, and only then is it parked like other decorations.
-- **Leftovers that fit nowhere at the 6 px hard floor try 4, 2 and 1 px** (`LEFTOVER_FLOORS`) before a template is dropped. Before this, a dense design in a small banner lost every template and returned the fallback with all text at about 1 px. Level 3 at 320×50 now gets real layouts that keep its top units readable.
+- **Leftovers that fit nowhere at the 6 px hard floor try 4, 2 and 1 px** (`LEFTOVER_FLOORS`) before a template is dropped. Before this, a dense design in a small banner lost every template and returned the fallback with all text at about 1 px.
+- **If the leftover pass still fails, it's redone once in rank order.** Leftovers normally go biggest footprint first, so a long, low-priority subhead or legal text could fill every gap before the CTA got one. On Linux, Level 3's CTA pill misses its 320×50 slot (85.6 px at 6 px against 69.5 px), so this happened in every template. The retry lets the important units claim room first. Level 3 at 300×50 and 320×50 now gets real layouts on both platforms, with the CTA never smaller than the subhead or legal text.
+- *Tried and reverted:* sizing text boxes to their drawn text. It didn't free the space that mattered, and because the grader measures alignment on boxes, it moved six matrix winners.
 - **Reflow** doesn't push units apart. Proportional centre mapping with sizes scaled by s = min(W/Ws, H/Hs) can't create overlaps the source didn't have; a test checks this on every sample × target.
 - **Reflow text scales with the layout** (after the whole-branch review): it's capped at s × its source size (never below the role's floor), and each unit sits at the top of its scaled box, where the renderer draws text. Before, text filled its box up to 1.5× the source size, so a half-size reflow had text 1.3–2.4× too big.
 - **A target within 2% of the source's aspect gets only the reflow** (`SAME_ASPECT_TOL`), with templates only if the reflow fails. A 1080×1080 design resized to 1080×1080 comes back as itself; before, Level 2 was rebuilt as a stack.
@@ -39,7 +41,7 @@
 **Results** (dev matrix, 3 samples × 13 sizes, after the whole-branch review fixes):
 - Every generated candidate passes every gate, on Windows and in the Linux container.
 - Level 3 → 728×90 builds 36 real layouts (12 before the sub-floor leftovers, none before Task 9).
-- Real layouts win 38 of 39 cells on Windows and 37 in the Linux container, which is what scoring runs. Level 3 → 300×250 picks the fallback on both. On Linux, Level 3 → 320×50 picks it too: a placed text box spans its whole slot, so the occupancy grid finds no gap a leftover pill fits, even at 1 px (README §11).
+- Real layouts win 38 of 39 cells on both Windows and in the Linux container, which is what scoring runs. Only Level 3 → 300×250 picks the fallback.
 
 **Known gaps** (see [README §11](README.md#11-whats-missing-as-of-2026-10-17)):
 - short text CTAs wrap one word per line in narrow columns;

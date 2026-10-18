@@ -43,7 +43,7 @@
 | 13 Dev matrix + contact sheets | ✅ done; 29/30 cells won by real layouts | `c4f4d15` | 376 (+2) |
 | 14 Provider benchmark | ✅ tool done; the real comparison still needs API keys | `dfb6fc6` | 380 (+2) |
 | 15 Docker no-network check | ✅ done; 30/30 outputs pass every gate in the container. Running the suite on Linux caught an image-sizing bug, now fixed (deviation 22). Linux text widths differ from Windows (deviation 21) | `b00192f`, `2397e75` | 382 (+2), on Windows and in the container |
-| Final whole-branch review | ✅ done by a fresh reviewer: 0 critical, 7 important (all fixed test-first), 6 minor (1 fixed, 5 deferred, README §11). One known gap remains on Linux: Level 3 → 320×50 | `96f763d` | 459 (+2) on Windows; 458 + 1 expected failure (+2) in the container |
+| Final whole-branch review | ✅ done by a fresh reviewer: 0 critical, 7 important (all fixed test-first), 6 minor (1 fixed, 5 deferred, README §11). A follow-up rank-order retry for leftovers closed the Linux gap at Level 3 → 320×50 | `96f763d`, `514351a` | 461 (+2) on Windows and in the container |
 
 Each task went test-first: every test was seen failing before its code was written. Each important decision was also broken on purpose, to confirm a test catches it. Most tasks ended up with more tests than the plan lists.
 
@@ -79,7 +79,7 @@ These change interfaces or facts the later task text assumes. **Where this list 
 23. **After the whole-branch review** (commit `96f763d`), these hold in addition:
     - an implicit label's shape covers at most 15% of the canvas, and text with legal markers is never the headline;
     - the LLM can't label text or an image `decoration`;
-    - leftovers try 4, 2 and 1 px before a template is dropped (`LEFTOVER_FLOORS`);
+    - leftovers try 4, 2 and 1 px before a template is dropped (`LEFTOVER_FLOORS`); if the pass still fails, it's redone once in rank order;
     - reflow caps text at s × its source size, top-aligns units, and is the only candidate when the target's aspect is within 2% of the source's;
     - a decoration shape that holds text in the source is placed as a backdrop behind that text;
     - G2 accepts a zero size the source already had;
@@ -94,7 +94,7 @@ The rulings with their reasons are recorded in the "As built" sections of [01](.
 - **Tuning, from the Task 13 contact sheets and the whole-branch review:**
   - short text CTAs wrap one word per line in narrow columns;
   - the missing-asset placeholder is prominent in some layouts;
-  - Level 3 → 300×250 picks the fallback, and on Linux so does Level 3 → 320×50 (placed text boxes span their slots, so leftovers find no room);
+  - Level 3 → 300×250 picks the fallback;
   - a zero-height line divider goes to a corner.
 - **Grader weights uncalibrated;** the golden set is still only the 3 samples.
 - **The full test suite takes about a minute,** because the end-to-end tests render real images.
