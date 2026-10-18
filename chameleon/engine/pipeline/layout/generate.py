@@ -265,12 +265,21 @@ class _Builder:
         text fits. Text that fits nowhere at the hard floor tries smaller
         sizes (LEFTOVER_FLOORS): a dense design in a small banner keeps its
         top units readable instead of losing the whole template to the
-        fallback. False if a unit can't be placed anywhere even then."""
-        for unit in sorted(self.leftover, key=lambda u: (-self._footprint(u), u.rank)):
-            if not self._place_leftover(unit, margin):
-                return False
-        self.leftover = []
-        return True
+        fallback.
+
+        If that pass fails, the banner is crowded: long low-priority text
+        filled every gap before a pill like the CTA got one. The pass is then
+        redone in rank order, so the important units get room first. False
+        if a unit can't be placed even then."""
+        saved = (dict(self.placed), list(self.boxes), list(self.degraded))
+        orders = (lambda u: (-self._footprint(u), u.rank),
+                  lambda u: (u.rank if u.rank is not None else math.inf, u.unit_id))
+        for order in orders:
+            self.placed, self.boxes, self.degraded = dict(saved[0]), list(saved[1]), list(saved[2])
+            if all(self._place_leftover(unit, margin) for unit in sorted(self.leftover, key=order)):
+                self.leftover = []
+                return True
+        return False
 
     def _place_leftover(self, unit: Unit, margin: float) -> bool:
         has_image = any(m["type"] == "image" for m in self._members(unit))

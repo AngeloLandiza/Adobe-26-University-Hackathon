@@ -1,5 +1,4 @@
 import json
-import sys
 import pytest
 from pathlib import Path
 from engine.pipeline.geometry import inside_canvas, overlap_area, rotated_aabb, union_box
@@ -183,6 +182,13 @@ def test_leftover_images_stay_small(l3, measurer):
 def _centre(el): return (el["x"] + el["width"] / 2, el["y"] + el["height"] / 2)
 
 
+def _drawn(el, measurer):
+    """Where a text's glyphs are drawn: its widest line placed per text_align, and its measured block."""
+    w = min(max(measurer.line_widths(el, el["font_size"], el["width"])), el["width"])
+    x = {"center": el["x"] + (el["width"] - w) / 2, "right": el["x"] + el["width"] - w}.get(el.get("text_align"), el["x"])
+    return (x, el["y"], w, measurer.block_height(el, el["font_size"], el["width"]))
+
+
 def test_same_aspect_target_keeps_the_source_layout(l2, measurer):
     # a 1080x1080 design resized to 1080x1080 should come back as itself, not rebuilt as a stack
     src = l2["source"]
@@ -193,9 +199,11 @@ def test_same_aspect_target_keeps_the_source_layout(l2, measurer):
         if not inside_canvas(rotated_aabb(el), src["canvas"]["width"], src["canvas"]["height"]):
             continue  # the corner-bleeding circle must move inside: nothing off-canvas
         o = out[el["id"]]
-        # the renderer draws text from the top of its box, so text must keep its top-left;
-        # everything else its centre
-        moved = (o["x"] - el["x"], o["y"] - el["y"]) if el["type"] == "text" else             (_centre(o)[0] - _centre(el)[0], _centre(o)[1] - _centre(el)[1])
+        # text must be drawn where it was (its box may be tighter); everything else keeps its centre
+        if el["type"] == "text":
+            moved = (_drawn(o, measurer)[0] - _drawn(el, measurer)[0], o["y"] - el["y"])
+        else:
+            moved = (_centre(o)[0] - _centre(el)[0], _centre(o)[1] - _centre(el)[1])
         assert abs(moved[0]) <= 2 and abs(moved[1]) <= 2, (el["id"], moved)
         if el["type"] == "text":  # never bigger, except up to the role's readability floor
             role = heuristic_plan(src).unit_for_element(el["id"]).role
@@ -214,10 +222,9 @@ def test_reflow_scales_text_with_the_layout(l1, measurer):
 
 @pytest.mark.parametrize("w,h", [
     (300, 600), (970, 90),
-    # Known gap: Linux text measures wider, and a placed text box spans its whole slot, so the occupancy
-    # grid finds no gap a leftover pill fits even at 1 px. Strict: it fails loudly once fixed.
-    pytest.param(320, 50, marks=pytest.mark.xfail(sys.platform == "linux", strict=True,
-                                                  reason="no free space for leftovers at 320x50 on Linux")),
+    # IAB mobile banners: the CTA misses its slot (on Linux at 320x50 too, where text measures wider)
+    # and long low-priority text filled every gap before it
+    (300, 50), (320, 50),
 ])
 def test_dense_design_in_a_small_format_still_gets_real_layouts(w, h, l3, measurer):
     # L3's 17 elements: a leftover that can't fit at the hard floor goes smaller, rather than sinking
@@ -241,10 +248,7 @@ def test_a_backdrop_stays_behind_its_copy(name, held, w, h, measurer):
     import tests.designs as designs
     src, target = getattr(designs, name), {"width": w, "height": h}
     backdrop = src["elements"][2]["id"] if name == "HEADLINE_CARD" else "panel"
-    def drawn(el):  # the glyphs' extent: widest line placed per text_align, measured block height
-        w = min(max(measurer.line_widths(el, el["font_size"], el["width"])), el["width"])
-        x = {"center": el["x"] + (el["width"] - w) / 2, "right": el["x"] + el["width"] - w}.get(el.get("text_align"), el["x"])
-        return (x, el["y"], w, measurer.block_height(el, el["font_size"], el["width"]))
+    drawn = lambda el: _drawn(el, measurer)
 
     def drawn_width(els):
         boxes = [drawn(els[t]) for t in held]
@@ -262,3 +266,16 @@ def test_a_backdrop_stays_behind_its_copy(name, held, w, h, measurer):
         # the text's whole slot
         k = max(els[t]["font_size"] / src_els[t]["font_size"] for t in held)
         assert els[backdrop]["width"] <= drawn_width(els) + pad * k + 1, c.candidate_id
+
+
+
+def test_crowded_banner_gives_the_cta_room_first(l3, measurer):
+    # at 300x50 the usual leftover pass fails in every template; the retry goes in rank order,
+    # so the CTA (rank 3) gets a gap before the long subhead and legal text fill them
+    src = l3["source"]
+    cands = [c for c in generate_candidates(src, {"width": 300, "height": 50}, heuristic_plan(src), measurer)
+             if c.candidate_id != "reflow"]
+    assert len(cands) >= 10
+    for c in cands:
+        size = {e["id"]: e["font_size"] for e in c.design["elements"] if e["type"] == "text"}
+        assert size["cta_label"] >= max(size["subhead"], size["legal_text"]), c.candidate_id
