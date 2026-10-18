@@ -23,23 +23,29 @@
 - **The minor zone flows** units left to right at their natural width, instead of equal cells.
 - **Free space** (§4 step 5): a coarse occupancy grid, scanned for the largest *distinct* empty rectangles (any rectangle inside a kept one is dropped). Leftovers are placed **biggest footprint first** (their smallest form at the hard floor). Leftover images are capped at a third of the canvas each way.
 - **Decorations** that would be fully covered by content try the other corners (`place_decoration(..., corner=)`), so gate G9 never discards a layout over a hidden circle.
+- **Backdrops** (after the whole-branch review): a decoration shape that the source paints text on, such as a panel behind copy or a card under a headline, follows that text instead of going to a corner. Its new box is the text's new *drawn* bounds (widest line per `text_align`, measured block), plus the source padding scaled with the font. If that would overlap content painted below it, it tries again with no padding, and only then is it parked like other decorations.
+- **Leftovers that fit nowhere at the 6 px hard floor try 4, 2 and 1 px** (`LEFTOVER_FLOORS`) before a template is dropped. Before this, a dense design in a small banner lost every template and returned the fallback with all text at about 1 px. Level 3 at 320×50 now gets real layouts that keep its top units readable.
 - **Reflow** doesn't push units apart. Proportional centre mapping with sizes scaled by s = min(W/Ws, H/Hs) can't create overlaps the source didn't have; a test checks this on every sample × target.
+- **Reflow text scales with the layout** (after the whole-branch review): it's capped at s × its source size (never below the role's floor), and each unit sits at the top of its scaled box, where the renderer draws text. Before, text filled its box up to 1.5× the source size, so a half-size reflow had text 1.3–2.4× too big.
+- **A target within 2% of the source's aspect gets only the reflow** (`SAME_ASPECT_TOL`), with templates only if the reflow fails. A 1080×1080 design resized to 1080×1080 comes back as itself; before, Level 2 was rebuilt as a stack.
 - One template variant failing to build is skipped, never fatal.
 
 **Finalising and the fallback** (`normalize.py`, `layers.py`, `fallback.py`):
-- `finalize` rounds box sizes **up** and font size and letter spacing **down**, so rounding can never re-wrap text.
+- `finalize` rounds box sizes **up** and font size and letter spacing **down**, so rounding can never re-wrap text. A non-cover image's height is then derived from its rounded width, so a sub-pixel image (0.375 × 0.1125) can't drift off its aspect.
 - A non-cover background image keeps its aspect: it's fitted inside the canvas, not stretched.
-- The safe fallback pulls bleeding elements in **one unit at a time** (a button and its label move together), and re-fits any text that overflows its box.
+- The safe fallback pulls bleeding elements in **one unit at a time** (a button and its label move together), and re-fits text that overflows its box. If even 1 px overflows, the box grows to the measured text and is pulled back onto the canvas.
+- The **last resort** in `resize.py` (used only if the fallback itself fails) scales the whole source uniformly and centres it, so it can't stretch an image either.
 
-**Results** (dev matrix, 3 samples × 10 sizes):
+**Results** (dev matrix, 3 samples × 13 sizes, after the whole-branch review fixes):
 - Every generated candidate passes every gate, on Windows and in the Linux container.
-- Level 3 → 728×90 builds 12 real layouts (none before these changes).
-- Real layouts win 29 of 30 cells on Windows; Level 3 → 300×250 picks the fallback. In the Linux container (what scoring runs), they win 28: Level 3 → 160×600 picks the fallback too, because Linux text measures wider.
+- Level 3 → 728×90 builds 36 real layouts (12 before the sub-floor leftovers, none before Task 9).
+- Real layouts win 38 of 39 cells on Windows and 37 in the Linux container, which is what scoring runs. Level 3 → 300×250 picks the fallback on both. On Linux, Level 3 → 320×50 picks it too: a placed text box spans its whole slot, so the occupancy grid finds no gap a leftover pill fits, even at 1 px (README §11).
 
-**Known gaps** (see [README §11](README.md#11-whats-missing-as-of-2026-10-16)):
+**Known gaps** (see [README §11](README.md#11-whats-missing-as-of-2026-10-17)):
 - short text CTAs wrap one word per line in narrow columns;
 - the missing-asset placeholder can be prominent;
-- a multi-shape decoration group is placed per element.
+- a multi-shape decoration group is placed per element;
+- a zero-height line divider is a decoration, so it goes to a corner instead of staying between the texts it separated.
 
 **Job:** given the source design, the target canvas and the `PriorityPlan`, generate many valid candidate layouts. Important units get space first; minor units get what's left. Node 2 doesn't pick a winner. That's node 3's job.
 

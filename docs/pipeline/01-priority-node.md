@@ -34,9 +34,10 @@ A **unit** is something the layout moves as one piece.
 - **Detected buttons (implicit label-on-shape).** An ungrouped text joins an ungrouped shape as a `container_label` unit when:
   - the text box is ≥ 90% inside the shape box, and the text is painted above it (higher `z_index`);
   - it's the **only** text that qualifies for that shape;
-  - the text box covers **≥ 25% of the shape's area**.
+  - the text box covers **≥ 25% of the shape's area**;
+  - the shape covers **≤ 15% of the canvas** (`MAX_LABEL_SHAPE_AREA`, added after the whole-branch review).
 
-  If a text sits on several shapes, the smallest one wins. The last two conditions keep a backdrop panel behind several lines of copy (or one small line) from being mistaken for a button; the sample buttons' labels cover 49–63% of their shapes. The unit id is the shape's id.
+  If a text sits on several shapes, the smallest one wins. The coverage and count conditions keep a backdrop panel behind several lines of copy (or one small line) from being mistaken for a button; the sample buttons' labels cover 49–63% of their shapes. The size bound keeps a flat-colour **background** with one big headline, or a **card** under a headline, from becoming a "button": both used to, which turned the background into a letterboxed badge and let a disclaimer become the headline. A shape left out this way stays a single unit, and node 2 places it as a backdrop behind the text it holds. The unit id is the shape's id.
 - **Everything else** is a `single` unit with `unit_id` = the element id.
 
 `kind` tells node 2 how to resize the unit:
@@ -136,6 +137,7 @@ A cut-off answer (`max_tokens`) or non-JSON also raises `ProviderError`. Other S
 2. **Background is a hard signal.**
    - Background units always stay background, and the LLM may skip them (the prompt only lists them by id), so that isn't a fix.
    - The LLM may **not** label any other unit `background`: node 2 would stretch it over the whole canvas. That label is treated as invalid.
+   - Nor may it label text or an image `decoration`: node 2 would park it in a corner at a fraction of its size (a headline came out at 4.7 px). Only units the heuristic also calls decoration (all-shape units) can be; otherwise the label is invalid and counts as a fix.
 3. **Ranking.**
    - Unknown ids are dropped.
    - Duplicates, and units whose role is `background` or `decoration`, are removed and count as fixes.
@@ -189,7 +191,7 @@ Deterministic rules over the same features. It's both the fallback and **the bas
    - among images under 6% of the canvas, with aspect ≥ 1.5 and centre within 20% of an edge, the one with the highest `z_index` (largest on ties) → `logo`;
    - the largest remaining image → `hero_image`; the rest → `secondary_image`.
 5. **Text units** (singles, plus generic groups that carry text, such as an icon with a caption):
-   - the single text with the largest font (bold breaks ties) → `headline`. Only single texts can be the headline;
+   - the single text with the largest font (bold breaks ties) → `headline`. Only single texts without a legal marker can be the headline, so a disclaimer never becomes the headline when the real title sits on a pill;
    - text containing a legal marker ("responsibly", "terms", "©", "rights reserved", "void where", "conditions apply") → `legal`. The marker is matched on the 160-character preview;
    - the smallest-font remaining text, if it has more than 12 words and sits in the bottom 20% → `legal`;
    - text of ≤ 6 words starting with an action verb → `cta` (Level 1's plain-text CTA);

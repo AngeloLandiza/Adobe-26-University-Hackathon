@@ -6,6 +6,7 @@
 
 **Gates** (`gates.py`):
 - `check_gates` never raises. Elements that fail G2 (schema) are skipped by the geometry gates.
+- **G2** accepts a width or height of 0 where the source element already had 0 (the schema allows it, and the renderer draws a `line` shape with height 0). Before, one such divider made every candidate fail, so the fallback won every size. A size that collapses to 0 from a real size still fails, and so does a negative one.
 - **G6** compares every non-editable field both ways, so an *added* field fails too.
 - **G8** checks button labels (`container_label`) only. The rigid-group check isn't built; rigid placement preserves it by construction.
 - **G9** uses cr-renderer's paint order: a stable sort by `z_index`, so at equal z the element listed later is on top. Covers are opaque images and shapes outside the background and decoration roles (`occlusion.py`, shared with node 2).
@@ -65,7 +66,7 @@ These mirror what the official structural check is described as doing, plus the 
 | # | Gate | Check |
 |---|---|---|
 | G1 | ids | same set of element ids as the source, same count, no duplicates |
-| G2 | schema | required fields per type present (as in `chameleon_design_schema_v0.9.json`); numbers finite; `width`, `height` > 0; `font_size` ≥ 1 |
+| G2 | schema | required fields per type present (as in `chameleon_design_schema_v0.9.json`); numbers finite; `width`, `height` > 0, or 0 where the source had 0; `font_size` ≥ 1 |
 | G3 | canvas | `canvas` equals `target_canvas` |
 | G4 | in canvas | every element's **rotated** bounding box inside `[0, W] × [0, H]`, with 0.5 px tolerance (same as `main.py`'s self-check) |
 | G5 | image aspect | non-`cover` images: `|(w/h) / (w₀/h₀) − 1| ≤ 0.02` (the official limit is ~5%) |

@@ -27,7 +27,7 @@ We're replacing the baseline with a three-node pipeline:
 
 Design: [`docs/pipeline/`](../docs/pipeline/README.md). Implementation plan and status: [`docs/superpowers/plans/`](../docs/superpowers/plans/2026-10-13-stage1-three-node-pipeline.md).
 
-**Status:** all three nodes are built and wired into `engine/resize.py`, so `python -m engine.main` now produces real layouts instead of the stretch baseline. Each task prints one `[priority] …` line saying whether the LLM or the rule-based ranker ranked it. The provider benchmark and the Docker no-network check are done; still to come: a final review. What's missing: [`docs/pipeline/README.md` §11](../docs/pipeline/README.md#11-whats-missing-as-of-2026-10-16).
+**Status:** all three nodes are built and wired into `engine/resize.py`, so `python -m engine.main` now produces real layouts instead of the stretch baseline. Each task prints one `[priority] …` line saying whether the LLM or the rule-based ranker ranked it. The provider benchmark, the Docker no-network check and the whole-branch review (with its fixes) are done. What's missing: [`docs/pipeline/README.md` §11](../docs/pipeline/README.md#11-whats-missing-as-of-2026-10-17).
 
 **Run the tests** from this folder:
 
@@ -38,7 +38,7 @@ Design: [`docs/pipeline/`](../docs/pipeline/README.md). Implementation plan and 
 
 (On macOS/Linux, use `.venv/bin/python`.)
 
-**See the results across 10 real ad sizes** (renders and one contact sheet per input, written to `output/matrix/`; about 80 s):
+**See the results across 13 real ad sizes** (renders and one contact sheet per input, written to `output/matrix/`; about 95 s):
 
 ```bash
 .venv/Scripts/python -m dev.run_matrix
@@ -144,7 +144,7 @@ engine needs must be installed at **build** time (add it to
 `requirements.txt`), not fetched at run time. If you're using a locally
 hosted model, bake its weights into the image during the build step.
 
-**Our engine in Docker (checked 2026-10-16, Docker 29.8.1).** The build takes about 80 s from scratch. With `--network none`, each task prints `[priority] source=heuristic provider=none`: no API can be reached, so the rule-based ranker takes over. The three samples take 3.3 s, 2.4 s and 1.7 s, about 14 s for the whole run including container start. All 30 sample × size outputs pass every hard gate inside the container.
+**Our engine in Docker (checked 2026-10-17, Docker 29.8.1).** The build takes about 80 s from scratch. With `--network none`, each task prints `[priority] source=heuristic provider=none`: no API can be reached, so the rule-based ranker takes over. The three samples take 3.3 s, 2.4 s and 1.9 s, about 15 s for the whole run including container start. All 39 sample × size outputs pass every hard gate inside the container.
 
 On Windows (Git Bash), turn off path conversion and use Windows paths for the mounts:
 

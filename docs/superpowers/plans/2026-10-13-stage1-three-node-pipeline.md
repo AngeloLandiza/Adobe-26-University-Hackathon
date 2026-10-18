@@ -22,9 +22,9 @@
 
 **Branch:** `stage1-three-node`. The plan was merged to `main` in PR #3. Tasks 1–6 are in [PR #4](https://github.com/AngeloLandiza/Adobe-26-University-Hackathon/pull/4). Implement every task on this branch.
 
-**Status:** in progress. The team chose **native execution** (one implementer, test-first, one whole-branch review at the end). See "Execution status" below.
+**Status:** all 15 tasks and the whole-branch review are done; the real provider comparison still needs API keys. The team chose **native execution** (one implementer, test-first, one whole-branch review at the end). See "Execution status" below.
 
-## Execution status (as of 2026-10-16)
+## Execution status (as of 2026-10-17)
 
 | Task | Status | Commit | Tests after the task |
 |---|---|---|---|
@@ -43,7 +43,7 @@
 | 13 Dev matrix + contact sheets | ✅ done; 29/30 cells won by real layouts | `c4f4d15` | 376 (+2) |
 | 14 Provider benchmark | ✅ tool done; the real comparison still needs API keys | `dfb6fc6` | 380 (+2) |
 | 15 Docker no-network check | ✅ done; 30/30 outputs pass every gate in the container. Running the suite on Linux caught an image-sizing bug, now fixed (deviation 22). Linux text widths differ from Windows (deviation 21) | `b00192f`, `2397e75` | 382 (+2), on Windows and in the container |
-| Final whole-branch review | ⏳ | | |
+| Final whole-branch review | ✅ done by a fresh reviewer: 0 critical, 7 important (all fixed test-first), 6 minor (1 fixed, 5 deferred, README §11). One known gap remains on Linux: Level 3 → 320×50 | `96f763d` | 459 (+2) on Windows; 458 + 1 expected failure (+2) in the container |
 
 Each task went test-first: every test was seen failing before its code was written. Each important decision was also broken on purpose, to confirm a test catches it. Most tasks ended up with more tests than the plan lists.
 
@@ -76,16 +76,26 @@ These change interfaces or facts the later task text assumes. **Where this list 
 20. **`numpy==2.4.6`, not the venv's newer version** (Task 15). numpy 2.5 needs Python 3.12 and the image runs 3.11, so the first build failed. Keep the venv on the same pins as `requirements.txt`.
 21. **Layouts are platform-dependent** (Task 15). Linux skia measures text in whole pixels and Windows in fractions, so the same input can wrap and lay out differently. Run the suite on both and judge tuning in the container (Linux), which is what scoring runs.
 22. **Images have a hard floor** (Task 15). `place_unit` returns `None` for an image under 6 px on its short side (or its own thickness, if the source is thinner). Running the suite in the container caught the minor-zone flow shrinking the Level 3 watermark to 0.04 × 0.02 px.
+23. **After the whole-branch review** (commit `96f763d`), these hold in addition:
+    - an implicit label's shape covers at most 15% of the canvas, and text with legal markers is never the headline;
+    - the LLM can't label text or an image `decoration`;
+    - leftovers try 4, 2 and 1 px before a template is dropped (`LEFTOVER_FLOORS`);
+    - reflow caps text at s × its source size, top-aligns units, and is the only candidate when the target's aspect is within 2% of the source's;
+    - a decoration shape that holds text in the source is placed as a backdrop behind that text;
+    - G2 accepts a zero size the source already had;
+    - the last resort scales uniformly;
+    - `dev/targets.json` has 13 sizes.
 
-The rulings with their reasons are recorded in the "As built" sections of [01](../../pipeline/01-priority-node.md), [02](../../pipeline/02-resize-engine.md) and [03](../../pipeline/03-grading-node.md), and the pipeline README lists what's missing ([§11](../../pipeline/README.md#11-whats-missing-as-of-2026-10-16)).
+The rulings with their reasons are recorded in the "As built" sections of [01](../../pipeline/01-priority-node.md), [02](../../pipeline/02-resize-engine.md) and [03](../../pipeline/03-grading-node.md), and the pipeline README lists what's missing ([§11](../../pipeline/README.md#11-whats-missing-as-of-2026-10-17)).
 
 ### Open items found during execution
 
 - **Live API tests not run** (no keys in the build environment).
-- **Tuning, from the Task 13 contact sheets:**
+- **Tuning, from the Task 13 contact sheets and the whole-branch review:**
   - short text CTAs wrap one word per line in narrow columns;
   - the missing-asset placeholder is prominent in some layouts;
-  - Level 3 → 300×250 picks the fallback.
+  - Level 3 → 300×250 picks the fallback, and on Linux so does Level 3 → 320×50 (placed text boxes span their slots, so leftovers find no room);
+  - a zero-height line divider goes to a corner.
 - **Grader weights uncalibrated;** the golden set is still only the 3 samples.
 - **The full test suite takes about a minute,** because the end-to-end tests render real images.
 

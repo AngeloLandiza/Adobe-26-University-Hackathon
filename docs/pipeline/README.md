@@ -1,6 +1,6 @@
 # CHAMELEON three-node pipeline: architecture
 
-**Status (2026-10-16):** all three nodes are built and wired into `engine/resize.py` ([PR #4](https://github.com/AngeloLandiza/Adobe-26-University-Hackathon/pull/4), plan Tasks 1–15). `python -m engine.main` produces real layouts for all three samples, and the dev matrix covers 10 real ad sizes. The provider benchmark is built, and the Docker image passes the no-network run. Still to do: the benchmark with real API keys and a whole-branch review. See §11 for what's missing.
+**Status (2026-10-17):** all three nodes are built and wired into `engine/resize.py` ([PR #4](https://github.com/AngeloLandiza/Adobe-26-University-Hackathon/pull/4), plan Tasks 1–15, plus fixes from the whole-branch review). `python -m engine.main` produces real layouts for all three samples, and the dev matrix covers 13 real ad sizes. The provider benchmark is built, and the Docker image passes the no-network run. Still to do: the benchmark with real API keys. See §11 for what's missing.
 **Builds on:** [Angelo's ideas](../architecture.md) (the candidate-and-score loop), reorganised around a priority step.
 **Implementation plan:** [stage-1 plan](../superpowers/plans/2026-10-13-stage1-three-node-pipeline.md), with per-task status.
 
@@ -231,7 +231,7 @@ chameleon/
   tests/                     # ✅ pytest suite (run from chameleon/, on Windows and in the container); live API tests are opt-in
   .dockerignore              # ✅ keeps .venv, .env, output, tests and dev out of the build context
   dev/                       # dev-only tooling, not copied into the Docker image
-    targets.json             # ✅ 10 real platform sizes for local testing
+    targets.json             # ✅ 13 real platform sizes for local testing (3 IAB sizes added after the review)
     golden/                  # ✅ hand-labelled roles and rankings for the 3 samples (team judgements)
     priority_metrics.py      # ✅ role accuracy, Kendall tau, top-3 recall
     run_matrix.py            # ✅ every source × every target -> contact sheets (Task 13)
@@ -254,8 +254,8 @@ A render-based test confirms text sized this way stays inside its box. We import
 - **`requirements-dev.txt`** adds `pytest` for local development only.
 - **`Dockerfile`** is unchanged. It copies `engine/`, `renderer/` and `brand_kit/`; `tests/` and `dev/` stay out of the image.
 - **API keys never go in the image or in git.** They come from environment variables only, and `.env` is gitignored.
-- **Smoke test** (Task 15, ✅ passed 2026-10-16): `docker run --network none` runs all three samples, and node 1 reports `source=heuristic provider=none` for each. The tasks take 3.3 s, 2.4 s and 1.7 s. All 30 sample × size outputs pass every hard gate inside the container.
-- **Linux output differs from Windows.** Skia measures text in whole pixels on Linux and in fractions of a pixel on Windows, where widths come out up to about 6% narrower. So text can wrap differently, and Level 3 places 13 elements differently. Line breaks still match the renderer on each platform, because node 2 calls the renderer's own wrap code. Scoring runs on Linux, so judge final layouts in the container, and run the test suite there too: it caught an image-sizing bug that Windows hid (deviation 22 in the plan). The matrix in the container: real layouts win 28 of 30 cells (29 on Windows), and 28 cells pick the same winner as on Windows. The command is in [`chameleon/README.md`](../../chameleon/README.md).
+- **Smoke test** (Task 15, ✅ passed 2026-10-16, rerun 2026-10-17 after the review fixes): `docker run --network none` runs all three samples, and node 1 reports `source=heuristic provider=none` for each. The tasks take 3.3 s, 2.4 s and 1.9 s. All 39 sample × size outputs pass every hard gate inside the container.
+- **Linux output differs from Windows.** Skia measures text in whole pixels on Linux and in fractions of a pixel on Windows, where widths come out up to about 6% narrower. So text can wrap differently, and Level 3 places 13 elements differently. Line breaks still match the renderer on each platform, because node 2 calls the renderer's own wrap code. Scoring runs on Linux, so judge final layouts in the container, and run the test suite there too: it caught an image-sizing bug that Windows hid (deviation 22 in the plan). The matrix in the container: real layouts win 37 of 39 cells (38 on Windows), and 34 cells pick the same winner as on Windows. The command is in [`chameleon/README.md`](../../chameleon/README.md).
 - **If we later ship a local model:** add `llama-cpp-python` and download pinned GGUF weights at build time. Image size and emulated CPU speed (open questions 3–4) decide whether that's viable.
 
 ---
@@ -288,7 +288,7 @@ Tests always use the rule-based ranker (an autouse fixture sets `CHAMELEON_LLM=h
 
 **The rest of the loop:**
 
-1. **More targets than the three samples.** `dev/targets.json` lists real formats (scoring targets are "real platform formats", per RULES): Instagram post 1080×1080, portrait 1080×1350, story 1080×1920, YouTube thumbnail 1280×720, LinkedIn banner 1584×396, Facebook cover 820×312, leaderboard 728×90, medium rectangle 300×250, wide skyscraper 160×600, billboard 970×250. `python -m dev.run_matrix` runs every input against every target (about 80 s for 3 × 10) and writes one render per cell, a labelled contact sheet per input and `winners.json` to `output/matrix/`. That's our main way to look at results.
+1. **More targets than the three samples.** `dev/targets.json` lists real formats (scoring targets are "real platform formats", per RULES): Instagram post 1080×1080, portrait 1080×1350, story 1080×1920, YouTube thumbnail 1280×720, LinkedIn banner 1584×396, Facebook cover 820×312, leaderboard 728×90, medium rectangle 300×250, wide skyscraper 160×600, billboard 970×250, mobile banner 320×50, half page 300×600, large leaderboard 970×90. `python -m dev.run_matrix` runs every input against every target (about 95 s for 3 × 13) and writes one render per cell, a labelled contact sheet per input and `winners.json` to `output/matrix/`. That's our main way to look at results.
 2. **More sources.** Hand-write more source designs in the schema: different element counts, a design with no groups, one with no images. Give each a golden label file in `dev/golden/`. Three samples are too few to judge the LLM against the heuristic.
 3. **Provider benchmark** (Task 14): Claude vs Gemini vs heuristic on the golden set, measuring cost, latency, role accuracy, Kendall τ and top-3 recall. Run `python -m dev.bench_priority --runs 3`; it writes `output/bench/priority.csv` and prints a summary with each provider's fallback rate and projected cost per 1,000 designs. A provider without its API key is skipped with a note.
 4. **Claude as a development helper.** Beyond being a node 1 provider, it can draft golden labels for new designs (a teammate reviews them), and act as a rubric judge to calibrate node 3's weights ([03-grading-node.md §5](03-grading-node.md)).
@@ -342,7 +342,7 @@ For the team or the organisers, most important first:
 
 ---
 
-## 11. What's missing (as of 2026-10-16)
+## 11. What's missing (as of 2026-10-17)
 
 **Not done yet:**
 
@@ -354,14 +354,22 @@ For the team or the organisers, most important first:
 
   Run `pytest tests/test_providers.py -m live -s` with keys set.
 - **The API path inside the container** (Task 15, optional step 4): needs a key.
-- **Whole-branch review** before merging.
 
-**Known quality gaps** (from the Task 13 contact sheets):
+**Known quality gaps** (from the Task 13 contact sheets and the whole-branch review):
 
 - **Short plain-text CTAs wrap one word per line** in narrow columns (Level 1 at Facebook cover and billboard sizes). Text fitting always maximises the font; short labels should prefer one line.
 - **The missing-asset placeholder can be prominent** (Level 3, Facebook cover and Instagram sizes). It must stay visible, but as the lowest-ranked unit it could be capped smaller.
-- **Level 3 → 300×250 picks the safe fallback,** because no template beats it. In the Linux container, Level 3 → 160×600 drops to the fallback as well (on Windows a stack wins); the wider Linux text leaves no template room there.
+- **Level 3 → 300×250 picks the safe fallback** on both platforms, because no template beats it.
+- **Level 3 → 320×50 picks the fallback on Linux** (on Windows a row wins). Every template is dropped because its leftover pills fit nowhere, even at 1 px. The root cause is that a placed text box spans its whole slot width, however short the text, so the free-space grid sees no gaps. The fix is to size text boxes to their drawn text, or to pack by drawn bounds. That changes every layout's geometry, so it's left for a tuning pass. The test for this case is a strict expected failure on Linux, so it reports when fixed.
+- **A zero-height line divider goes to a corner** like any decoration, instead of staying between the texts it separated.
 - **Grader weights are uncalibrated** starting guesses (calibration plan: [03-grading-node.md §5](03-grading-node.md)).
+
+**Deferred from the whole-branch review** (minor; the ledger has details):
+
+- the provider SDKs are imported when `engine.resize` loads; a broken install would fail before node 1's fallback can run (move the imports into `_get_client`);
+- cr-renderer (git HEAD), skia-python and Pillow are unpinned; text metrics depend on skia, so pin them for reproducible output;
+- Review Focus 1's test checks structure (`assert_valid`), not every gate;
+- Claude's cost uses the requested model's price even when the server-side fallback model answered (benchmark accuracy only).
 
 **Deliberately not built:**
 
