@@ -19,6 +19,7 @@
 - Fixed fractional slots, as planned. Slots carry an `align`; in strips the logo aligns to the **top**, so the space it leaves forms one usable block.
 - Logos never grow past 1.5× their source size (§3.5).
 - Text roles never cluster into a row; only other same-role consecutive units do.
+- **A crowded row wraps:** if some units in a row can't reach their floor in one line, the row wraps onto as few lines as lets every unit reach it. At 1080×1920, Level 3's four badges share a 464×177 slot; in one line each pill got 116 px and its label 6–8.5 px against a 16.2 px floor, and on two lines they stay at their floor.
 - **Text stacks** give each unit the height it needs at its role's floor. While they don't all fit, the lowest-ranked units drop to the 6 px hard floor, then out to the free-space pass. Spare height is shared by priority weight.
 - **The minor zone flows** units left to right at their natural width, instead of equal cells.
 - **Free space** (§4 step 5): a coarse occupancy grid, scanned for the largest *distinct* empty rectangles (any rectangle inside a kept one is dropped). Leftovers are placed **biggest footprint first** (their smallest form at the hard floor). Leftover images are capped at a third of the canvas each way.
@@ -41,7 +42,7 @@
 **Results** (dev matrix, 3 samples × 13 sizes, after the whole-branch review fixes):
 - Every generated candidate passes every gate, on Windows and in the Linux container.
 - Level 3 → 728×90 builds 36 real layouts (12 before the sub-floor leftovers, none before Task 9).
-- Real layouts win 38 of 39 cells on both Windows and in the Linux container, which is what scoring runs. Only Level 3 → 300×250 picks the fallback.
+- Real layouts win all 39 cells, on Windows and in the Linux container (what scoring runs). Level 3 → 300×250 picked the fallback until legibility was graded below the floor (see [03](03-grading-node.md), "As built").
 
 **Known gaps** (see [README §11](README.md#11-whats-missing-as-of-2026-10-17)):
 - short text CTAs wrap one word per line in narrow columns;

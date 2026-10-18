@@ -255,7 +255,7 @@ A render-based test confirms text sized this way stays inside its box. We import
 - **`Dockerfile`** is unchanged. It copies `engine/`, `renderer/` and `brand_kit/`; `tests/` and `dev/` stay out of the image.
 - **API keys never go in the image or in git.** They come from environment variables only, and `.env` is gitignored.
 - **Smoke test** (Task 15, ✅ passed 2026-10-16, rerun 2026-10-17 after the review fixes): `docker run --network none` runs all three samples, and node 1 reports `source=heuristic provider=none` for each. The tasks take 3.3 s, 2.4 s and 1.9 s. All 39 sample × size outputs pass every hard gate inside the container.
-- **Linux output differs from Windows.** Skia measures text in whole pixels on Linux and in fractions of a pixel on Windows, where widths come out up to about 6% narrower. So text can wrap differently, and Level 3 places 13 elements differently. Line breaks still match the renderer on each platform, because node 2 calls the renderer's own wrap code. Scoring runs on Linux, so judge final layouts in the container, and run the test suite there too: it caught an image-sizing bug that Windows hid (deviation 22 in the plan). The matrix in the container: real layouts win 38 of 39 cells, as on Windows, and 34 cells pick the same winner as on Windows. The command is in [`chameleon/README.md`](../../chameleon/README.md).
+- **Linux output differs from Windows.** Skia measures text in whole pixels on Linux and in fractions of a pixel on Windows, where widths come out up to about 6% narrower. So text can wrap differently, and Level 3 places 13 elements differently. Line breaks still match the renderer on each platform, because node 2 calls the renderer's own wrap code. Scoring runs on Linux, so judge final layouts in the container, and run the test suite there too: it caught an image-sizing bug that Windows hid (deviation 22 in the plan). The matrix in the container: real layouts win all 39 cells, as on Windows, and 34 cells pick the same winner as on Windows. The command is in [`chameleon/README.md`](../../chameleon/README.md).
 - **If we later ship a local model:** add `llama-cpp-python` and download pinned GGUF weights at build time. Image size and emulated CPU speed (open questions 3–4) decide whether that's viable.
 
 ---
@@ -359,7 +359,6 @@ For the team or the organisers, most important first:
 
 - **Short plain-text CTAs wrap one word per line** in narrow columns (Level 1 at Facebook cover and billboard sizes). Text fitting always maximises the font; short labels should prefer one line.
 - **The missing-asset placeholder can be prominent** (Level 3, Facebook cover and Instagram sizes). It must stay visible, but as the lowest-ranked unit it could be capped smaller.
-- **Level 3 → 300×250 picks the safe fallback** on both platforms, because no template beats it.
 - **A zero-height line divider goes to a corner** like any decoration, instead of staying between the texts it separated.
 - **Grader weights are uncalibrated** starting guesses (calibration plan: [03-grading-node.md §5](03-grading-node.md)).
 

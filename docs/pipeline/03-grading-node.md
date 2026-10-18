@@ -13,7 +13,7 @@
 
 **Geometry metrics** (`metrics.py`): the weights are the starting values in §2.
 - **hierarchy:** text against text by largest font, image against image by area. Text-vs-image pairs are skipped, since a hero image is normally bigger than the headline above it. Equal sizes count half.
-- **legibility:** each unit's *smallest* text, `clamp((size − floor) / (0.6 × floor))`.
+- **legibility:** each unit's *smallest* text. From its floor to 1.6 × floor it scores 0.25 → 1; below the floor it scores up to 0.25, in proportion to size (`BELOW_FLOOR_SHARE`). The first version gave 0 to anything below the floor. On a canvas where no layout can meet the floors (Level 3 → 300×250), it couldn't tell 9 px text from 2 px, and the uniformly shrunk fallback won on faithfulness alone. Degradation still marks the floor itself.
 - **overlap:** only the overlap fraction *beyond* what the same pair had in the source, so deliberate text-on-photo isn't penalised.
 - **degradation:** a unit counts if node 2 flagged it **or any of its text is below its role's floor**. Before this change, the safe fallback scored 1.0 here and came within 0.015 of winning Level 3.
 - **faithfulness:** the mean of (a) reading-order agreement with the source (centres within 0.1 × height count as one row) and (b) font-size order agreement.
@@ -84,7 +84,7 @@ Each metric is in `[0, 1]`, where 1 is best. Unit weights come from the plan: `w
 | Metric | What it rewards | How (sketch) | Start weight |
 |---|---|---|---|
 | `hierarchy` | more important units look more important | weighted Kendall-style agreement between rank and prominence. Prominence is box area for images; for text it's `font_size`, compared within text and by box area across types. | 0.20 |
-| `legibility` | text big enough to read | per text unit: `clamp((font − floor) / (comfort − floor))` with `comfort = 1.6 × floor`, averaged by `w_u` | 0.20 |
+| `legibility` | text big enough to read | per text unit: `0.25 + 0.75 × clamp((font − floor) / (comfort − floor))` at or above the floor, `0.25 × font / floor` below it, with `comfort = 1.6 × floor`, averaged by `w_u` | 0.20 |
 | `overlap` | no accidental collisions | `1 −` normalised Σ overlap area between different content units, weighted by `w_a + w_b` | 0.15 |
 | `degradation` | the important units got real slots | `1 − Σ w_u (degraded) / Σ w_u` | 0.10 |
 | `faithfulness` | the source's intent survives | reading-order agreement with the source (top-to-bottom, left-to-right) for units that share a column or row; same font-size ordering among text | 0.08 |
