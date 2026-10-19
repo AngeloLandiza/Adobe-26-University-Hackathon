@@ -52,7 +52,7 @@ For one task's candidates and scores, set `CHAMELEON_DEBUG=1` before `python -m 
 .venv/Scripts/python -m dev.bench_priority --runs 3
 ```
 
-**LLM settings for the priority node** (optional; without them it uses its built-in rule-based ranker, which is also what runs in the no-network scored Docker run):
+**LLM settings for the priority node** (optional; without them it uses its built-in rule-based ranker, which is also what runs in the no-network scored Docker run). Put them in `chameleon/.env`: copy `.env.example` to `.env` and fill in your keys. The file is read automatically and is gitignored.
 
 - `ANTHROPIC_API_KEY` and/or `GEMINI_API_KEY` enable Claude or Gemini.
 - `CHAMELEON_LLM` = `auto` (default), `claude`, `gemini` or `heuristic`.
