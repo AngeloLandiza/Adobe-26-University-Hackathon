@@ -26,6 +26,7 @@ teacher-cache/            raw teacher answers, so reruns cost nothing (gitignore
 | [judgments/](judgments/) | pairwise "which layout is better, and why" | the teacher (+ human pilot) | student D (and B2) | yes |
 | [floor-plans/](floor-plans/) | teacher-designed floor plans and their win rates | not generated yet (B2) | student B2, then C | yes |
 | [role-labels/](role-labels/) | teacher's role + importance labels per ad | not generated yet (A) | student A | yes |
+| [attention/](attention/) | relation features (how specific pieces relate) for every judged candidate | `python -m dev.attention.features_dataset` | attention experiments E1+ | yes |
 | [teacher-cache/](teacher-cache/) | raw teacher responses keyed by prompt hash | `dev/distill/teacher.py` | reruns only | no |
 
 ## Rules

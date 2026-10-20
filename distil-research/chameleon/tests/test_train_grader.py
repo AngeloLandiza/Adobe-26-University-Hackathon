@@ -210,3 +210,105 @@ def test_report_has_a_json_twin(tmp_path):
     assert data["examples"]["train"] == 30 and data["examples"]["holdout"] == 20
     assert {"default_holdout", "learned_holdout"} <= set(data["accuracy"])
     assert abs(sum(v for k, v in data["weights"]["learned"].items() if k != "geometry_share") - 2) < 1e-6
+
+
+# --- --extra-features: 12 metrics + extra (relation) features, signed logistic regression ---
+
+EXTRA = ["gap", "order"]
+
+
+def _signed_examples(n: int, seed: int) -> tuple[list, list[str]]:
+    """Winner decided by `order` (more is better) and `gap` (LESS is better):
+    a rule the non-negative Bradley-Terry fit cannot express."""
+    rng = np.random.default_rng(seed)
+    out, groups = [], []
+    for i in range(n):
+        a = {k: float(rng.random()) for k in NAMES + EXTRA}
+        b = {k: float(rng.random()) for k in NAMES + EXTRA}
+        score = lambda m: m["order"] - m["gap"]
+        out.append((a, b, 1.0 if score(a) > score(b) else 0.0))
+        groups.append(f"t{i % 25}")
+    return out, groups
+
+
+def test_logistic_fit_learns_signed_weights():
+    train, groups = _signed_examples(600, 1)
+    holdout, _ = _signed_examples(300, 2)
+    model = tg.fit_logistic(train, NAMES + EXTRA, l2=1e-3)
+    assert model.weights["gap"] < 0 < model.weights["order"]
+    assert tg.logistic_accuracy(model, holdout) >= 0.9
+    assert tg.fit_logistic(train, NAMES + EXTRA, l2=1e-3) == model  # deterministic
+
+
+def test_logistic_is_antisymmetric():
+    train, _ = _signed_examples(200, 3)
+    model = tg.fit_logistic(train, NAMES + EXTRA, l2=1e-2)
+    a, b, _ = train[0]
+    assert model.score(a) - model.score(b) == pytest.approx(-(model.score(b) - model.score(a)))
+
+
+def test_choose_l2_by_grouped_cv_picks_from_grid():
+    train, groups = _signed_examples(300, 4)
+    l2, cv = tg.choose_l2(train, groups, NAMES + EXTRA, grid=(1e-3, 1.0, 100.0))
+    assert l2 in (1e-3, 1.0, 100.0) and set(cv) == {1e-3, 1.0, 100.0}
+    assert cv[100.0] <= cv[l2]
+
+
+def test_join_extra_features_merges_and_drops_rows_without_features():
+    pool = [_row("c", "x", "train"), _row("c", "y", "train")]
+    extra = [{"cell": "c", "candidate_id": "x", "features": {"gap": 0.3}}]
+    rows = tg.join_extra_features(pool, extra)
+    assert len(rows) == 1 and rows[0]["metrics"]["gap"] == 0.3 and rows[0]["metrics"][NAMES[0]] == 0.0
+    assert "gap" not in pool[0]["metrics"]  # the input rows are not mutated
+
+
+def _extra_dataset(tmp_path, n_train=300, n_hold=150):
+    """Pool + judgements + extra features: the winner is the candidate with the smaller `gap`."""
+    pool, judgments, extra = [], [], []
+    rng = np.random.default_rng(11)
+    for i in range(n_train + n_hold):
+        split = "train" if i < n_train else "holdout"
+        cell, gaps = f"cell{i}", rng.random(2)
+        for j, g in zip("ab", gaps):
+            pool.append({"cell": cell, "task_id": f"t{i // 3}", "split": split, "candidate_id": f"{cell}{j}",
+                         "brand": "offbrand" if i % 2 else "solstice",
+                         "metrics": {k: float(rng.random()) for k in NAMES}})
+            extra.append({"cell": cell, "candidate_id": f"{cell}{j}", "features": {"gap": float(g), "order": 0.5}})
+        judgments.append(_judge(cell, f"{cell}a", f"{cell}b", "a" if gaps[0] < gaps[1] else "b",
+                                task=f"t{i // 3}", split=split))
+    _write_jsonl(tmp_path / "pool.jsonl", pool)
+    _write_jsonl(tmp_path / "judgments.jsonl", judgments)
+    _write_jsonl(tmp_path / "extra.jsonl", extra)
+
+
+def test_main_with_extra_features_reports_extended_model(tmp_path, monkeypatch):
+    out = tmp_path / "weights.json"
+    monkeypatch.setenv("CHAMELEON_GRADER_WEIGHTS", str(out))
+    _extra_dataset(tmp_path)
+    code = tg.main(["--rubric-version", "any", "--pool", str(tmp_path / "pool.jsonl"),
+                    "--judgments", str(tmp_path / "judgments.jsonl"), "--report", str(tmp_path / "r.md"),
+                    "--extra-features", str(tmp_path / "extra.jsonl")])
+    assert code == 0 and not out.exists()
+    text = (tmp_path / "r.md").read_text()
+    assert "## Extended model" in text and "| logistic 12 + extra |" in text
+    data = json.loads((tmp_path / "r.json").read_text())["extended"]
+    acc = data["accuracy"]
+    assert acc["logistic 12 + extra"]["holdout"] >= 0.9 > acc["learned"]["holdout"] + 0.2
+    assert set(acc["logistic 12 + extra"]["by_brand"]) == {"solstice", "offbrand"}
+    assert data["weights"]["logistic 12 + extra"]["gap"] < 0
+    assert data["top_extra_features"][0][0] == "gap"
+
+
+def test_extended_model_never_writes_engine_weights(tmp_path, monkeypatch):
+    # labels from the default weights: the 12-metric fit gains nothing, so --write must refuse,
+    # however well the extended model does
+    out = tmp_path / "weights.json"
+    monkeypatch.setenv("CHAMELEON_GRADER_WEIGHTS", str(out))
+    _dataset(tmp_path, DEFAULT_WEIGHTS)
+    rows = [json.loads(x) for x in (tmp_path / "pool.jsonl").read_text().splitlines()]
+    _write_jsonl(tmp_path / "extra.jsonl", [{"cell": r["cell"], "candidate_id": r["candidate_id"],
+                                             "features": {"gap": 0.1}} for r in rows])
+    tg.main(["--rubric-version", "any", "--pool", str(tmp_path / "pool.jsonl"), "--judgments",
+             str(tmp_path / "judgments.jsonl"), "--report", str(tmp_path / "r.md"), "--write",
+             "--extra-features", str(tmp_path / "extra.jsonl")])
+    assert not out.exists()
