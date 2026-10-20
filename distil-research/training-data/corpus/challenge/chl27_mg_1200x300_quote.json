@@ -1,0 +1,95 @@
+{
+  "task_id": "chl27_mg_1200x300_quote",
+  "split": "challenge",
+  "origin": "challenge",
+  "brand": "challenge",
+  "expects_missing_asset": false,
+  "notes": "Quote-led 4:1 on black: big quote mark, two-line italic serif quote, attribution, square logo right.",
+  "features": [
+    "banner-4:1",
+    "monochrome",
+    "quote-led",
+    "italic",
+    "solid-bg",
+    "no-groups",
+    "no-cta"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1200,
+      "height": 300
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 1200,
+        "height": 300,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(17,17,17,1)"
+      },
+      {
+        "id": "quote_mark",
+        "type": "text",
+        "x": 40,
+        "y": 52,
+        "width": 90,
+        "height": 196,
+        "z_index": 4,
+        "content": "“",
+        "font_family": "Solstice Serif",
+        "font_size": 150,
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "quote",
+        "type": "text",
+        "x": 150,
+        "y": 82,
+        "width": 780,
+        "height": 96,
+        "z_index": 4,
+        "content": "A building should be quiet enough to hear the light move.",
+        "font_family": "Solstice Serif",
+        "font_size": 38,
+        "font_style": "italic",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "attribution",
+        "type": "text",
+        "x": 150,
+        "y": 196,
+        "width": 780,
+        "height": 21,
+        "z_index": 4,
+        "content": "AIKO TANABE, ARCHITECT",
+        "font_family": "Solstice Sans",
+        "font_size": 14,
+        "font_weight": "bold",
+        "color": "rgba(138,138,138,1)",
+        "text_align": "left",
+        "letter_spacing": 4
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 1010,
+        "y": 70,
+        "width": 160,
+        "height": 160.0,
+        "z_index": 3,
+        "asset_id": "chl_logo_monograph_white.png",
+        "fit": "contain"
+      }
+    ]
+  },
+  "challenge_brand": "monograph",
+  "palette": "monochrome"
+}

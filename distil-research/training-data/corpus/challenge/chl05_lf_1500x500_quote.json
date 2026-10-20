@@ -1,0 +1,147 @@
+{
+  "task_id": "chl05_lf_1500x500_quote",
+  "split": "challenge",
+  "origin": "challenge",
+  "brand": "challenge",
+  "expects_missing_asset": false,
+  "notes": "Quote-led 3:1: oversized quote mark, italic serif testimonial, attribution, button, product right.",
+  "features": [
+    "banner-3:1",
+    "light",
+    "quote-led",
+    "italic",
+    "solid-bg",
+    "deco-overlap",
+    "groups"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1500,
+      "height": 500
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 1500,
+        "height": 500,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(247,241,234,1)"
+      },
+      {
+        "id": "deco_disc",
+        "type": "shape",
+        "x": 1100,
+        "y": 40,
+        "width": 420,
+        "height": 420,
+        "z_index": 1,
+        "shape_type": "ellipse",
+        "fill_color": "rgba(235,201,185,1)",
+        "opacity": 0.8
+      },
+      {
+        "id": "quote_mark",
+        "type": "text",
+        "x": 80,
+        "y": 41,
+        "width": 110,
+        "height": 261,
+        "z_index": 4,
+        "content": "“",
+        "font_family": "Solstice Serif",
+        "font_size": 200,
+        "font_weight": "bold",
+        "color": "rgba(180,83,42,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "quote",
+        "type": "text",
+        "x": 210,
+        "y": 81,
+        "width": 840,
+        "height": 131,
+        "z_index": 4,
+        "content": "My skin finally looks like it slept eight hours.",
+        "font_family": "Solstice Serif",
+        "font_size": 52,
+        "font_style": "italic",
+        "color": "rgba(46,42,38,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "attribution",
+        "type": "text",
+        "x": 210,
+        "y": 234,
+        "width": 840,
+        "height": 27,
+        "z_index": 4,
+        "content": "MAYA R., VERIFIED BUYER",
+        "font_family": "Solstice Sans",
+        "font_size": 18,
+        "font_weight": "bold",
+        "color": "rgba(180,83,42,1)",
+        "text_align": "left",
+        "letter_spacing": 3
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 210,
+        "y": 291,
+        "width": 243,
+        "height": 58,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(46,42,38,1)",
+        "corner_radius": 29.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 210,
+        "y": 308,
+        "width": 243,
+        "height": 25,
+        "z_index": 4,
+        "content": "Read 2,400 Reviews",
+        "font_family": "Solstice Sans",
+        "font_size": 18,
+        "font_weight": "bold",
+        "color": "rgba(247,241,234,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 1250,
+        "y": 50,
+        "width": 133.3,
+        "height": 399.9,
+        "z_index": 3,
+        "asset_id": "chl_prod_serum.png",
+        "fit": "contain"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 210,
+        "y": 420,
+        "width": 160.0,
+        "height": 40.0,
+        "z_index": 3,
+        "asset_id": "chl_logo_lumen_fig.png",
+        "fit": "contain"
+      }
+    ]
+  },
+  "challenge_brand": "lumen",
+  "palette": "light"
+}

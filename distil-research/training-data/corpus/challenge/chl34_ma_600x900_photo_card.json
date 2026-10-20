@@ -1,0 +1,119 @@
+{
+  "task_id": "chl34_ma_600x900_photo_card",
+  "split": "challenge",
+  "origin": "challenge",
+  "brand": "challenge",
+  "expects_missing_asset": false,
+  "notes": "Full-bleed dunes photo with a white card panel at the TOP holding logo and copy.",
+  "features": [
+    "portrait-2:3",
+    "saturated",
+    "full-bleed-panel",
+    "photo-bg",
+    "panel",
+    "groups",
+    "no-product"
+  ],
+  "source": {
+    "canvas": {
+      "width": 600,
+      "height": 900
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0,
+        "y": 0,
+        "width": 600,
+        "height": 900,
+        "z_index": 0,
+        "asset_id": "chl_photo_dunes.png",
+        "fit": "cover"
+      },
+      {
+        "id": "panel",
+        "type": "shape",
+        "x": 40,
+        "y": 40,
+        "width": 520,
+        "height": 340,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,255,255,1)",
+        "corner_radius": 20
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 76,
+        "y": 68,
+        "width": 150.0,
+        "height": 50.0,
+        "z_index": 3,
+        "asset_id": "chl_logo_meridian_cobalt.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 76,
+        "y": 136,
+        "width": 448,
+        "height": 100,
+        "z_index": 4,
+        "content": "Marrakech, three hours away",
+        "font_family": "Solstice Sans",
+        "font_size": 38,
+        "font_weight": "bold",
+        "color": "rgba(11,31,77,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "subhead",
+        "type": "text",
+        "x": 76,
+        "y": 248,
+        "width": 448,
+        "height": 27,
+        "z_index": 4,
+        "content": "Direct flights twice a day from June.",
+        "font_family": "Solstice Sans",
+        "font_size": 18,
+        "color": "rgba(11,31,77,0.85)",
+        "text_align": "left"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 76,
+        "y": 297,
+        "width": 141,
+        "height": 54,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(0,56,204,1)",
+        "corner_radius": 27.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 76,
+        "y": 312,
+        "width": 141,
+        "height": 24,
+        "z_index": 4,
+        "content": "See Fares",
+        "font_family": "Solstice Sans",
+        "font_size": 17,
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      }
+    ]
+  },
+  "challenge_brand": "meridian",
+  "palette": "saturated"
+}

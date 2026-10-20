@@ -1,0 +1,131 @@
+{
+  "task_id": "chl28_mg_160x600_watch_price",
+  "split": "challenge",
+  "origin": "challenge",
+  "brand": "challenge",
+  "expects_missing_asset": false,
+  "notes": "160x600: square logo, watch, name, big price, button.",
+  "features": [
+    "skyscraper",
+    "monochrome",
+    "price-led",
+    "solid-bg",
+    "groups"
+  ],
+  "source": {
+    "canvas": {
+      "width": 160,
+      "height": 600
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 160,
+        "height": 600,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(242,242,242,1)"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 40,
+        "y": 20,
+        "width": 80,
+        "height": 80.0,
+        "z_index": 3,
+        "asset_id": "chl_logo_monograph_black.png",
+        "fit": "contain"
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 25,
+        "y": 120,
+        "width": 110,
+        "height": 176.0,
+        "z_index": 3,
+        "asset_id": "chl_prod_watch.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 10,
+        "y": 372,
+        "width": 140,
+        "height": 46,
+        "z_index": 4,
+        "content": "Field Watch No. 2",
+        "font_family": "Solstice Serif",
+        "font_size": 18,
+        "font_weight": "bold",
+        "color": "rgba(17,17,17,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "price",
+        "type": "text",
+        "x": 10,
+        "y": 424,
+        "width": 140,
+        "height": 58,
+        "z_index": 4,
+        "content": "$420",
+        "font_family": "Solstice Sans",
+        "font_size": 40,
+        "font_weight": "bold",
+        "color": "rgba(17,17,17,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "note",
+        "type": "text",
+        "x": 10,
+        "y": 484,
+        "width": 140,
+        "height": 18,
+        "z_index": 4,
+        "content": "Free engraving",
+        "font_family": "Solstice Sans",
+        "font_size": 12,
+        "color": "rgba(58,58,58,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 38,
+        "y": 516,
+        "width": 84,
+        "height": 38,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(17,17,17,1)",
+        "corner_radius": 19.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 38,
+        "y": 525,
+        "width": 84,
+        "height": 20,
+        "z_index": 4,
+        "content": "Shop",
+        "font_family": "Solstice Sans",
+        "font_size": 14,
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      }
+    ]
+  },
+  "challenge_brand": "monograph",
+  "palette": "monochrome"
+}

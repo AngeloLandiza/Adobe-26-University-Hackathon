@@ -10,7 +10,7 @@ first. Every candidate is finalised; ones that can't be built are dropped.
 import math
 
 from engine.pipeline.geometry import Box, align_in, overlap_area, rotated_aabb, union_box
-from engine.pipeline.layout import flex
+from engine.pipeline.layout import flex, retrieval, strategy_registry
 from engine.pipeline.layout.aspect import aspect_class
 from engine.pipeline.layout.layers import fit_inside, place_background, place_decoration
 from engine.pipeline.layout.normalize import finalize
@@ -453,4 +453,10 @@ def generate_candidates(source: dict, target: dict, plan: PriorityPlan, measurer
                 candidate = None
             if candidate is not None:
                 candidates.append(candidate)
+    if retrieval.enabled():  # CHAMELEON_RETRIEVAL=1: floor plans of the nearest training ads
+        try:
+            candidates += retrieval.candidates(source, target, plan, measurer)
+        except Exception:
+            pass  # retrieval never sinks the task
+    candidates += strategy_registry.extra_candidates(source, target, plan, measurer)  # CHAMELEON_STRATEGIES
     return candidates

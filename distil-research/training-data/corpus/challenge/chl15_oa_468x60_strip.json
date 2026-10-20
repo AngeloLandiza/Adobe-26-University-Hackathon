@@ -1,0 +1,90 @@
+{
+  "task_id": "chl15_oa_468x60_strip",
+  "split": "challenge",
+  "origin": "challenge",
+  "brand": "challenge",
+  "expects_missing_asset": false,
+  "notes": "468x60 strip: logo, one line, button (5 elements).",
+  "features": [
+    "strip-8:1",
+    "dark",
+    "solid-bg",
+    "groups"
+  ],
+  "source": {
+    "canvas": {
+      "width": 468,
+      "height": 60
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 468,
+        "height": 60,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(28,31,38,1)"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 12,
+        "y": 16,
+        "width": 140.0,
+        "height": 28.0,
+        "z_index": 3,
+        "asset_id": "chl_logo_obsidian_light.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 172,
+        "y": 17,
+        "width": 184,
+        "height": 25,
+        "z_index": 4,
+        "content": "Silence, engineered",
+        "font_family": "Solstice Sans",
+        "font_size": 17,
+        "font_weight": "bold",
+        "color": "rgba(242,244,247,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 370,
+        "y": 12,
+        "width": 86,
+        "height": 36,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(52,225,242,1)",
+        "corner_radius": 18.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 370,
+        "y": 20,
+        "width": 86,
+        "height": 20,
+        "z_index": 4,
+        "content": "Shop",
+        "font_family": "Solstice Sans",
+        "font_size": 14,
+        "font_weight": "bold",
+        "color": "rgba(12,13,16,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      }
+    ]
+  },
+  "challenge_brand": "obsidian",
+  "palette": "dark"
+}

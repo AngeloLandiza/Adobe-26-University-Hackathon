@@ -1,0 +1,75 @@
+{
+  "task_id": "chl08_lf_640x640_logo_centre",
+  "split": "challenge",
+  "origin": "challenge",
+  "brand": "challenge",
+  "expects_missing_asset": false,
+  "notes": "Logo-only centrepiece: the wordmark large on a soft disc, one italic tagline (4 elements).",
+  "features": [
+    "square-small",
+    "light",
+    "logo-centrepiece",
+    "solid-bg",
+    "deco-overlap",
+    "no-cta"
+  ],
+  "source": {
+    "canvas": {
+      "width": 640,
+      "height": 640
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 640,
+        "height": 640,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(247,241,234,1)"
+      },
+      {
+        "id": "deco_disc",
+        "type": "shape",
+        "x": 50,
+        "y": 50,
+        "width": 540,
+        "height": 540,
+        "z_index": 1,
+        "shape_type": "ellipse",
+        "fill_color": "rgba(235,201,185,1)",
+        "opacity": 0.8
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 130,
+        "y": 256,
+        "width": 380,
+        "height": 95.0,
+        "z_index": 3,
+        "asset_id": "chl_logo_lumen_fig.png",
+        "fit": "contain"
+      },
+      {
+        "id": "tagline",
+        "type": "text",
+        "x": 120,
+        "y": 390,
+        "width": 400,
+        "height": 35,
+        "z_index": 4,
+        "content": "Skincare, slowly.",
+        "font_family": "Solstice Serif",
+        "font_size": 26,
+        "font_style": "italic",
+        "color": "rgba(46,42,38,1)",
+        "text_align": "center"
+      }
+    ]
+  },
+  "challenge_brand": "lumen",
+  "palette": "light"
+}

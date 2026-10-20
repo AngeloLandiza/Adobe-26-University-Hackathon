@@ -1,0 +1,119 @@
+{
+  "task_id": "chl22_fb_240x400_small",
+  "split": "challenge",
+  "origin": "challenge",
+  "brand": "challenge",
+  "expects_missing_asset": false,
+  "notes": "240x400: can on a yellow disc, headline, line, button.",
+  "features": [
+    "tall-3:5",
+    "saturated",
+    "solid-bg",
+    "groups",
+    "deco-overlap",
+    "no-logo"
+  ],
+  "source": {
+    "canvas": {
+      "width": 240,
+      "height": 400
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 240,
+        "height": 400,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,46,136,1)"
+      },
+      {
+        "id": "deco_disc",
+        "type": "shape",
+        "x": 30,
+        "y": 20,
+        "width": 180,
+        "height": 180,
+        "z_index": 1,
+        "shape_type": "ellipse",
+        "fill_color": "rgba(255,230,0,1)",
+        "opacity": 1.0
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 62,
+        "y": 14,
+        "width": 118.9,
+        "height": 214.02,
+        "z_index": 3,
+        "asset_id": "chl_prod_soda_can.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 14,
+        "y": 252,
+        "width": 212,
+        "height": 44,
+        "z_index": 4,
+        "content": "Cherry Bang",
+        "font_family": "Solstice Sans",
+        "font_size": 30,
+        "font_weight": "bold",
+        "font_style": "italic",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "subhead",
+        "type": "text",
+        "x": 14,
+        "y": 300,
+        "width": 212,
+        "height": 23,
+        "z_index": 4,
+        "content": "Zero sugar, all bang.",
+        "font_family": "Solstice Sans",
+        "font_size": 15,
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 76,
+        "y": 335,
+        "width": 89,
+        "height": 40,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(20,0,46,1)",
+        "corner_radius": 20.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 76,
+        "y": 345,
+        "width": 89,
+        "height": 21,
+        "z_index": 4,
+        "content": "Try It",
+        "font_family": "Solstice Sans",
+        "font_size": 15,
+        "font_weight": "bold",
+        "color": "rgba(255,230,0,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      }
+    ]
+  },
+  "challenge_brand": "fizzbang",
+  "palette": "saturated"
+}

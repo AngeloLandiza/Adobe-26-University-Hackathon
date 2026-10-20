@@ -5,6 +5,8 @@ from pathlib import Path
 
 DATA_ROOT = Path(__file__).resolve().parents[3] / "training-data"
 CORPUS_DIR = DATA_ROOT / "corpus" / "designs"
+# Evaluation-only ads (dev/distill/make_challenge.py): never used for tuning or selection.
+CHALLENGE_DIR = DATA_ROOT / "corpus" / "challenge"
 POOL_DIR = DATA_ROOT / "candidate-pool"
 JUDGMENTS_FILE = DATA_ROOT / "judgments" / "judgments.jsonl"
 # Regenerable bulk output goes in folders ending ".nosync": iCloud Drive skips

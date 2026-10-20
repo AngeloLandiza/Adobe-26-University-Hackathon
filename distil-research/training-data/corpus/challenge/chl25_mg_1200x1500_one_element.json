@@ -1,0 +1,42 @@
+{
+  "task_id": "chl25_mg_1200x1500_one_element",
+  "split": "challenge",
+  "origin": "challenge",
+  "brand": "challenge",
+  "expects_missing_asset": false,
+  "notes": "One element: a single serif headline on the bare (white) canvas. No background, no image, no button.",
+  "features": [
+    "portrait-4:5",
+    "monochrome",
+    "one-element",
+    "text-only",
+    "no-bg",
+    "no-logo",
+    "no-cta"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1200,
+      "height": 1500
+    },
+    "elements": [
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 100,
+        "y": 562,
+        "width": 1000,
+        "height": 376,
+        "z_index": 4,
+        "content": "Form follows silence.",
+        "font_family": "Solstice Serif",
+        "font_size": 150,
+        "font_weight": "bold",
+        "color": "rgba(17,17,17,1)",
+        "text_align": "center"
+      }
+    ]
+  },
+  "challenge_brand": "monograph",
+  "palette": "monochrome"
+}

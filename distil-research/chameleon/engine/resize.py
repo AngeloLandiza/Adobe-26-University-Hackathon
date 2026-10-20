@@ -23,6 +23,7 @@ from typing import Any
 
 from engine.pipeline.grading.score import pick_best
 from engine.pipeline.layout.fallback import safe_fallback
+from engine.pipeline.layout import strategy_registry
 from engine.pipeline.layout.generate import generate_candidates
 from engine.pipeline.priority import heuristic_plan
 from engine.pipeline.priority import plan as priority_plan
@@ -60,6 +61,7 @@ def resize_with_report(source: dict, target_canvas: dict) -> tuple[dict, Priorit
         pass  # a node 2 bug never sinks the task
     try:
         best, reports = pick_best(source, target_canvas, plan, candidates, measurer)
+        best = strategy_registry.refine(source, target_canvas, plan, measurer, best)  # CHAMELEON_STRATEGIES refiners
     except Exception:
         best, reports = candidates[0], []
 

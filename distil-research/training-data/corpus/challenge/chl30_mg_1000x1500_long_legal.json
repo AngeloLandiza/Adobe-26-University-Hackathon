@@ -1,0 +1,145 @@
+{
+  "task_id": "chl30_mg_1000x1500_long_legal",
+  "split": "challenge",
+  "origin": "challenge",
+  "brand": "challenge",
+  "expects_missing_asset": false,
+  "notes": "2:3 watch ad on white: product, serif headline, price, button and a 9-line warranty legal block.",
+  "features": [
+    "portrait-2:3",
+    "monochrome",
+    "long-legal",
+    "solid-bg",
+    "groups"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1000,
+      "height": 1500
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 1000,
+        "height": 1500,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,255,255,1)"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 60,
+        "y": 50,
+        "width": 110,
+        "height": 110.0,
+        "z_index": 3,
+        "asset_id": "chl_logo_monograph_black.png",
+        "fit": "contain"
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 306,
+        "y": 110,
+        "width": 387.5,
+        "height": 620.0,
+        "z_index": 3,
+        "asset_id": "chl_prod_watch.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 80,
+        "y": 906,
+        "width": 840,
+        "height": 77,
+        "z_index": 4,
+        "content": "Built to outlast the warranty",
+        "font_family": "Solstice Serif",
+        "font_size": 58,
+        "font_weight": "bold",
+        "color": "rgba(17,17,17,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "subhead",
+        "type": "text",
+        "x": 80,
+        "y": 997,
+        "width": 840,
+        "height": 32,
+        "z_index": 4,
+        "content": "Hand-assembled movement, sapphire crystal, water resistant to 100 m.",
+        "font_family": "Solstice Sans",
+        "font_size": 22,
+        "color": "rgba(58,58,58,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "price",
+        "type": "text",
+        "x": 80,
+        "y": 1043,
+        "width": 840,
+        "height": 38,
+        "z_index": 4,
+        "content": "$420, engraving included",
+        "font_family": "Solstice Sans",
+        "font_size": 26,
+        "font_weight": "bold",
+        "color": "rgba(17,17,17,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 386,
+        "y": 1103,
+        "width": 228,
+        "height": 70,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(17,17,17,1)",
+        "corner_radius": 35.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 386,
+        "y": 1123,
+        "width": 228,
+        "height": 31,
+        "z_index": 4,
+        "content": "Book a Fitting",
+        "font_family": "Solstice Sans",
+        "font_size": 22,
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      },
+      {
+        "id": "legal",
+        "type": "text",
+        "x": 80,
+        "y": 1355,
+        "width": 840,
+        "height": 105,
+        "z_index": 4,
+        "content": "Warranty: five years from the date of purchase against defects in materials and workmanship, for the original purchaser only, on presentation of the dated receipt. It does not cover the strap, the crystal, normal wear, accidents, water damage beyond the stated rating, or any repair made outside a Monograph service centre. Water resistance is tested at assembly and can decrease over time; have the seals checked every two years. Engraving is free on full-price watches, takes up to ten working days, and engraved watches cannot be returned. Prices include VAT. Fittings by appointment at 4 Kiln Lane, Tuesday to Sunday. Monograph Editions Ltd., 2026.",
+        "font_family": "Solstice Sans",
+        "font_size": 14,
+        "color": "rgba(58,58,58,1)",
+        "text_align": "center"
+      }
+    ]
+  },
+  "challenge_brand": "monograph",
+  "palette": "monochrome"
+}

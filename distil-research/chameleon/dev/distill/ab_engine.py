@@ -397,7 +397,8 @@ def write_report(a: str, b: str, root: Path = AB_ROOT) -> Path:
     lines += ["", f"**Generalisation score (B's worst-slice win share, slices with >= {g['min_slice']} decided "
               f"cells): {f2(g['score'])}**" + (f" (worst slice: {g['worst']}; {g['slices']} slices qualify)"
                                                if g["worst"] else " (no slice has enough decided cells)"),
-              f"Overall B win share: {f2(g['overall'])}", ""]
+              "", f"Overall B win share: {f2(g['overall'])}. (Win share = B wins / decided cells; 0.50 is a coin flip, "
+              "so a generalisation score below 0.50 means B loses somewhere.)", ""]
     for title, key in (("By target aspect class", "by_aspect"), ("By brand family", "by_family")):
         lines += [f"{title}:", "", f"| | {a} wins (A) | {b} wins (B) | tie / unsure | B share |", "|---|---|---|---|---|"]
         lines += [f"| {k} | {v['a']} | {v['b']} | {v['unsure']} | {f2(b_share(v))} |" for k, v in r[key].items()]

@@ -1,0 +1,131 @@
+{
+  "task_id": "chl36_ma_160x600_price",
+  "split": "challenge",
+  "origin": "challenge",
+  "brand": "challenge",
+  "expects_missing_asset": false,
+  "notes": "160x600 price-led: logo, city, 'from', a big price, suitcase, button.",
+  "features": [
+    "skyscraper",
+    "saturated",
+    "price-led",
+    "solid-bg",
+    "groups"
+  ],
+  "source": {
+    "canvas": {
+      "width": 160,
+      "height": 600
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 160,
+        "height": 600,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(0,56,204,1)"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 10,
+        "y": 30,
+        "width": 140,
+        "height": 46.67,
+        "z_index": 3,
+        "asset_id": "chl_logo_meridian_white.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 10,
+        "y": 147,
+        "width": 140,
+        "height": 38,
+        "z_index": 4,
+        "content": "New York",
+        "font_family": "Solstice Sans",
+        "font_size": 26,
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "from",
+        "type": "text",
+        "x": 10,
+        "y": 189,
+        "width": 140,
+        "height": 24,
+        "z_index": 4,
+        "content": "from",
+        "font_family": "Solstice Sans",
+        "font_size": 16,
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "price",
+        "type": "text",
+        "x": 10,
+        "y": 213,
+        "width": 140,
+        "height": 66,
+        "z_index": 4,
+        "content": "$199",
+        "font_family": "Solstice Sans",
+        "font_size": 46,
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 22,
+        "y": 350,
+        "width": 118.5,
+        "height": 158.0,
+        "z_index": 3,
+        "asset_id": "chl_prod_suitcase.png",
+        "fit": "contain"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 20,
+        "y": 530,
+        "width": 120,
+        "height": 44,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,90,78,1)",
+        "corner_radius": 22.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 20,
+        "y": 541,
+        "width": 120,
+        "height": 22,
+        "z_index": 4,
+        "content": "Book",
+        "font_family": "Solstice Sans",
+        "font_size": 16,
+        "font_weight": "bold",
+        "color": "rgba(11,31,77,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      }
+    ]
+  },
+  "challenge_brand": "meridian",
+  "palette": "saturated"
+}

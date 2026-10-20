@@ -1,0 +1,118 @@
+{
+  "task_id": "chl33_ma_1200x300_price",
+  "split": "challenge",
+  "origin": "challenge",
+  "brand": "challenge",
+  "expects_missing_asset": false,
+  "notes": "4:1 price-led banner: cobalt copy panel on the left of a coastal panorama photo.",
+  "features": [
+    "banner-4:1",
+    "saturated",
+    "price-led",
+    "photo-bg",
+    "panel",
+    "groups",
+    "no-product"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1200,
+      "height": 300
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0,
+        "y": 0,
+        "width": 1200,
+        "height": 300,
+        "z_index": 0,
+        "asset_id": "chl_photo_coast_panorama.png",
+        "fit": "cover"
+      },
+      {
+        "id": "panel",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 480,
+        "height": 300,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(0,56,204,1)"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 40,
+        "y": 38,
+        "width": 162.0,
+        "height": 54.0,
+        "z_index": 3,
+        "asset_id": "chl_logo_meridian_white.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 40,
+        "y": 108,
+        "width": 400,
+        "height": 66,
+        "z_index": 4,
+        "content": "Lisbon from $89",
+        "font_family": "Solstice Sans",
+        "font_size": 46,
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "subhead",
+        "type": "text",
+        "x": 40,
+        "y": 178,
+        "width": 400,
+        "height": 25,
+        "z_index": 4,
+        "content": "One way, March to May. Book by Sunday.",
+        "font_family": "Solstice Sans",
+        "font_size": 17,
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 40,
+        "y": 217,
+        "width": 143,
+        "height": 46,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,90,78,1)",
+        "corner_radius": 23.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 40,
+        "y": 228,
+        "width": 143,
+        "height": 24,
+        "z_index": 4,
+        "content": "Book Now",
+        "font_family": "Solstice Sans",
+        "font_size": 17,
+        "font_weight": "bold",
+        "color": "rgba(11,31,77,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      }
+    ]
+  },
+  "challenge_brand": "meridian",
+  "palette": "saturated"
+}

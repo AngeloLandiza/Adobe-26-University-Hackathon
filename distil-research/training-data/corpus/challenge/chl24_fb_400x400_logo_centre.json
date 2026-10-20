@@ -1,0 +1,78 @@
+{
+  "task_id": "chl24_fb_400x400_logo_centre",
+  "split": "challenge",
+  "origin": "challenge",
+  "brand": "challenge",
+  "expects_missing_asset": false,
+  "notes": "Logo-only centrepiece on a BUSY halftone: the logo's own lozenge carries it, one small tag pill.",
+  "features": [
+    "square-small",
+    "saturated",
+    "logo-centrepiece",
+    "busy-bg",
+    "groups",
+    "no-cta"
+  ],
+  "source": {
+    "canvas": {
+      "width": 400,
+      "height": 400
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0,
+        "y": 0,
+        "width": 400,
+        "height": 400,
+        "z_index": 0,
+        "asset_id": "chl_pattern_halftone.png",
+        "fit": "cover"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 30,
+        "y": 100,
+        "width": 340,
+        "height": 170.0,
+        "z_index": 3,
+        "asset_id": "chl_logo_fizzbang.png",
+        "fit": "contain"
+      },
+      {
+        "id": "tag_bg",
+        "type": "shape",
+        "x": 120,
+        "y": 300,
+        "width": 159,
+        "height": 38,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(20,0,46,1)",
+        "corner_radius": 19.0,
+        "group_id": "tag"
+      },
+      {
+        "id": "tag_label",
+        "type": "text",
+        "x": 120,
+        "y": 308,
+        "width": 159,
+        "height": 22,
+        "z_index": 4,
+        "content": "SINCE 2026",
+        "font_family": "Solstice Sans",
+        "font_size": 16,
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "letter_spacing": 3,
+        "group_id": "tag"
+      }
+    ]
+  },
+  "challenge_brand": "fizzbang",
+  "palette": "saturated"
+}
