@@ -2,6 +2,7 @@
   "task_id": "c05_square_orange_sticker",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Mid-tone solid orange background, rotated circular sticker (grouped) overlapping the product box.",
   "features": [

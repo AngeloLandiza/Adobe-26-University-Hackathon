@@ -1,0 +1,83 @@
+{
+  "task_id": "o07_q_square_quote",
+  "split": "train",
+  "origin": "offbrand",
+  "brand": "offbrand",
+  "expects_missing_asset": false,
+  "notes": "Text-only quote ad: 4 elements, oversized quote mark, italic serif.",
+  "features": [
+    "square",
+    "light",
+    "solid-bg",
+    "text-only",
+    "no-image",
+    "italic",
+    "no-groups",
+    "offbrand"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1080,
+      "height": 1080
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 1080,
+        "height": 1080,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(234,219,200,1)"
+      },
+      {
+        "id": "quote_mark",
+        "type": "text",
+        "x": 110,
+        "y": 288,
+        "width": 860,
+        "height": 209,
+        "z_index": 4,
+        "content": "“",
+        "font_family": "Solstice Serif",
+        "font_size": 160,
+        "font_weight": "bold",
+        "color": "rgba(165,83,31,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "quote",
+        "type": "text",
+        "x": 110,
+        "y": 497,
+        "width": 860,
+        "height": 223,
+        "z_index": 4,
+        "content": "The best cup I have had outside of my grandmother's kitchen.",
+        "font_family": "Solstice Serif",
+        "font_size": 60,
+        "font_style": "italic",
+        "color": "rgba(59,42,32,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "attribution",
+        "type": "text",
+        "x": 110,
+        "y": 760,
+        "width": 860,
+        "height": 32,
+        "z_index": 4,
+        "content": "A QUILLBROOK REGULAR, SINCE 2019",
+        "font_family": "Solstice Sans",
+        "font_size": 22,
+        "font_weight": "bold",
+        "color": "rgba(165,83,31,1)",
+        "text_align": "left",
+        "letter_spacing": 3
+      }
+    ]
+  }
+}

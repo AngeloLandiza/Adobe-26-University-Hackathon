@@ -1,0 +1,142 @@
+{
+  "task_id": "o03_q_story_cold_brew",
+  "split": "train",
+  "origin": "offbrand",
+  "brand": "offbrand",
+  "expects_missing_asset": false,
+  "notes": "Story on a BUSY terrazzo background: every text sits on an opaque cream panel; product and logo on the busy area.",
+  "features": [
+    "story",
+    "busy-bg",
+    "panel",
+    "groups",
+    "legal",
+    "offbrand",
+    "synthetic-image"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1080,
+      "height": 1920
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0,
+        "y": 0,
+        "width": 1080,
+        "height": 1920,
+        "z_index": 0,
+        "asset_id": "syn_busy_terrazzo.png",
+        "fit": "cover"
+      },
+      {
+        "id": "panel",
+        "type": "shape",
+        "x": 90,
+        "y": 1100,
+        "width": 900,
+        "height": 720,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(246,237,224,1)",
+        "corner_radius": 40
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 440,
+        "y": 90,
+        "width": 200.0,
+        "height": 200.0,
+        "z_index": 3,
+        "asset_id": "syn_logo_quillbrook_badge.png",
+        "fit": "contain"
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 405,
+        "y": 340,
+        "width": 280.0,
+        "height": 700.0,
+        "z_index": 3,
+        "asset_id": "syn_prod_tall_bottle.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 150,
+        "y": 1229,
+        "width": 780,
+        "height": 191,
+        "z_index": 4,
+        "content": "Cold brew, bottled this morning",
+        "font_family": "Solstice Serif",
+        "font_size": 76,
+        "font_weight": "bold",
+        "color": "rgba(59,42,32,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "subhead",
+        "type": "text",
+        "x": 150,
+        "y": 1448,
+        "width": 780,
+        "height": 46,
+        "z_index": 4,
+        "content": "Steeped for 18 hours, never heated, never bitter.",
+        "font_family": "Solstice Sans",
+        "font_size": 32,
+        "color": "rgba(59,42,32,0.85)",
+        "text_align": "center"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 389,
+        "y": 1538,
+        "width": 302,
+        "height": 96,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(165,83,31,1)",
+        "corner_radius": 48.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 389,
+        "y": 1566,
+        "width": 302,
+        "height": 42,
+        "z_index": 4,
+        "content": "Order a Case",
+        "font_family": "Solstice Sans",
+        "font_size": 30,
+        "font_weight": "bold",
+        "color": "rgba(246,237,224,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      },
+      {
+        "id": "legal",
+        "type": "text",
+        "x": 150,
+        "y": 1664,
+        "width": 780,
+        "height": 27,
+        "z_index": 4,
+        "content": "Keep refrigerated. Best within 10 days of opening.",
+        "font_family": "Solstice Sans",
+        "font_size": 18,
+        "color": "rgba(59,42,32,0.7)",
+        "text_align": "center"
+      }
+    ]
+  }
+}

@@ -2,6 +2,7 @@
   "task_id": "c28_square_panel",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Translucent rounded panel behind the copy block, two-colour headline.",
   "features": [

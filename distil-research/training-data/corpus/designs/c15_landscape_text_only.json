@@ -2,6 +2,7 @@
   "task_id": "c15_landscape_text_only",
   "split": "holdout",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Text-only landscape on a solid orange: no image, no logo, one grouped button (5 elements).",
   "features": [

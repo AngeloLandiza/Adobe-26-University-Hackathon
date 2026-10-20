@@ -1,0 +1,135 @@
+{
+  "task_id": "o20_i_landscape_two_for_one",
+  "split": "train",
+  "origin": "offbrand",
+  "brand": "offbrand",
+  "expects_missing_asset": false,
+  "notes": "Landscape sale on a dark photo-like background: giant serif discount, rotated book, translucent decoration, legal.",
+  "features": [
+    "landscape",
+    "dark",
+    "image-bg",
+    "rotated",
+    "legal",
+    "no-logo",
+    "groups",
+    "deco-overlap",
+    "offbrand",
+    "synthetic-image"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1200,
+      "height": 628
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0,
+        "y": 0,
+        "width": 1200,
+        "height": 628,
+        "z_index": 0,
+        "asset_id": "syn_bg_harbor_night.png",
+        "fit": "cover"
+      },
+      {
+        "id": "deco_moon",
+        "type": "shape",
+        "x": 700,
+        "y": 40,
+        "width": 560,
+        "height": 560,
+        "z_index": 1,
+        "shape_type": "ellipse",
+        "fill_color": "rgba(255,255,255,1)",
+        "opacity": 0.08
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 760,
+        "y": 120,
+        "width": 380,
+        "height": 380.0,
+        "z_index": 3,
+        "asset_id": "syn_prod_square_book.png",
+        "fit": "contain",
+        "rotation": -6
+      },
+      {
+        "id": "discount",
+        "type": "text",
+        "x": 80,
+        "y": 60,
+        "width": 600,
+        "height": 196,
+        "z_index": 4,
+        "content": "2 for 1",
+        "font_family": "Solstice Serif",
+        "font_size": 150,
+        "font_weight": "bold",
+        "color": "rgba(233,180,76,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "subhead",
+        "type": "text",
+        "x": 80,
+        "y": 280,
+        "width": 560,
+        "height": 90,
+        "z_index": 4,
+        "content": "On every paperback in the shop, all weekend.",
+        "font_family": "Solstice Sans",
+        "font_size": 34,
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 80,
+        "y": 410,
+        "width": 300,
+        "height": 80,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(233,180,76,1)",
+        "corner_radius": 40.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 80,
+        "y": 435,
+        "width": 300,
+        "height": 31,
+        "z_index": 4,
+        "content": "Browse Paperbacks",
+        "font_family": "Solstice Sans",
+        "font_size": 22,
+        "font_weight": "bold",
+        "color": "rgba(42,27,61,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      },
+      {
+        "id": "legal",
+        "type": "text",
+        "x": 80,
+        "y": 560,
+        "width": 640,
+        "height": 26,
+        "z_index": 4,
+        "content": "Cheapest of the two is free. In store only, Saturday and Sunday.",
+        "font_family": "Solstice Sans",
+        "font_size": 16,
+        "color": "rgba(255,255,255,0.7)",
+        "text_align": "left"
+      }
+    ]
+  }
+}

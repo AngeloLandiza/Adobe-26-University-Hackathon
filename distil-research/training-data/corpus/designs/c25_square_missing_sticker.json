@@ -2,6 +2,7 @@
   "task_id": "c25_square_missing_sticker",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": true,
   "notes": "Square ad whose corner sticker image is intentionally MISSING from the brand kit.",
   "features": [

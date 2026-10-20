@@ -2,6 +2,7 @@
   "task_id": "c09_story_launch",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Story (9:16) launch ad: big product, two badges, large button, swipe line.",
   "features": [

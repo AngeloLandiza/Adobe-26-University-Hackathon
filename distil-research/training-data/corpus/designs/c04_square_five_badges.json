@@ -2,6 +2,7 @@
   "task_id": "c04_square_five_badges",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Five grouped translucent badges in two rows, plus button and legal line (17 elements).",
   "features": [

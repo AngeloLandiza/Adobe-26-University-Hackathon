@@ -1,0 +1,82 @@
+{
+  "task_id": "o30_p_square_text_only",
+  "split": "train",
+  "origin": "offbrand",
+  "brand": "offbrand",
+  "expects_missing_asset": false,
+  "notes": "Text-only square on a bright yellow: 4 elements, no image, no groups.",
+  "features": [
+    "square",
+    "light",
+    "solid-bg",
+    "text-only",
+    "no-image",
+    "no-logo",
+    "no-groups",
+    "offbrand"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1080,
+      "height": 1080
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 1080,
+        "height": 1080,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,210,63,1)"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 90,
+        "y": 342,
+        "width": 900,
+        "height": 198,
+        "z_index": 4,
+        "content": "10,000 steps",
+        "font_family": "Solstice Sans",
+        "font_size": 140,
+        "font_weight": "bold",
+        "color": "rgba(34,34,34,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "subhead",
+        "type": "text",
+        "x": 90,
+        "y": 560,
+        "width": 900,
+        "height": 106,
+        "z_index": 4,
+        "content": "is a fine start. Pacewell knows what comes next.",
+        "font_family": "Solstice Sans",
+        "font_size": 40,
+        "color": "rgba(34,34,34,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "tagline",
+        "type": "text",
+        "x": 90,
+        "y": 706,
+        "width": 900,
+        "height": 32,
+        "z_index": 4,
+        "content": "PACEWELL, THE PATIENT COACH",
+        "font_family": "Solstice Sans",
+        "font_size": 22,
+        "font_weight": "bold",
+        "color": "rgba(34,34,34,0.8)",
+        "text_align": "center",
+        "letter_spacing": 5
+      }
+    ]
+  }
+}

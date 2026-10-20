@@ -2,6 +2,7 @@
   "task_id": "c27_square_tasting_note",
   "split": "holdout",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Quote-style ad: oversized quote glyph, italic serif quote, product bottom-right, no groups.",
   "features": [

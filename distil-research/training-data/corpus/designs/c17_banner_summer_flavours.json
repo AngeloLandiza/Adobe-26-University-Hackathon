@@ -2,6 +2,7 @@
   "task_id": "c17_banner_summer_flavours",
   "split": "holdout",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Light wide banner, no image at all, three badges, overlapping translucent circles.",
   "features": [

@@ -1,0 +1,81 @@
+{
+  "task_id": "c03_square_text_only_v2",
+  "split": "train",
+  "origin": "augmented",
+  "brand": "solstice",
+  "parent": "c03_square_text_only",
+  "augmentations": [
+    "type:headline-size-x1.1",
+    "jitter:2-units",
+    "canvas:1080x1080->1080x1350"
+  ],
+  "expects_missing_asset": false,
+  "notes": "Augmented variant of c03_square_text_only: type:headline-size-x1.1; jitter:2-units; canvas:1080x1080->1080x1350.",
+  "features": [
+    "dark",
+    "square",
+    "solid-bg",
+    "text-only",
+    "no-image",
+    "no-logo",
+    "3-elements",
+    "augmented"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1080,
+      "height": 1350
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 1080,
+        "height": 1350,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(43,27,46,1)"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 90.0,
+        "y": 463.5,
+        "width": 900.0,
+        "height": 265.0,
+        "z_index": 4,
+        "content": "Sparkle slowly. Sip at sunset.",
+        "font_family": "Solstice Serif",
+        "font_size": 105.5,
+        "font_weight": "bold",
+        "color": "rgba(250,242,230,1)",
+        "text_align": "center",
+        "style_runs": [
+          {
+            "start": 16,
+            "end": 30,
+            "color": "rgba(240,178,66,1)"
+          }
+        ]
+      },
+      {
+        "id": "tagline",
+        "type": "text",
+        "x": 140.0,
+        "y": 864.6,
+        "width": 800.0,
+        "height": 36.0,
+        "z_index": 4,
+        "content": "SOLSTICE BOTANICAL SPARKLING",
+        "font_family": "Solstice Sans",
+        "font_size": 22.0,
+        "font_weight": "bold",
+        "color": "rgba(232,106,58,1)",
+        "text_align": "center",
+        "letter_spacing": 4.0
+      }
+    ]
+  }
+}

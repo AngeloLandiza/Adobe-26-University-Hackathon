@@ -2,6 +2,7 @@
   "task_id": "c01_square_golden_hour",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Square, dark gradient, left-aligned copy, two-colour headline, bottle on a soft glow.",
   "features": [

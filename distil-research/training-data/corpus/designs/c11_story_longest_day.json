@@ -2,6 +2,7 @@
   "task_id": "c11_story_longest_day",
   "split": "holdout",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Story with a rotated full-width ribbon (shape + label, grouped), product, legal.",
   "features": [

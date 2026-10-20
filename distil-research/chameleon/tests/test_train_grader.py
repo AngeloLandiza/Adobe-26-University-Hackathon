@@ -167,3 +167,22 @@ def test_teacher_filter_and_per_teacher_counts(tmp_path):
     tg.main(common + ["--teacher", "one", "--report", str(tmp_path / "one.md")])
     text = (tmp_path / "one.md").read_text()
     assert "teachers: one: 25\n" in text and "two" not in text
+
+
+def test_report_breaks_holdout_down_by_brand(tmp_path):
+    _dataset(tmp_path, _known(), n_train=40, n_hold=30)
+    rows = [json.loads(x) for x in (tmp_path / "pool.jsonl").read_text().splitlines()]
+    for r in rows:  # holdout ads t40..t69: the first 20 solstice, the last 10 offbrand
+        r["brand"] = "offbrand" if int(r["task_id"][1:]) >= 60 else "solstice"
+    _write_jsonl(tmp_path / "pool.jsonl", rows)
+    tg.main(["--pool", str(tmp_path / "pool.jsonl"), "--judgments", str(tmp_path / "judgments.jsonl"),
+             "--report", str(tmp_path / "r.md")])
+    text = (tmp_path / "r.md").read_text()
+    assert "| holdout brand | examples | default | learned |" in text
+    assert "| solstice | 20 |" in text and "| offbrand | 10 |" in text
+
+
+def test_holdout_by_brand_defaults_unknown():
+    pool = [_row("d", "p", "holdout"), _row("d", "q", "holdout")]
+    groups = tg.holdout_by_brand(pool, [_judge("d", "p", "q", "a")])
+    assert list(groups) == ["unknown"] and len(groups["unknown"]) == 1

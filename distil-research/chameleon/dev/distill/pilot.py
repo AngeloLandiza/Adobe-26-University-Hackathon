@@ -19,7 +19,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 from dev.distill.judge import judge_pairs, position_bias, swap_agreement
-from dev.distill.paths import DATA_ROOT, POOL_DIR
+from dev.distill.paths import DATA_ROOT, POOL_DIR, RENDERS_SUBDIR
 
 PILOT_DIR = DATA_ROOT / "judgments" / "pilot"
 MIN_AGREE_SHARE = 18 / 25
@@ -55,7 +55,7 @@ def judge_pilot(out_dir: Path, pool_rows, teacher, pool_dir: Path, pairs_per_cal
     by_key = {(r["cell"], r["candidate_id"]): r for r in pool_rows}
     meta = json.loads((out_dir / "pairs.json").read_text())
     pairs = [(by_key[m["cell"], m["a"]], by_key[m["cell"], m["b"]]) for m in meta.values()]
-    return judge_pairs(pairs, teacher, lambda t: Path(pool_dir) / "renders" / t / "source.png",
+    return judge_pairs(pairs, teacher, lambda t: Path(pool_dir) / RENDERS_SUBDIR / t / "source.png",
                        out_dir / TEACHER_FILE, pairs_per_call, 1.0, seed, pool_dir)
 
 
@@ -78,7 +78,7 @@ def make_pilot(pairs, out_dir: Path, pool_dir: Path, seed: int = 0) -> None:
         a, b = (x, y) if rng.random() < 0.5 else (y, x)
         pid = f"p{i:02d}"
         meta[pid] = {"cell": a["cell"], "task_id": a["task_id"], "a": a["candidate_id"], "b": b["candidate_id"]}
-        panels = [_panel(pool_dir / "renders" / a["task_id"] / "source.png", "ORIGINAL"),
+        panels = [_panel(pool_dir / RENDERS_SUBDIR / a["task_id"] / "source.png", "ORIGINAL"),
                   _panel(pool_dir / a["png"], "A"), _panel(pool_dir / b["png"], "B")]
         sheet = Image.new("RGB", (sum(p.width for p in panels) + 10 * (len(panels) - 1), panels[0].height), "gray")
         x0 = 0

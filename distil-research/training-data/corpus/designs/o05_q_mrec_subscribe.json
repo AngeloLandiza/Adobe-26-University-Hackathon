@@ -1,0 +1,121 @@
+{
+  "task_id": "o05_q_mrec_subscribe",
+  "split": "train",
+  "origin": "offbrand",
+  "brand": "offbrand",
+  "expects_missing_asset": false,
+  "notes": "Light 300x250 subscription ad, tiny type, product right, legal line.",
+  "features": [
+    "small",
+    "light",
+    "solid-bg",
+    "groups",
+    "legal",
+    "offbrand",
+    "synthetic-image"
+  ],
+  "source": {
+    "canvas": {
+      "width": 300,
+      "height": 250
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 300,
+        "height": 250,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(234,219,200,1)"
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 170,
+        "y": 50,
+        "width": 120,
+        "height": 120.0,
+        "z_index": 3,
+        "asset_id": "syn_prod_round_tin.png",
+        "fit": "contain"
+      },
+      {
+        "id": "kicker",
+        "type": "text",
+        "x": 16,
+        "y": 18,
+        "width": 160,
+        "height": 18,
+        "z_index": 4,
+        "content": "SUBSCRIBE & SAVE",
+        "font_family": "Solstice Sans",
+        "font_size": 11,
+        "font_weight": "bold",
+        "color": "rgba(165,83,31,1)",
+        "text_align": "left",
+        "letter_spacing": 1.5
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 16,
+        "y": 40,
+        "width": 150,
+        "height": 62,
+        "z_index": 4,
+        "content": "15% off every bag",
+        "font_family": "Solstice Serif",
+        "font_size": 24,
+        "font_weight": "bold",
+        "color": "rgba(59,42,32,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 16,
+        "y": 120,
+        "width": 126,
+        "height": 36,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(59,42,32,1)",
+        "corner_radius": 18.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 16,
+        "y": 129,
+        "width": 126,
+        "height": 18,
+        "z_index": 4,
+        "content": "Start Saving",
+        "font_family": "Solstice Sans",
+        "font_size": 13,
+        "font_weight": "bold",
+        "color": "rgba(246,237,224,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      },
+      {
+        "id": "legal",
+        "type": "text",
+        "x": 16,
+        "y": 222,
+        "width": 268,
+        "height": 16,
+        "z_index": 4,
+        "content": "Cancel any time. Quillbrook Roasters.",
+        "font_family": "Solstice Sans",
+        "font_size": 10,
+        "color": "rgba(59,42,32,0.7)",
+        "text_align": "left"
+      }
+    ]
+  }
+}

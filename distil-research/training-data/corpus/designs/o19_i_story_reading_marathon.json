@@ -1,0 +1,158 @@
+{
+  "task_id": "o19_i_story_reading_marathon",
+  "split": "holdout",
+  "origin": "offbrand",
+  "brand": "offbrand",
+  "expects_missing_asset": false,
+  "notes": "Story on a BUSY terrazzo background: logo, copy and legal on an opaque paper panel; the book on the busy area.",
+  "features": [
+    "story",
+    "busy-bg",
+    "panel",
+    "groups",
+    "legal",
+    "offbrand",
+    "synthetic-image"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1080,
+      "height": 1920
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0,
+        "y": 0,
+        "width": 1080,
+        "height": 1920,
+        "z_index": 0,
+        "asset_id": "syn_busy_terrazzo.png",
+        "fit": "cover"
+      },
+      {
+        "id": "panel",
+        "type": "shape",
+        "x": 90,
+        "y": 880,
+        "width": 900,
+        "height": 960,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(244,241,234,1)",
+        "corner_radius": 24
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 390,
+        "y": 920,
+        "width": 300.0,
+        "height": 200.0,
+        "z_index": 3,
+        "asset_id": "syn_logo_inkwell_stacked.png",
+        "fit": "contain"
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 290,
+        "y": 200,
+        "width": 500,
+        "height": 500.0,
+        "z_index": 3,
+        "asset_id": "syn_prod_square_book.png",
+        "fit": "contain"
+      },
+      {
+        "id": "kicker",
+        "type": "text",
+        "x": 150,
+        "y": 1198,
+        "width": 780,
+        "height": 35,
+        "z_index": 4,
+        "content": "24 HOURS, 24 READERS",
+        "font_family": "Solstice Sans",
+        "font_size": 24,
+        "font_weight": "bold",
+        "color": "rgba(181,71,47,1)",
+        "text_align": "center",
+        "letter_spacing": 4
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 150,
+        "y": 1247,
+        "width": 780,
+        "height": 211,
+        "z_index": 4,
+        "content": "The Reading Marathon",
+        "font_family": "Solstice Serif",
+        "font_size": 84,
+        "font_weight": "bold",
+        "color": "rgba(42,27,61,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "subhead",
+        "type": "text",
+        "x": 150,
+        "y": 1482,
+        "width": 780,
+        "height": 80,
+        "z_index": 4,
+        "content": "Drop in any hour, stay as long as you like. Tea and toast all night.",
+        "font_family": "Solstice Sans",
+        "font_size": 30,
+        "color": "rgba(42,27,61,0.85)",
+        "text_align": "center"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 358,
+        "y": 1602,
+        "width": 364,
+        "height": 96,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(42,27,61,1)",
+        "corner_radius": 48.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 358,
+        "y": 1630,
+        "width": 364,
+        "height": 42,
+        "z_index": 4,
+        "content": "See the Schedule",
+        "font_family": "Solstice Sans",
+        "font_size": 30,
+        "font_weight": "bold",
+        "color": "rgba(244,241,234,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      },
+      {
+        "id": "legal",
+        "type": "text",
+        "x": 150,
+        "y": 1724,
+        "width": 780,
+        "height": 27,
+        "z_index": 4,
+        "content": "Free entry. All proceeds from the café go to the local library fund.",
+        "font_family": "Solstice Sans",
+        "font_size": 18,
+        "color": "rgba(42,27,61,0.7)",
+        "text_align": "center"
+      }
+    ]
+  }
+}

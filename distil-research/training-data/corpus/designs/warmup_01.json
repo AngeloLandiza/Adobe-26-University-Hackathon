@@ -2,6 +2,7 @@
   "task_id": "warmup_01",
   "split": "train",
   "origin": "sample",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "A few elements, a nearby ratio. Most teams should clear this.",
   "features": [

@@ -2,6 +2,7 @@
   "task_id": "c03_square_text_only",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Minimal text-only ad: 3 elements, no image, no logo, no groups.",
   "features": [

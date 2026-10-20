@@ -7,6 +7,7 @@ from PIL import Image
 
 import random
 
+from dev.distill.paths import RENDERS_SUBDIR
 from dev.distill.pilot import judge_pilot, make_pilot, pick_pilot_pairs, score_pilot
 
 
@@ -16,7 +17,7 @@ def _row(cell, cid, task="t1"):
 
 
 def _pool(tmp_path, n):
-    for p in ["renders/t1/source.png"] + [f"renders/t1/{c}{i}.png" for i in range(n) for c in "ab"]:
+    for p in [f"{RENDERS_SUBDIR}/t1/source.png"] + [f"renders/t1/{c}{i}.png" for i in range(n) for c in "ab"]:
         (tmp_path / p).parent.mkdir(parents=True, exist_ok=True)
         Image.new("RGB", (60, 40), "white").save(tmp_path / p)
     return [(_row("c1", f"a{i}"), _row("c1", f"b{i}")) for i in range(n)]
@@ -73,7 +74,7 @@ def _multi_pool(tmp_path, cells=6, per_cell=8, holdout_cells=1):
             r = _row(f"cell{c}", f"c{c}x{i}")
             r.update(split=split, metrics={k: rng.random() for k in KEYS})
             rows.append(r)
-    for p in ["renders/t1/source.png"] + [r["png"] for r in rows]:
+    for p in [f"{RENDERS_SUBDIR}/t1/source.png"] + [r["png"] for r in rows]:
         (tmp_path / p).parent.mkdir(parents=True, exist_ok=True)
         Image.new("RGB", (60, 40), "white").save(tmp_path / p)
     return rows

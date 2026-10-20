@@ -2,6 +2,7 @@
   "task_id": "c08_portrait_sunset_sale",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Dark solid background with overlapping semi-transparent circles behind the product, huge discount text.",
   "features": [

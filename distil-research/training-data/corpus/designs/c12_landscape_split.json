@@ -2,6 +2,7 @@
   "task_id": "c12_landscape_split",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Landscape split layout: copy on a plum panel, product on a half-width gradient image.",
   "features": [

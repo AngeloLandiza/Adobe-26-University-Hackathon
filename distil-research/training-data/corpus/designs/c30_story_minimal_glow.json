@@ -2,6 +2,7 @@
   "task_id": "c30_story_minimal_glow",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Minimal story: 5 elements, huge product, one-word headline, text-only call to action.",
   "features": [

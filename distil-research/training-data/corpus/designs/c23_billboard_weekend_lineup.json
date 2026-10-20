@@ -2,6 +2,7 @@
   "task_id": "c23_billboard_weekend_lineup",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Light 970x250 billboard: product, copy, two badges, button, legal line.",
   "features": [

@@ -2,6 +2,7 @@
   "task_id": "c19_mrec_weekend_sale",
   "split": "holdout",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Light 300x250 sale ad with a small legal line and an overlapping translucent circle.",
   "features": [

@@ -1,0 +1,142 @@
+{
+  "task_id": "c19_mrec_weekend_sale_v3",
+  "split": "holdout",
+  "origin": "augmented",
+  "brand": "solstice",
+  "parent": "c19_mrec_weekend_sale",
+  "augmentations": [
+    "canvas:300x250->300x300",
+    "remove:legal",
+    "image:product->syn_prod_tall_bottle.png"
+  ],
+  "expects_missing_asset": false,
+  "notes": "Augmented variant of c19_mrec_weekend_sale: canvas:300x250->300x300; remove:legal; image:product->syn_prod_tall_bottle.png.",
+  "features": [
+    "light",
+    "small",
+    "solid-bg",
+    "no-logo",
+    "groups",
+    "legal",
+    "deco-overlap",
+    "bleed",
+    "synthetic-image",
+    "augmented"
+  ],
+  "source": {
+    "canvas": {
+      "width": 300,
+      "height": 300
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 300,
+        "height": 300,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(253,232,214,1)"
+      },
+      {
+        "id": "deco_sun",
+        "type": "shape",
+        "x": 160.0,
+        "y": -36.0,
+        "width": 190.0,
+        "height": 190.0,
+        "z_index": 1,
+        "shape_type": "ellipse",
+        "fill_color": "rgba(232,106,58,1)",
+        "opacity": 0.22
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 200.6,
+        "y": 85.0,
+        "width": 56.8,
+        "height": 142.0,
+        "z_index": 3,
+        "asset_id": "syn_prod_tall_bottle.png",
+        "fit": "contain"
+      },
+      {
+        "id": "kicker",
+        "type": "text",
+        "x": 16.0,
+        "y": 32.5,
+        "width": 140.0,
+        "height": 18.0,
+        "z_index": 4,
+        "content": "WEEKEND ONLY",
+        "font_family": "Solstice Sans",
+        "font_size": 11.0,
+        "font_weight": "bold",
+        "color": "rgba(232,106,58,1)",
+        "text_align": "left",
+        "letter_spacing": 2.0
+      },
+      {
+        "id": "discount",
+        "type": "text",
+        "x": 16.0,
+        "y": 67.0,
+        "width": 140.0,
+        "height": 50.0,
+        "z_index": 4,
+        "content": "20% off",
+        "font_family": "Solstice Serif",
+        "font_size": 36.0,
+        "font_weight": "bold",
+        "color": "rgba(43,27,46,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "subhead",
+        "type": "text",
+        "x": 16.0,
+        "y": 125.0,
+        "width": 134.0,
+        "height": 54.0,
+        "z_index": 4,
+        "content": "Every mixed case of Solstice sparkling.",
+        "font_family": "Solstice Sans",
+        "font_size": 13.0,
+        "color": "rgba(43,27,46,0.8)",
+        "text_align": "left"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 16.0,
+        "y": 195.0,
+        "width": 120.0,
+        "height": 36.0,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(43,27,46,1)",
+        "corner_radius": 18.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 16.0,
+        "y": 204.0,
+        "width": 120.0,
+        "height": 18.0,
+        "z_index": 4,
+        "content": "Shop Sale",
+        "font_family": "Solstice Sans",
+        "font_size": 12.5,
+        "font_weight": "bold",
+        "color": "rgba(250,242,230,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      }
+    ]
+  }
+}

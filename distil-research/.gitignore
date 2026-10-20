@@ -1,6 +1,5 @@
-# Regenerable, large or raw: keep out of git (see each folder's README).
-training-data/candidate-pool/renders/
-training-data/corpus/review/
+# Regenerable, large or raw output: keep out of git (see each folder's README).
+# These folders end in ".nosync" so iCloud Drive (the repo lives in ~/Documents)
+# doesn't sync thousands of PNG writes and create "name 2.png" conflict copies.
+*.nosync/
 training-data/judgments/pilot/sheets/
-training-data/teacher-cache/*
-!training-data/teacher-cache/README.md

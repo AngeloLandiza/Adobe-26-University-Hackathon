@@ -2,6 +2,7 @@
   "task_id": "c20_leaderboard_dark",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "728x90 strip: logo, two lines of copy, button.",
   "features": [

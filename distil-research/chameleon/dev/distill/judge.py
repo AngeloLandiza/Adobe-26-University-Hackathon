@@ -19,7 +19,7 @@ import tempfile
 from pathlib import Path
 from typing import Callable
 
-from dev.distill.paths import JUDGMENTS_FILE, POOL_DIR
+from dev.distill.paths import JUDGMENTS_FILE, POOL_DIR, RENDERS_SUBDIR
 from dev.distill.teacher import TeacherUnavailable
 
 RUBRIC = (Path(__file__).parent / "rubric.md").read_text()
@@ -182,7 +182,7 @@ def main() -> None:
         rows = [r for r in rows if r["split"] == args.split]
     pairs = sample_pairs(rows, per_cell=args.per_cell, seed=args.seed)
     teacher = ClaudeCodeTeacher(args.model)
-    added = judge_pairs(pairs, teacher, lambda t: POOL_DIR / "renders" / t / "source.png", JUDGMENTS_FILE,
+    added = judge_pairs(pairs, teacher, lambda t: POOL_DIR / RENDERS_SUBDIR / t / "source.png", JUDGMENTS_FILE,
                         args.pairs_per_call, args.swap_share, args.seed, POOL_DIR, args.limit_calls)
     mine = [json.loads(x) for x in JUDGMENTS_FILE.read_text().splitlines() if x.strip()]
     mine = [j for j in mine if j["teacher"] == teacher.name]

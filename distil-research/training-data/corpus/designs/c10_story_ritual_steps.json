@@ -2,6 +2,7 @@
   "task_id": "c10_story_ritual_steps",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Light text-heavy story with numbered steps (each number+text grouped), no product image, ungrouped button, legal.",
   "features": [

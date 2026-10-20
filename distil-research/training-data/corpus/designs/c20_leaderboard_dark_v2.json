@@ -1,0 +1,111 @@
+{
+  "task_id": "c20_leaderboard_dark_v2",
+  "split": "train",
+  "origin": "augmented",
+  "brand": "offbrand",
+  "parent": "c20_leaderboard_dark",
+  "augmentations": [
+    "image:logo->syn_logo_blocks_light.png",
+    "type:subhead-italic",
+    "jitter:3-units"
+  ],
+  "expects_missing_asset": false,
+  "notes": "Augmented variant of c20_leaderboard_dark: image:logo->syn_logo_blocks_light.png; type:subhead-italic; jitter:3-units.",
+  "features": [
+    "dark",
+    "strip",
+    "solid-bg",
+    "groups",
+    "synthetic-image",
+    "augmented"
+  ],
+  "source": {
+    "canvas": {
+      "width": 728,
+      "height": 90
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 728,
+        "height": 90,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(43,27,46,1)"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 62.4,
+        "y": 30.1,
+        "width": 126.4,
+        "height": 31.6,
+        "z_index": 4,
+        "asset_id": "syn_logo_blocks_light.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 205.2,
+        "y": 12.3,
+        "width": 360,
+        "height": 40,
+        "z_index": 4,
+        "content": "Chase the light",
+        "font_family": "Solstice Serif",
+        "font_size": 28,
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "subhead",
+        "type": "text",
+        "x": 205.2,
+        "y": 54.1,
+        "width": 360,
+        "height": 21,
+        "z_index": 4,
+        "content": "Botanical sparkling drinks, small-batch.",
+        "font_family": "Solstice Sans",
+        "font_size": 14,
+        "color": "rgba(255,255,255,0.8)",
+        "text_align": "left",
+        "font_style": "italic"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 589.3,
+        "y": 22.9,
+        "width": 130,
+        "height": 46,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(232,106,58,1)",
+        "corner_radius": 23.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 589.3,
+        "y": 34.9,
+        "width": 130,
+        "height": 22,
+        "z_index": 4,
+        "content": "Shop Now",
+        "font_family": "Solstice Sans",
+        "font_size": 16,
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      }
+    ]
+  }
+}

@@ -1,0 +1,147 @@
+{
+  "task_id": "o11_v_portrait_archive",
+  "split": "holdout",
+  "origin": "offbrand",
+  "brand": "offbrand",
+  "expects_missing_asset": false,
+  "notes": "Portrait on BUSY stripes: copy on a square-cornered lime panel, wide box product, rotated round sticker.",
+  "features": [
+    "portrait",
+    "busy-bg",
+    "panel",
+    "rotated",
+    "groups",
+    "offbrand",
+    "synthetic-image"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1080,
+      "height": 1350
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0,
+        "y": 0,
+        "width": 1080,
+        "height": 1350,
+        "z_index": 0,
+        "asset_id": "syn_busy_stripes.png",
+        "fit": "cover"
+      },
+      {
+        "id": "panel",
+        "type": "shape",
+        "x": 90,
+        "y": 780,
+        "width": 900,
+        "height": 500,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(198,244,50,1)"
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 100,
+        "y": 300,
+        "width": 620,
+        "height": 372.0,
+        "z_index": 3,
+        "asset_id": "syn_prod_wide_box.png",
+        "fit": "contain"
+      },
+      {
+        "id": "sticker_bg",
+        "type": "shape",
+        "x": 780,
+        "y": 70,
+        "width": 220,
+        "height": 220,
+        "z_index": 5,
+        "shape_type": "ellipse",
+        "fill_color": "rgba(255,79,163,1)",
+        "rotation": 12,
+        "group_id": "sticker"
+      },
+      {
+        "id": "sticker_label",
+        "type": "text",
+        "x": 805,
+        "y": 145,
+        "width": 170,
+        "height": 70,
+        "z_index": 6,
+        "content": "48H ONLY",
+        "font_family": "Solstice Sans",
+        "font_size": 30,
+        "font_weight": "bold",
+        "color": "rgba(27,15,46,1)",
+        "text_align": "center",
+        "rotation": 12,
+        "group_id": "sticker"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 150,
+        "y": 831,
+        "width": 780,
+        "height": 210,
+        "z_index": 4,
+        "content": "Box fresh, half price",
+        "font_family": "Solstice Sans",
+        "font_size": 80,
+        "font_weight": "bold",
+        "font_style": "italic",
+        "color": "rgba(27,15,46,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "subhead",
+        "type": "text",
+        "x": 150,
+        "y": 1065,
+        "width": 780,
+        "height": 44,
+        "z_index": 4,
+        "content": "Last season's colourways, every size still in stock.",
+        "font_family": "Solstice Sans",
+        "font_size": 30,
+        "color": "rgba(27,15,46,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 370,
+        "y": 1149,
+        "width": 339,
+        "height": 90,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(27,15,46,1)",
+        "corner_radius": 45.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 370,
+        "y": 1175,
+        "width": 339,
+        "height": 39,
+        "z_index": 4,
+        "content": "Shop the Archive",
+        "font_family": "Solstice Sans",
+        "font_size": 28,
+        "font_weight": "bold",
+        "color": "rgba(198,244,50,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      }
+    ]
+  }
+}

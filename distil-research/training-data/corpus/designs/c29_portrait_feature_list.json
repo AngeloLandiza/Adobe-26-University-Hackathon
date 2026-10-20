@@ -2,6 +2,7 @@
   "task_id": "c29_portrait_feature_list",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Light portrait with a four-item feature list (dot + text grouped) and a logo grouped on a dark pill.",
   "features": [

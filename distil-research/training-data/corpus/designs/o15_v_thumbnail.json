@@ -1,0 +1,134 @@
+{
+  "task_id": "o15_v_thumbnail",
+  "split": "holdout",
+  "origin": "offbrand",
+  "brand": "offbrand",
+  "expects_missing_asset": false,
+  "notes": "1280x720 thumbnail: huge 3-line headline, product on a solid disc, rotated badge, no button.",
+  "features": [
+    "landscape",
+    "dark",
+    "image-bg",
+    "rotated",
+    "badges-1",
+    "no-cta",
+    "deco-overlap",
+    "groups",
+    "offbrand",
+    "synthetic-image"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1280,
+      "height": 720
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720,
+        "z_index": 0,
+        "asset_id": "syn_bg_violet_glow.png",
+        "fit": "cover"
+      },
+      {
+        "id": "deco_disc",
+        "type": "shape",
+        "x": 690,
+        "y": 120,
+        "width": 520,
+        "height": 520,
+        "z_index": 1,
+        "shape_type": "ellipse",
+        "fill_color": "rgba(198,244,50,1)",
+        "opacity": 0.9
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 650,
+        "y": 230,
+        "width": 600,
+        "height": 300.0,
+        "z_index": 3,
+        "asset_id": "syn_prod_sneaker.png",
+        "fit": "contain"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 80,
+        "y": 60,
+        "width": 300,
+        "height": 60.0,
+        "z_index": 3,
+        "asset_id": "syn_logo_voltstride_light.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 80,
+        "y": 160,
+        "width": 560,
+        "height": 360,
+        "z_index": 4,
+        "content": "We tested it on 100 marathons",
+        "font_family": "Solstice Sans",
+        "font_size": 84,
+        "font_weight": "bold",
+        "font_style": "italic",
+        "color": "rgba(245,240,255,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "subhead",
+        "type": "text",
+        "x": 80,
+        "y": 560,
+        "width": 520,
+        "height": 44,
+        "z_index": 4,
+        "content": "Full review inside.",
+        "font_family": "Solstice Sans",
+        "font_size": 30,
+        "color": "rgba(245,240,255,0.85)",
+        "text_align": "left"
+      },
+      {
+        "id": "badge_bg",
+        "type": "shape",
+        "x": 1030,
+        "y": 50,
+        "width": 182,
+        "height": 53,
+        "z_index": 6,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,79,163,1)",
+        "corner_radius": 26.5,
+        "rotation": 8,
+        "group_id": "badge"
+      },
+      {
+        "id": "badge_label",
+        "type": "text",
+        "x": 1030,
+        "y": 62,
+        "width": 182,
+        "height": 31,
+        "z_index": 7,
+        "content": "NEW VIDEO",
+        "font_family": "Solstice Sans",
+        "font_size": 22,
+        "font_weight": "bold",
+        "color": "rgba(27,15,46,1)",
+        "text_align": "center",
+        "rotation": 8,
+        "group_id": "badge"
+      }
+    ]
+  }
+}

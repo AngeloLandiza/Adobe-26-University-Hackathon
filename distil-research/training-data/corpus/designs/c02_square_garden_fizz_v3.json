@@ -1,0 +1,137 @@
+{
+  "task_id": "c02_square_garden_fizz_v3",
+  "split": "holdout",
+  "origin": "augmented",
+  "brand": "offbrand",
+  "parent": "c02_square_garden_fizz",
+  "augmentations": [
+    "remove:subhead",
+    "image:product->syn_prod_coffee_bag.png",
+    "palette:citrine(inverted)"
+  ],
+  "expects_missing_asset": false,
+  "notes": "Augmented variant of c02_square_garden_fizz: remove:subhead; image:product->syn_prod_coffee_bag.png; palette:citrine(inverted).",
+  "features": [
+    "dark",
+    "square",
+    "solid-bg",
+    "no-logo",
+    "ungrouped-button",
+    "deco-overlap",
+    "bleed",
+    "synthetic-image",
+    "augmented"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1080,
+      "height": 1080
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 1080,
+        "height": 1080,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(38,38,38,1)"
+      },
+      {
+        "id": "deco_leaf",
+        "type": "shape",
+        "x": 620,
+        "y": -120,
+        "width": 600,
+        "height": 600,
+        "z_index": 1,
+        "shape_type": "ellipse",
+        "fill_color": "rgba(37,128,74,1)",
+        "opacity": 0.25
+      },
+      {
+        "id": "deco_sun",
+        "type": "shape",
+        "x": -140,
+        "y": 760,
+        "width": 460,
+        "height": 460,
+        "z_index": 1,
+        "shape_type": "ellipse",
+        "fill_color": "rgba(255,210,63,1)",
+        "opacity": 0.3
+      },
+      {
+        "id": "wordmark",
+        "type": "text",
+        "x": 340,
+        "y": 70,
+        "width": 400,
+        "height": 44,
+        "z_index": 4,
+        "content": "CITRINE",
+        "font_family": "Solstice Sans",
+        "font_size": 30,
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "letter_spacing": 8
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 345.6,
+        "y": 140.0,
+        "width": 388.9,
+        "height": 500.01,
+        "z_index": 3,
+        "asset_id": "syn_prod_coffee_bag.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 90,
+        "y": 650,
+        "width": 900,
+        "height": 90,
+        "z_index": 4,
+        "content": "Garden-fresh fizz",
+        "font_family": "Solstice Serif",
+        "font_size": 68,
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 370,
+        "y": 760,
+        "width": 340,
+        "height": 84,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,255,255,1)",
+        "corner_radius": 42.0
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 370,
+        "y": 786,
+        "width": 340,
+        "height": 34,
+        "z_index": 4,
+        "content": "Find a Store",
+        "font_family": "Solstice Sans",
+        "font_size": 24,
+        "font_weight": "bold",
+        "color": "rgba(38,38,38,1)",
+        "text_align": "center"
+      }
+    ]
+  }
+}

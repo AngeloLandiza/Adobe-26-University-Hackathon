@@ -12,7 +12,12 @@ missing-asset path. Nothing here is random.
 
 Running it also prints layout warnings (text that overflows its box, content
 off the canvas, text boxes that overlap by accident), so a broken ad is
-caught before anyone looks at the sheet.
+caught before anyone looks at the sheet. The same checks (`check`,
+`pixel_check`) gate the augmented and off-brand ads (augment.py,
+make_offbrand.py), which drop any ad that fails them.
+
+Every record carries `brand: "solstice"`; images resolve against the brand
+kit plus training-data/corpus/assets/ (dev/distill/assets.py).
 """
 
 import json
@@ -20,13 +25,14 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw
 
+from dev.distill.assets import asset_exists, merged_assets_dir
 from dev.distill.paths import CORPUS_DIR, DATA_ROOT
 
 CHAMELEON = Path(__file__).resolve().parents[2]
 ASSETS_DIR = CHAMELEON / "brand_kit" / "assets"
 FONTS_DIR = CHAMELEON / "brand_kit" / "fonts"
 INPUT_DIR = CHAMELEON / "input"
-REVIEW_DIR = DATA_ROOT / "corpus" / "review"
+REVIEW_DIR = DATA_ROOT / "corpus" / "review.nosync"  # iCloud skips *.nosync
 
 GRADIENT, BOTTLE, LOGO = "solstice_bg_gradient.png", "solstice_bottle.png", "solstice_logo_lockup.png"
 LOGO_ASPECT = 3.0  # solstice_logo_lockup.png is 900x300; the bottle is 800x800
@@ -152,7 +158,7 @@ def ad(task_id, split, w, h, elements, notes, features) -> dict:
     flat = []
     for el in elements:
         flat.extend(el if isinstance(el, list) else [el])
-    return {"task_id": task_id, "split": split, "origin": "claude-drafted",
+    return {"task_id": task_id, "split": split, "origin": "claude-drafted", "brand": "solstice",
             "expects_missing_asset": False, "notes": notes, "features": features,
             "source": {"canvas": {"width": w, "height": h}, "elements": flat}}
 
@@ -575,7 +581,7 @@ def drafted() -> list[dict]:
         text("subhead", "Live music, rooftop pours and the longest golden hour of the year",
              140, 366, 800, 96, 34, serif=True, italic=True, color=rgba(WHITE, 0.9), align="center"),
         bottle(680, 510, 360, rotation=-10),
-        text("date", "Saturday 21 June", 90, 520, 560, 50, 38, bold=True),
+        text("date", "Saturday 21 June", 90, 520, 560, 54, 38, bold=True),
         text("details", "6:00 pm until sundown, Harbour Rooftop, Pier 9", 90, 580, 540, 80, 26,
              color=rgba(WHITE, 0.85)),
         pill("badge1", 90, 700, 190, 48, "FREE ENTRY", 16),
@@ -668,7 +674,7 @@ def samples() -> list[dict]:
     out = []
     for path in sorted(INPUT_DIR.glob("*.json")):
         task = json.loads(path.read_text())
-        out.append({"task_id": task["task_id"], "split": "train", "origin": "sample",
+        out.append({"task_id": task["task_id"], "split": "train", "origin": "sample", "brand": "solstice",
                     "expects_missing_asset": _missing_assets(task["source"]) != [],
                     "notes": task.get("notes", ""), "features": ["sample", task.get("difficulty", "")],
                     "source": task["source"]})
@@ -676,8 +682,7 @@ def samples() -> list[dict]:
 
 
 def _missing_assets(source: dict) -> list[str]:
-    return [el["asset_id"] for el in source["elements"]
-            if el["type"] == "image" and not (ASSETS_DIR / el["asset_id"]).is_file()]
+    return [el["asset_id"] for el in source["elements"] if el["type"] == "image" and not asset_exists(el["asset_id"])]
 
 
 def _box(el: dict) -> tuple[float, float, float, float]:
@@ -697,18 +702,49 @@ def _contains(outer, inner) -> bool:
 # Overlaps a designer made on purpose (a sticker or badge laid over the
 # product box), so the checker doesn't flag them.
 INTENDED_OVERLAPS = {
-    "c05_square_orange_sticker": {("product", "sticker_label")},
-    "c14_thumbnail_taste_test": {("product", "badge_label")},
+    "c05_square_orange_sticker": {("product", "sticker_label"), ("product", "sticker_bg")},
+    "c14_thumbnail_taste_test": {("product", "badge_label"), ("product", "badge_bg")},
 }
 
 
-def check(record: dict) -> list[str]:
-    """Layout warnings for one ad: overflowing text, off-canvas content,
-    accidental overlaps. Decorative shapes (id deco*) and backgrounds may bleed."""
+_MEASURER = None
+
+
+def measurer():
+    """One shared TextMeasurer (font loading is slow)."""
+    global _MEASURER
+    if _MEASURER is None:
+        from engine.pipeline.textmeasure import TextMeasurer
+        _MEASURER = TextMeasurer(FONTS_DIR)
+    return _MEASURER
+
+
+def _is_layer(el: dict) -> bool:
+    """Background or decoration: allowed to bleed off the canvas and under content."""
+    return el["id"] == "bg" or el["id"].startswith("deco")
+
+
+def _image_aspect(asset_id: str) -> float | None:
+    from dev.distill.assets import BRAND_ASSETS_DIR, SYNTH_ASSETS_DIR
+    for folder in (BRAND_ASSETS_DIR, SYNTH_ASSETS_DIR):
+        if (folder / asset_id).is_file():
+            with Image.open(folder / asset_id) as im:
+                return im.width / im.height
+    return None
+
+
+def check(record: dict, strict: bool = False) -> list[str]:
+    """Layout warnings for one ad: overflowing text (both this file's own
+    estimate and the engine's TextMeasurer.fits), off-canvas content,
+    accidental overlaps, non-cover images not in their asset's aspect ratio.
+    Decorative shapes (id deco*) and backgrounds may bleed. `strict` also
+    flags images/shapes that partly overlap other content (one fully inside
+    the other, like a product on a panel, is fine)."""
     from renderer.converter.convert import _get_renderer
     from renderer.converter.wrap import char_widths, wrap_text
 
     fm = _get_renderer(str(FONTS_DIR)).font_manager
+    tm = measurer()
     src = record["source"]
     cw, ch = src["canvas"]["width"], src["canvas"]["height"]
     warnings = []
@@ -736,6 +772,12 @@ def check(record: dict) -> list[str]:
                 warnings.append(f"{el['id']}: {len(lines)} lines need {need:.0f}px, box is {el['height']}")
             if widest > el["width"] + 0.5:
                 warnings.append(f"{el['id']}: a line is {widest:.0f}px wide, box is {el['width']}")
+            if not tm.fits(el, el["font_size"], el["width"], el["height"]):
+                warnings.append(f"{el['id']}: TextMeasurer says the text does not fit its box")
+        if el["type"] == "image" and el.get("fit", "contain") != "cover":
+            aspect = _image_aspect(el["asset_id"])
+            if aspect and abs((el["width"] / el["height"]) / aspect - 1) > 0.02:
+                warnings.append(f"{el['id']}: box aspect {el['width'] / el['height']:.2f} != image {aspect:.2f}")
         if el["id"] == "bg" or el["id"].startswith("deco"):
             continue
         x, y, w, h = _box(el)
@@ -746,9 +788,12 @@ def check(record: dict) -> list[str]:
         for b in content[i + 1:]:
             if a.get("group_id") and a.get("group_id") == b.get("group_id"):
                 continue
-            if "text" not in (a["type"], b["type"]):
+            if (a["id"], b["id"]) in INTENDED_OVERLAPS.get(record.get("parent") or record["task_id"], set()):
                 continue
-            if (a["id"], b["id"]) in INTENDED_OVERLAPS.get(record["task_id"], set()):
+            if "text" not in (a["type"], b["type"]):
+                if strict and _intersect(_box(a), _box(b)) and not (
+                        _contains(_box(a), _box(b)) or _contains(_box(b), _box(a))):
+                    warnings.append(f"overlap: {a['id']} x {b['id']}")
                 continue
             shape_el, text_el = (a, b) if a["type"] == "shape" else (b, a)
             if shape_el["type"] == "shape" and _contains(_box(shape_el), _box(text_el)):
@@ -758,39 +803,124 @@ def check(record: dict) -> list[str]:
     return warnings
 
 
-def contact_sheet(records: list[dict], path: Path, cell: int = 420) -> None:
+MIN_CONTRAST = 3.0   # WCAG large-text floor; the drafted ads' white-on-orange buttons sit at 3.2
+MAX_BUSY = 40.0      # mean Sobel gradient (0-255 grey) behind a text box's inner area; busy images read 60+
+PIXEL_RENDER = 600
+
+
+def text_backdrops(source: dict, assets_dir) -> dict[str, tuple[float, float]]:
+    """{text id: (contrast ratio, busyness)} measured the way the engine's
+    pixel metrics do: render without text, then compare each text's colour with
+    the darkest/lightest 10% of what sits behind it, and take the mean Sobel
+    gradient of the box's inner area (shrunk by 15% per side so a button's own
+    rounded edge doesn't count as busy)."""
+    import numpy as np
+
+    from engine.pipeline.grading.pixels import _luminance, _ratio, _sobel
+    from engine.pipeline.render import render_to_image
+    from renderer.converter.colorutil import parse_rgba
+
+    backdrop = dict(source, elements=[e for e in source["elements"] if e["type"] != "text"])
+    rgb = np.asarray(render_to_image(backdrop, assets_dir, max_size=PIXEL_RENDER), dtype=float)
+    scale = rgb.shape[1] / source["canvas"]["width"]
+    lum = _luminance(rgb)
+    sobel = _sobel(rgb @ np.array([0.299, 0.587, 0.114]))
+    out = {}
+    for t in source["elements"]:
+        if t["type"] != "text":
+            continue
+        x0, y0 = max(0, int(t["x"] * scale)), max(0, int(t["y"] * scale))
+        x1 = min(rgb.shape[1], int((t["x"] + t["width"]) * scale) + 1)
+        y1 = min(rgb.shape[0], int((t["y"] + t["height"]) * scale) + 1)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        region = rgb[y0:y1, x0:x1].reshape(-1, 3)
+        r, g, b, alpha = parse_rgba(t.get("color"), default=(0, 0, 0, 1.0))
+        alpha *= 1.0 if t.get("opacity") is None else t["opacity"]
+        shown = alpha * np.array([r, g, b], dtype=float) + (1 - alpha) * np.median(region, axis=0)
+        text_lum = float(_luminance(shown))
+        ratio = min(_ratio(text_lum, float(np.percentile(lum[y0:y1, x0:x1], p))) for p in (10, 90))
+        dx, dy = (x1 - x0) * 0.15, (y1 - y0) * 0.15
+        inner = sobel[int(y0 + dy):max(int(y0 + dy) + 1, int(y1 - dy)), int(x0 + dx):max(int(x0 + dx) + 1, int(x1 - dx))]
+        out[t["id"]] = (ratio, float(inner.mean()))
+    return out
+
+
+def pixel_check(record: dict, assets_dir, parent_backdrops: dict | None = None) -> list[str]:
+    """Readability warnings from pixels: text below MIN_CONTRAST against what
+    is behind it (or below its parent ad's own value, if the parent was already
+    lower), and text sitting on a busy area."""
+    warnings = []
+    for tid, (ratio, busy) in text_backdrops(record["source"], assets_dir).items():
+        floor = MIN_CONTRAST
+        if parent_backdrops and tid in parent_backdrops:
+            floor = min(floor, parent_backdrops[tid][0] - 0.05)
+        if ratio < floor:
+            warnings.append(f"{tid}: contrast {ratio:.2f} < {floor:.2f}")
+        if busy > MAX_BUSY:
+            warnings.append(f"{tid}: sits on a busy backdrop (sobel {busy:.0f} > {MAX_BUSY:.0f})")
+    return warnings
+
+
+def contact_sheet(records: list[dict], path: Path, cell: int = 420, assets_dir=None) -> None:
+    """Every ad rendered into one grid (and each ad's PNG beside it)."""
     from engine.pipeline.render import render_to_image
 
+    if assets_dir is None:
+        with merged_assets_dir() as assets:
+            return contact_sheet(records, path, cell, assets)
     cols = 6
     rows = -(-len(records) // cols)
     label_h = 34
     sheet = Image.new("RGB", (cols * cell, rows * (cell + label_h)), (236, 236, 236))
     draw = ImageDraw.Draw(sheet)
     for i, rec in enumerate(records):
-        img = render_to_image(rec["source"], assets_dir=ASSETS_DIR, max_size=cell - 16)
+        img = render_to_image(rec["source"], assets_dir=assets_dir, max_size=cell - 16)
         img.save(path.parent / f"{rec['task_id']}.png")
         cx, cy = (i % cols) * cell, (i // cols) * (cell + label_h)
         sheet.paste(img, (cx + (cell - img.width) // 2, cy + label_h + (cell - img.height) // 2))
         c = rec["source"]["canvas"]
-        label = f"{rec['task_id']}  [{rec['split']}]  {c['width']}x{c['height']}  n={len(rec['source']['elements'])}"
+        label = (f"{rec['task_id']}  [{rec['split']}/{rec.get('brand', '?')}]  {c['width']}x{c['height']}  "
+                 f"n={len(rec['source']['elements'])}")
         draw.text((cx + 8, cy + 10), label, fill=(20, 20, 20))
     sheet.save(path)
 
 
+def sync_designs(records: list[dict], origins: tuple[str, ...]) -> None:
+    """Write `records` into CORPUS_DIR, owning every file whose origin is in
+    `origins`: stale ones are deleted, unchanged ones are left untouched, and
+    changed ones are rewritten in place. (Deleting and recreating every file
+    makes cloud-synced folders such as iCloud Drive leave "name 2.json"
+    conflict copies; any such copy of a file we own is removed.)"""
+    import re
+
+    CORPUS_DIR.mkdir(parents=True, exist_ok=True)
+    keep = {f"{r['task_id']}.json": json.dumps(r, indent=2, ensure_ascii=False) + "\n" for r in records}
+    for path in CORPUS_DIR.glob("*.json"):
+        try:
+            data = json.loads(path.read_text())
+        except ValueError:
+            continue
+        conflict_copy = re.search(r" \d+\.json$", path.name) is not None
+        if conflict_copy and (f"{data.get('task_id')}.json" in keep or data.get("origin") in origins):
+            path.unlink()
+        elif path.name not in keep and data.get("origin") in origins:
+            path.unlink()
+    for name, text in keep.items():
+        path = CORPUS_DIR / name
+        if not path.exists() or path.read_text() != text:
+            path.write_text(text)
+
+
 def main() -> None:
     records = samples() + drafted()
-    CORPUS_DIR.mkdir(parents=True, exist_ok=True)
     REVIEW_DIR.mkdir(parents=True, exist_ok=True)
-    keep = {f"{r['task_id']}.json" for r in records}
-    for stale in CORPUS_DIR.glob("*.json"):
-        if stale.name not in keep and json.loads(stale.read_text()).get("origin") in ("sample", "claude-drafted"):
-            stale.unlink()
     problems = 0
     for rec in records:
         for w in check(rec) if rec["origin"] != "sample" else []:
             print(f"[warn] {rec['task_id']}: {w}")
             problems += 1
-        (CORPUS_DIR / f"{rec['task_id']}.json").write_text(json.dumps(rec, indent=2, ensure_ascii=False) + "\n")
+    sync_designs(records, ("sample", "claude-drafted"))
     contact_sheet(records, REVIEW_DIR / "sheet.png")
     splits = {s: sum(r["split"] == s for r in records) for s in ("train", "holdout")}
     print(f"wrote {len(records)} ads ({splits['train']} train, {splits['holdout']} holdout) to {CORPUS_DIR}")

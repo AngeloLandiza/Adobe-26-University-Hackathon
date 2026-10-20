@@ -1,0 +1,84 @@
+{
+  "task_id": "c30_story_minimal_glow_v2",
+  "split": "train",
+  "origin": "augmented",
+  "brand": "solstice",
+  "parent": "c30_story_minimal_glow",
+  "augmentations": [
+    "remove:logo",
+    "image:product->syn_prod_tall_bottle.png",
+    "type:cta_text-spacing"
+  ],
+  "expects_missing_asset": false,
+  "notes": "Augmented variant of c30_story_minimal_glow: remove:logo; image:product->syn_prod_tall_bottle.png; type:cta_text-spacing.",
+  "features": [
+    "dark",
+    "story",
+    "solid-bg",
+    "5-elements",
+    "no-groups",
+    "synthetic-image",
+    "augmented"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1080,
+      "height": 1920
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 1080,
+        "height": 1920,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(43,27,46,1)"
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 360.0,
+        "y": 340.0,
+        "width": 360.0,
+        "height": 900.0,
+        "z_index": 3,
+        "asset_id": "syn_prod_tall_bottle.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 90,
+        "y": 1260,
+        "width": 900,
+        "height": 224,
+        "z_index": 4,
+        "content": "Glow.",
+        "font_family": "Solstice Serif",
+        "font_size": 170,
+        "font_weight": "bold",
+        "color": "rgba(250,242,230,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "cta_text",
+        "type": "text",
+        "x": 290,
+        "y": 1580,
+        "width": 500,
+        "height": 44,
+        "z_index": 4,
+        "content": "SHOP SOLSTICE",
+        "font_family": "Solstice Sans",
+        "font_size": 30,
+        "font_weight": "bold",
+        "color": "rgba(240,178,66,1)",
+        "text_align": "center",
+        "letter_spacing": 1.5
+      }
+    ]
+  }
+}

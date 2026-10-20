@@ -1,0 +1,137 @@
+{
+  "task_id": "c14_thumbnail_taste_test_v2",
+  "split": "train",
+  "origin": "augmented",
+  "brand": "offbrand",
+  "parent": "c14_thumbnail_taste_test",
+  "augmentations": [
+    "type:headline-sans",
+    "palette:ultra"
+  ],
+  "expects_missing_asset": false,
+  "notes": "Augmented variant of c14_thumbnail_taste_test: type:headline-sans; palette:ultra.",
+  "features": [
+    "dark",
+    "landscape",
+    "gradient-bg",
+    "rotated",
+    "badges-1",
+    "deco-overlap",
+    "no-cta",
+    "synthetic-image",
+    "augmented"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1280,
+      "height": 720
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720,
+        "z_index": 0,
+        "asset_id": "syn_bg_violet_glow.png",
+        "fit": "cover"
+      },
+      {
+        "id": "deco_disc",
+        "type": "shape",
+        "x": 760,
+        "y": 140,
+        "width": 460,
+        "height": 460,
+        "z_index": 1,
+        "shape_type": "ellipse",
+        "fill_color": "rgba(244,239,255,1)",
+        "opacity": 0.92
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 720,
+        "y": 100,
+        "width": 540,
+        "height": 540,
+        "z_index": 3,
+        "asset_id": "solstice_bottle.png",
+        "fit": "contain"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 76.6,
+        "y": 76.6,
+        "width": 147.5,
+        "height": 36.9,
+        "z_index": 4,
+        "asset_id": "syn_logo_blocks_light.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 80,
+        "y": 170,
+        "width": 620,
+        "height": 321,
+        "z_index": 4,
+        "content": "Taste test: three new botanicals",
+        "font_family": "Solstice Sans",
+        "font_size": 84,
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "subhead",
+        "type": "text",
+        "x": 80,
+        "y": 511,
+        "width": 580,
+        "height": 84,
+        "z_index": 4,
+        "content": "We tried every flavour so you can pick your favourite.",
+        "font_family": "Solstice Sans",
+        "font_size": 28,
+        "color": "rgba(255,255,255,0.85)",
+        "text_align": "left"
+      },
+      {
+        "id": "badge_bg",
+        "type": "shape",
+        "x": 1010,
+        "y": 44,
+        "width": 210,
+        "height": 64,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(198,244,50,1)",
+        "corner_radius": 10,
+        "rotation": 10,
+        "group_id": "badge"
+      },
+      {
+        "id": "badge_label",
+        "type": "text",
+        "x": 1010,
+        "y": 60,
+        "width": 210,
+        "height": 34,
+        "z_index": 4,
+        "content": "NEW VIDEO",
+        "font_family": "Solstice Sans",
+        "font_size": 24,
+        "font_weight": "bold",
+        "color": "rgba(23,12,43,1)",
+        "text_align": "center",
+        "rotation": 10,
+        "group_id": "badge"
+      }
+    ]
+  }
+}

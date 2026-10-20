@@ -2,6 +2,7 @@
   "task_id": "c16_banner_bottled_glow",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Wide 4:1 banner: logo left, copy centre, product and button right.",
   "features": [

@@ -2,6 +2,7 @@
   "task_id": "c06_portrait_lineup",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Portrait flavour lineup: the bottle three times in a row, each with a name and descriptor (16 elements).",
   "features": [

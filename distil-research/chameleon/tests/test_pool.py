@@ -1,7 +1,10 @@
 import json
 import random
 
+import pytest
+
 from dev.distill import pool
+from dev.distill.paths import RENDERS_SUBDIR
 from engine.pipeline.layout.aspect import aspect_class
 
 METRIC_KEYS = ["hierarchy", "legibility", "overlap", "degradation", "faithfulness", "space_use", "alignment",
@@ -31,7 +34,7 @@ def test_pool_rows_have_metrics_and_pngs(l1, targets, tmp_path):
     assert rows
     on_disk = [json.loads(line) for line in (tmp_path / "pool.jsonl").read_text().splitlines()]
     assert on_disk == rows
-    assert (tmp_path / "renders" / l1["task_id"] / "source.png").exists()
+    assert (tmp_path / RENDERS_SUBDIR / l1["task_id"] / "source.png").exists()
     for row in rows:
         assert row["cell"] == f"{l1['task_id']}@leaderboard"
         assert (row["task_id"], row["split"], row["target"]) == (l1["task_id"], "train", "leaderboard")
@@ -135,3 +138,37 @@ def test_build_pool_drops_candidates_failing_the_gates(l1, targets, tmp_path, mo
     monkeypatch.setattr(gates, "check_gates", reject_first)
     fewer = pool.build_pool([_l1_design(l1)], [target], tmp_path / "gated")
     assert len(fewer) == len(baseline) - 1
+
+
+def test_synthetic_asset_resolves_through_merged_dir(l1, targets, tmp_path):
+    """An ad that uses a code-drawn `syn_` image (training-data/corpus/assets/)
+    plans without the missing-asset flag and lands in pool rows with its brand."""
+    from dev.distill.assets import SYNTH_ASSETS_DIR, merged_assets_dir
+    from engine.pipeline.priority import heuristic_plan
+
+    syn = sorted(p.name for p in SYNTH_ASSETS_DIR.glob("syn_*.png"))
+    assert syn, "run python -m dev.distill.synth_images first"
+    source = json.loads(json.dumps(l1["source"]))
+    source["elements"].append({"id": "syn_mark", "type": "image", "x": 20, "y": 20, "width": 100, "height": 100,
+                               "z_index": 9, "asset_id": syn[0], "fit": "contain"})
+    with merged_assets_dir() as assets:
+        assert (assets / syn[0]).is_file() and (assets / "solstice_bottle.png").is_file()
+        plan = heuristic_plan(source, assets)
+    assert not any("missing_asset" in u.flags for u in plan.units)
+    design = {"task_id": "syn_probe", "split": "holdout", "brand": "offbrand", "source": source}
+    target = next(t for t in targets if t["name"] == "leaderboard")
+    rows = pool.build_pool([design], [target], tmp_path)
+    assert rows and all(r["brand"] == "offbrand" for r in rows)
+    assert all(r["metrics"]["placeholder"] == 1.0 for r in rows)
+
+
+def test_merged_assets_dir_rejects_name_collisions(tmp_path):
+    from dev.distill.assets import merged_assets_dir
+
+    a, b = tmp_path / "a", tmp_path / "b"
+    a.mkdir(), b.mkdir()
+    (a / "x.png").write_bytes(b"1")
+    (b / "x.png").write_bytes(b"2")
+    with pytest.raises(ValueError):
+        with merged_assets_dir(a, b):
+            pass

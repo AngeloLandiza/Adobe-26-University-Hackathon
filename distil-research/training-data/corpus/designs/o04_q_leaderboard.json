@@ -1,0 +1,104 @@
+{
+  "task_id": "o04_q_leaderboard",
+  "split": "train",
+  "origin": "offbrand",
+  "brand": "offbrand",
+  "expects_missing_asset": false,
+  "notes": "728x90 strip: round badge logo, two lines of copy, button.",
+  "features": [
+    "strip",
+    "dark",
+    "solid-bg",
+    "groups",
+    "offbrand",
+    "synthetic-image"
+  ],
+  "source": {
+    "canvas": {
+      "width": 728,
+      "height": 90
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 728,
+        "height": 90,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(59,42,32,1)"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 12,
+        "y": 9,
+        "width": 72.0,
+        "height": 72.0,
+        "z_index": 3,
+        "asset_id": "syn_logo_quillbrook_badge.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 100,
+        "y": 14,
+        "width": 420,
+        "height": 38,
+        "z_index": 4,
+        "content": "Fresh roast, every Monday",
+        "font_family": "Solstice Serif",
+        "font_size": 28,
+        "font_weight": "bold",
+        "color": "rgba(246,237,224,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "subhead",
+        "type": "text",
+        "x": 100,
+        "y": 54,
+        "width": 420,
+        "height": 22,
+        "z_index": 4,
+        "content": "Free delivery on two bags or more.",
+        "font_family": "Solstice Sans",
+        "font_size": 15,
+        "color": "rgba(246,237,224,0.8)",
+        "text_align": "left"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 572,
+        "y": 22,
+        "width": 140,
+        "height": 46,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(224,164,88,1)",
+        "corner_radius": 23.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 572,
+        "y": 34,
+        "width": 140,
+        "height": 22,
+        "z_index": 4,
+        "content": "Shop Coffee",
+        "font_family": "Solstice Sans",
+        "font_size": 16,
+        "font_weight": "bold",
+        "color": "rgba(59,42,32,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      }
+    ]
+  }
+}

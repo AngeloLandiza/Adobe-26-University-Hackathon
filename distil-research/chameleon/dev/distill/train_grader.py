@@ -121,6 +121,25 @@ def split_examples(pool_rows, judgments) -> tuple[list, list]:
     return train, holdout
 
 
+def holdout_by_brand(pool_rows, judgments) -> dict[str, list]:
+    """Holdout examples grouped by the pool row's `brand` ("solstice",
+    "offbrand"; "unknown" for rows written before the field existed), so the
+    report can show whether a fit generalises beyond the sample brand."""
+    rows = [dict(r, split=f"holdout:{r.get('brand', 'unknown')}") if r["split"] == "holdout" else r
+            for r in pool_rows]
+    groups: dict[str, list] = {}
+    by_key = {(r["cell"], r["candidate_id"]): r for r in rows}
+    for j in judgments:
+        if j["winner"] == "tie":
+            continue
+        ra, rb = by_key.get((j["cell"], j["a"])), by_key.get((j["cell"], j["b"]))
+        if ra is None or rb is None or ra["split"] != rb["split"] or not ra["split"].startswith("holdout:"):
+            continue
+        groups.setdefault(ra["split"].split(":", 1)[1], []).append(
+            (ra["metrics"], rb["metrics"], 1.0 if j["winner"] == "a" else 0.0))
+    return groups
+
+
 def _read_jsonl(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
 
@@ -155,7 +174,8 @@ def main(argv=None) -> int:
     per_teacher: dict[str, int] = {}
     for j in judgments:
         per_teacher[j["teacher"]] = per_teacher.get(j["teacher"], 0) + 1
-    train, holdout, counts = _join(_read_jsonl(args.pool), judgments)
+    pool_rows = _read_jsonl(args.pool)
+    train, holdout, counts = _join(pool_rows, judgments)
     if not train or not holdout:
         print(f"need both train and holdout examples (train={len(train)}, holdout={len(holdout)})", file=sys.stderr)
         return 1
@@ -172,7 +192,11 @@ def main(argv=None) -> int:
                "| accuracy | train | holdout |", "|---|---|---|"]
     for name in ("default", "learned"):
         summary.append(f"| {name} | {acc[name, 'train']:.3f} | {acc[name, 'holdout']:.3f} |")
-    summary += [f"holdout gain: {gain:+.3f} (needs >= {MIN_GAIN})", *notes, "", *_weights_table(learned)]
+    summary += ["", "| holdout brand | examples | default | learned |", "|---|---|---|---|"]
+    for brand, examples in sorted(holdout_by_brand(pool_rows, judgments).items(), key=lambda kv: kv[0] != "solstice"):
+        summary.append(f"| {brand} | {len(examples)} | {pairwise_accuracy(DEFAULT_WEIGHTS, examples):.3f} | "
+                       f"{pairwise_accuracy(learned, examples):.3f} |")
+    summary += ["", f"holdout gain: {gain:+.3f} (needs >= {MIN_GAIN})", *notes, "", *_weights_table(learned)]
     print("\n".join(summary))
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text("# Grader training report\n\n" + "\n".join(summary) + "\n")

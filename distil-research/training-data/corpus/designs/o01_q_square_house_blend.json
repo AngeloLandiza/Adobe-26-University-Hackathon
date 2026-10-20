@@ -1,0 +1,173 @@
+{
+  "task_id": "o01_q_square_house_blend",
+  "split": "train",
+  "origin": "offbrand",
+  "brand": "offbrand",
+  "expects_missing_asset": false,
+  "notes": "Coffee roaster, dark photo-like background, copy left, round tin product right, badge top right.",
+  "features": [
+    "square",
+    "dark",
+    "image-bg",
+    "groups",
+    "badges-1",
+    "deco-overlap",
+    "offbrand",
+    "synthetic-image"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1080,
+      "height": 1080
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0,
+        "y": 0,
+        "width": 1080,
+        "height": 1080,
+        "z_index": 0,
+        "asset_id": "syn_bg_roast_ember.png",
+        "fit": "cover"
+      },
+      {
+        "id": "deco_glow",
+        "type": "shape",
+        "x": 560,
+        "y": 270,
+        "width": 500,
+        "height": 500,
+        "z_index": 1,
+        "shape_type": "ellipse",
+        "fill_color": "rgba(224,164,88,1)",
+        "opacity": 0.18
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 90,
+        "y": 70,
+        "width": 130.0,
+        "height": 130.0,
+        "z_index": 3,
+        "asset_id": "syn_logo_quillbrook_badge.png",
+        "fit": "contain"
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 590,
+        "y": 320,
+        "width": 420,
+        "height": 420.0,
+        "z_index": 3,
+        "asset_id": "syn_prod_round_tin.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 90,
+        "y": 358,
+        "width": 470,
+        "height": 176,
+        "z_index": 4,
+        "content": "House Blend, slow roasted.",
+        "font_family": "Solstice Serif",
+        "font_size": 70,
+        "font_weight": "bold",
+        "color": "rgba(246,237,224,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "subhead",
+        "type": "text",
+        "x": 90,
+        "y": 564,
+        "width": 470,
+        "height": 100,
+        "z_index": 4,
+        "content": "Chocolate, toasted hazelnut and a little dried cherry. Roasted on Mondays, at your door by Thursday.",
+        "font_family": "Solstice Sans",
+        "font_size": 26,
+        "color": "rgba(246,237,224,0.85)",
+        "text_align": "left"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 90,
+        "y": 710,
+        "width": 265,
+        "height": 77,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(224,164,88,1)",
+        "corner_radius": 38.5,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 90,
+        "y": 732,
+        "width": 265,
+        "height": 34,
+        "z_index": 4,
+        "content": "Shop the Blend",
+        "font_family": "Solstice Sans",
+        "font_size": 24,
+        "font_weight": "bold",
+        "color": "rgba(59,42,32,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      },
+      {
+        "id": "note",
+        "type": "text",
+        "x": 90,
+        "y": 811,
+        "width": 470,
+        "height": 30,
+        "z_index": 4,
+        "content": "Whole bean or ground to order",
+        "font_family": "Solstice Sans",
+        "font_size": 20,
+        "color": "rgba(246,237,224,0.7)",
+        "text_align": "left"
+      },
+      {
+        "id": "badge_bg",
+        "type": "shape",
+        "x": 820,
+        "y": 110,
+        "width": 195,
+        "height": 43,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(125,143,105,1)",
+        "corner_radius": 21.5,
+        "group_id": "badge"
+      },
+      {
+        "id": "badge_label",
+        "type": "text",
+        "x": 820,
+        "y": 119,
+        "width": 195,
+        "height": 25,
+        "z_index": 4,
+        "content": "NEW HARVEST",
+        "font_family": "Solstice Sans",
+        "font_size": 18,
+        "font_weight": "bold",
+        "color": "rgba(246,237,224,1)",
+        "text_align": "center",
+        "letter_spacing": 2,
+        "group_id": "badge"
+      }
+    ]
+  }
+}

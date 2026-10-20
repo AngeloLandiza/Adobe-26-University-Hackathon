@@ -2,6 +2,7 @@
   "task_id": "c21_leaderboard_new_flavor",
   "split": "holdout",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "728x90 strip on orange: product, copy, one badge, button; no logo.",
   "features": [

@@ -2,6 +2,7 @@
   "task_id": "c24_cover_all_summer",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "820x312 cover: no groups and no button; overlapping translucent circles.",
   "features": [

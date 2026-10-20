@@ -2,6 +2,7 @@
   "task_id": "advanced_01",
   "split": "train",
   "origin": "sample",
+  "brand": "solstice",
   "expects_missing_asset": true,
   "notes": "Arbitrary text & images, deliberately awkward content, extreme unseen ratio. Separates the elite. Adversarial features present on purpose: a run-on headline, a variable-count set of badges, a rotated element, and one image element whose asset is intentionally MISSING from the assets bundle — the engine must not crash on it.",
   "features": [

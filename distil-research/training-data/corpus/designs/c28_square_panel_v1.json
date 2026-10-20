@@ -1,0 +1,129 @@
+{
+  "task_id": "c28_square_panel_v1",
+  "split": "train",
+  "origin": "augmented",
+  "brand": "offbrand",
+  "parent": "c28_square_panel",
+  "augmentations": [
+    "remove:subhead",
+    "copy:headline=short",
+    "image:logo->syn_logo_quillbrook_badge.png,background->syn_bg_roast_ember.png",
+    "palette:bloom"
+  ],
+  "expects_missing_asset": false,
+  "notes": "Augmented variant of c28_square_panel: remove:subhead; copy:headline=short; image:logo->syn_logo_quillbrook_badge.png,background->syn_bg_roast_ember.png; palette:bloom.",
+  "features": [
+    "dark",
+    "square",
+    "gradient-bg",
+    "panel",
+    "style-runs",
+    "groups",
+    "synthetic-image",
+    "augmented"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1080,
+      "height": 1080
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0,
+        "y": 0,
+        "width": 1080,
+        "height": 1080,
+        "z_index": 0,
+        "asset_id": "syn_bg_roast_ember.png",
+        "fit": "cover"
+      },
+      {
+        "id": "panel",
+        "type": "shape",
+        "x": 90,
+        "y": 630,
+        "width": 900,
+        "height": 360,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(74,31,58,0.7)",
+        "corner_radius": 32
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 493.5,
+        "y": 40.0,
+        "width": 93.0,
+        "height": 93.0,
+        "z_index": 4,
+        "asset_id": "syn_logo_quillbrook_badge.png",
+        "fit": "contain"
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 315,
+        "y": 150,
+        "width": 460,
+        "height": 460,
+        "z_index": 3,
+        "asset_id": "solstice_bottle.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 130,
+        "y": 670,
+        "width": 820,
+        "height": 90,
+        "z_index": 4,
+        "content": "Sip the glow",
+        "font_family": "Solstice Serif",
+        "font_size": 68,
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "style_runs": [
+          {
+            "start": 8,
+            "end": 12,
+            "color": "rgba(178,58,96,1)"
+          }
+        ]
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 360,
+        "y": 770,
+        "width": 360,
+        "height": 80,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(178,58,96,1)",
+        "corner_radius": 40.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 360,
+        "y": 794,
+        "width": 360,
+        "height": 34,
+        "z_index": 4,
+        "content": "Explore Flavours",
+        "font_family": "Solstice Sans",
+        "font_size": 24,
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      }
+    ]
+  }
+}

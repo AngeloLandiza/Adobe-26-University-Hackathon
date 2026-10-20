@@ -2,6 +2,7 @@
   "task_id": "c13_landscape_cucumber_mint",
   "split": "holdout",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Light landscape, product left, copy right, two badges, text wordmark instead of the logo image.",
   "features": [

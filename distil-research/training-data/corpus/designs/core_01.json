@@ -2,6 +2,7 @@
   "task_id": "core_01",
   "split": "train",
   "origin": "sample",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Many elements, grouped pieces, overlapping and semi-transparent shapes — resized to a very different shape (square turned into a wide banner). This is the main discriminator.",
   "features": [

@@ -2,6 +2,7 @@
   "task_id": "c18_mrec_chase_light",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Small 300x250 medium rectangle: tiny type, product left, copy right.",
   "features": [

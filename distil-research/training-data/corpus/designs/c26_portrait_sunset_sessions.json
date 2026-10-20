@@ -2,6 +2,7 @@
   "task_id": "c26_portrait_sunset_sessions",
   "split": "holdout",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": true,
   "notes": "Busy event poster (20 elements): rotated product, italic serif subhead, three badges, a MISSING partner-mark image, legal.",
   "features": [
@@ -122,7 +123,7 @@
         "x": 90,
         "y": 520,
         "width": 560,
-        "height": 50,
+        "height": 54,
         "z_index": 4,
         "content": "Saturday 21 June",
         "font_family": "Solstice Sans",

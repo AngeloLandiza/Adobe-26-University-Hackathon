@@ -2,6 +2,7 @@
   "task_id": "c22_skyscraper",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Tall 160x600 skyscraper: stacked logo, product, copy, button.",
   "features": [

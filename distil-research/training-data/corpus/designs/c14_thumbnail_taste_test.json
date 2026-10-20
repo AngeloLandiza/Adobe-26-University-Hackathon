@@ -2,6 +2,7 @@
   "task_id": "c14_thumbnail_taste_test",
   "split": "train",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "1280x720 thumbnail: huge 3-line headline, product on a solid disc (intentional layering), rotated badge, no button.",
   "features": [

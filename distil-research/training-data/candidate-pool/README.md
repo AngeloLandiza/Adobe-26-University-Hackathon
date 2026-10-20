@@ -8,10 +8,10 @@
 - `pool.jsonl`, one row per candidate:
   ```json
   {"cell": "c07_story_sale@leaderboard", "task_id": "c07_story_sale", "split": "train", "target": "leaderboard",
-   "candidate_id": "row/cutoff=3/margin=0.04/mirror=False/split=0.35", "png": "renders/c07_story_sale/leaderboard/4.png",
+   "candidate_id": "row/cutoff=3/margin=0.04/mirror=False/split=0.35", "png": "renders.nosync/c07_story_sale/leaderboard/4.png",
    "is_fallback": false, "metrics": {"hierarchy": 0.91, "...": "12 keys: 9 geometry + 3 pixel"}}
   ```
-- `renders/` (gitignored): `<task_id>/<target>/<n>.png` per candidate, plus `<task_id>/source.png`, the original ad shown to the judge. Regenerate with the command below.
+- `renders.nosync/` (gitignored): `<task_id>/<target>/<n>.png` per candidate, plus `<task_id>/source.png`, the original ad shown to the judge. Regenerate with the command below.
 
 **How it's made:** `python -m dev.distill.pool` (from `distil-research/chameleon/`). It's deterministic for a given seed: target sizes are sampled per ad from `dev/targets.json`, covering every shape class across the corpus.
 

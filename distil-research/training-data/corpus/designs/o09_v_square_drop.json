@@ -1,0 +1,158 @@
+{
+  "task_id": "o09_v_square_drop",
+  "split": "train",
+  "origin": "offbrand",
+  "brand": "offbrand",
+  "expects_missing_asset": false,
+  "notes": "Sneaker drop on a BUSY confetti background; all copy on an opaque dark panel, logo on a dark pill.",
+  "features": [
+    "square",
+    "busy-bg",
+    "panel",
+    "groups",
+    "offbrand",
+    "synthetic-image"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1080,
+      "height": 1080
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0,
+        "y": 0,
+        "width": 1080,
+        "height": 1080,
+        "z_index": 0,
+        "asset_id": "syn_busy_confetti.png",
+        "fit": "cover"
+      },
+      {
+        "id": "panel",
+        "type": "shape",
+        "x": 90,
+        "y": 540,
+        "width": 900,
+        "height": 490,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(27,15,46,1)",
+        "corner_radius": 36
+      },
+      {
+        "id": "logo_pill",
+        "type": "shape",
+        "x": 300,
+        "y": 50,
+        "width": 480,
+        "height": 120,
+        "z_index": 2,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(27,15,46,1)",
+        "corner_radius": 60,
+        "group_id": "logo_lockup"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 340,
+        "y": 70,
+        "width": 400,
+        "height": 80.0,
+        "z_index": 3,
+        "asset_id": "syn_logo_voltstride_light.png",
+        "fit": "contain",
+        "group_id": "logo_lockup"
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 190,
+        "y": 190,
+        "width": 700,
+        "height": 350.0,
+        "z_index": 3,
+        "asset_id": "syn_prod_sneaker.png",
+        "fit": "contain"
+      },
+      {
+        "id": "kicker",
+        "type": "text",
+        "x": 150,
+        "y": 612,
+        "width": 780,
+        "height": 38,
+        "z_index": 4,
+        "content": "DROP 07",
+        "font_family": "Solstice Sans",
+        "font_size": 26,
+        "font_weight": "bold",
+        "color": "rgba(198,244,50,1)",
+        "text_align": "center",
+        "letter_spacing": 8
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 150,
+        "y": 660,
+        "width": 780,
+        "height": 119,
+        "z_index": 4,
+        "content": "The Volt Runner",
+        "font_family": "Solstice Sans",
+        "font_size": 84,
+        "font_weight": "bold",
+        "font_style": "italic",
+        "color": "rgba(245,240,255,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "subhead",
+        "type": "text",
+        "x": 150,
+        "y": 799,
+        "width": 780,
+        "height": 41,
+        "z_index": 4,
+        "content": "Lightest sole we have ever made. 400 pairs, then gone.",
+        "font_family": "Solstice Sans",
+        "font_size": 28,
+        "color": "rgba(245,240,255,0.85)",
+        "text_align": "center"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 398,
+        "y": 874,
+        "width": 283,
+        "height": 83,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(198,244,50,1)",
+        "corner_radius": 41.5,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 398,
+        "y": 898,
+        "width": 283,
+        "height": 36,
+        "z_index": 4,
+        "content": "Enter the Draw",
+        "font_family": "Solstice Sans",
+        "font_size": 26,
+        "font_weight": "bold",
+        "color": "rgba(27,15,46,1)",
+        "text_align": "center",
+        "group_id": "cta"
+      }
+    ]
+  }
+}

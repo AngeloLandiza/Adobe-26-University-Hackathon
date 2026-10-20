@@ -2,6 +2,7 @@
   "task_id": "c02_square_garden_fizz",
   "split": "holdout",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Light solid background, no logo image (text wordmark), button shape + label NOT grouped.",
   "features": [

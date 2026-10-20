@@ -13,7 +13,8 @@ import random
 import sys
 from pathlib import Path
 
-from dev.distill.paths import DATA_ROOT, POOL_DIR
+from dev.distill.assets import merged_assets_dir
+from dev.distill.paths import DATA_ROOT, POOL_DIR, RENDERS_SUBDIR
 from engine.pipeline.grading.weights import DEFAULT_WEIGHTS
 
 TARGETS_PATH = Path(__file__).resolve().parents[1] / "targets.json"
@@ -44,7 +45,20 @@ def build_pool(designs: list[dict], targets: list[dict] | dict[str, list[dict]],
     """Render and measure every distinct passing candidate for each ad x target
     cell. `targets` is one list for every ad, or {task_id: its targets}. An ad
     that fails to build is reported through `log` and skipped. Rows are also
-    written to out_dir/pool.jsonl."""
+    written to out_dir/pool.jsonl. Images resolve against the brand kit plus
+    the synthetic corpus assets (dev/distill/assets.py); each row carries the
+    ad's `brand` ("solstice" when the design doesn't say)."""
+    from engine.pipeline.textmeasure import TextMeasurer
+
+    out_dir = Path(out_dir)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    with merged_assets_dir() as assets:
+        rows = _build(designs, targets, out_dir, assets, TextMeasurer(), log)
+    (out_dir / "pool.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+    return rows
+
+
+def _build(designs, targets, out_dir: Path, assets: Path, measurer, log) -> list[dict]:
     from engine.pipeline.grading.gates import check_gates
     from engine.pipeline.grading.metrics import geometry_metrics
     from engine.pipeline.grading.pixels import pixel_metrics
@@ -52,21 +66,17 @@ def build_pool(designs: list[dict], targets: list[dict] | dict[str, list[dict]],
     from engine.pipeline.layout.generate import generate_candidates
     from engine.pipeline.priority import heuristic_plan
     from engine.pipeline.render import render_to_image
-    from engine.pipeline.textmeasure import TextMeasurer
 
-    out_dir = Path(out_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
-    measurer = TextMeasurer()
     rows: list[dict] = []
     for design in designs:
         task_id, source = design["task_id"], design["source"]
         ad_targets = targets[task_id] if isinstance(targets, dict) else targets
         ad_rows: list[dict] = []
         try:
-            plan = heuristic_plan(source)
-            ad_dir = out_dir / "renders" / task_id
+            plan = heuristic_plan(source, assets)
+            ad_dir = out_dir / RENDERS_SUBDIR / task_id
             ad_dir.mkdir(parents=True, exist_ok=True)
-            render_to_image(source, max_size=RENDER_SIZE).save(ad_dir / "source.png")
+            render_to_image(source, assets_dir=assets, max_size=RENDER_SIZE).save(ad_dir / "source.png")
             for target in ad_targets:
                 if _near_source(target, _source_aspect(design)):
                     continue
@@ -80,16 +90,17 @@ def build_pool(designs: list[dict], targets: list[dict] | dict[str, list[dict]],
                     if key in seen:
                         continue
                     try:
-                        metrics = geometry_metrics(source, cand, plan) | pixel_metrics(cand.design, plan)
-                        image = render_to_image(cand.design, max_size=RENDER_SIZE)
+                        metrics = geometry_metrics(source, cand, plan) | pixel_metrics(cand.design, plan, assets)
+                        image = render_to_image(cand.design, assets_dir=assets, max_size=RENDER_SIZE)
                     except Exception:  # an unmeasurable or unrenderable candidate can't be judged
                         continue
                     seen.add(key)
-                    png = Path("renders") / task_id / target["name"] / f"{len(seen) - 1}.png"
+                    png = Path(RENDERS_SUBDIR) / task_id / target["name"] / f"{len(seen) - 1}.png"
                     (out_dir / png).parent.mkdir(parents=True, exist_ok=True)
                     image.save(out_dir / png)
                     ad_rows.append({"cell": f"{task_id}@{target['name']}", "task_id": task_id, "split": design["split"],
-                                    "target": target["name"], "candidate_id": cand.candidate_id, "png": png.as_posix(),
+                                    "brand": design.get("brand", "solstice"), "target": target["name"],
+                                    "candidate_id": cand.candidate_id, "png": png.as_posix(),
                                     "is_fallback": cand.is_fallback, "metrics": metrics})
         except Exception as exc:
             if log:
@@ -98,7 +109,6 @@ def build_pool(designs: list[dict], targets: list[dict] | dict[str, list[dict]],
         rows += ad_rows
         if log:
             log(f"{task_id}: {len(ad_rows)} candidates over {len({r['cell'] for r in ad_rows})} targets")
-    (out_dir / "pool.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
     return rows
 
 

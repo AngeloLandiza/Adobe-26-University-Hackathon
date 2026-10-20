@@ -2,6 +2,7 @@
   "task_id": "c07_portrait_long_copy",
   "split": "holdout",
   "origin": "claude-drafted",
+  "brand": "solstice",
   "expects_missing_asset": false,
   "notes": "Light portrait with a run-on 5-line headline, a line divider, and a long multi-line legal block; logo sits on a dark band (white logo would vanish on cream).",
   "features": [
