@@ -1,0 +1,62 @@
+{
+ "rubric_version": "f80dbb11",
+ "rule": "win = every verdict picks the retrieved build over the cell's current winner with confidence >= 2; best of the recommended plans by the default grader",
+ "retrieval": {
+  "all": {
+   "cells": 85,
+   "built": 85,
+   "judged": 85,
+   "wins": 45,
+   "win_rate": 0.5294117647058824,
+   "picks_changed": 48,
+   "picks_changed_wins": 29,
+   "picks_changed_loses": 11
+  },
+  "by_class": {
+   "square": {
+    "cells": 29,
+    "built": 29,
+    "judged": 29,
+    "wins": 17,
+    "win_rate": 0.5862068965517241,
+    "picks_changed": 19,
+    "picks_changed_wins": 14,
+    "picks_changed_loses": 2
+   },
+   "tall": {
+    "cells": 30,
+    "built": 30,
+    "judged": 30,
+    "wins": 12,
+    "win_rate": 0.4,
+    "picks_changed": 14,
+    "picks_changed_wins": 8,
+    "picks_changed_loses": 4
+   },
+   "very_tall": {
+    "cells": 26,
+    "built": 26,
+    "judged": 26,
+    "wins": 16,
+    "win_rate": 0.6153846153846154,
+    "picks_changed": 15,
+    "picks_changed_wins": 7,
+    "picks_changed_loses": 5
+   }
+  }
+ },
+ "clustered_same_cells": {
+  "plan_level": {
+   "plan_cell_pairs_judged": 399,
+   "wins": 104,
+   "win_rate": 0.2606516290726817
+  },
+  "final_pick_replay": {
+   "cells": 85,
+   "picks_changed": 37,
+   "wins": 24,
+   "loses": 9
+  },
+  "cells_with_clustered_builds": 85
+ }
+}
