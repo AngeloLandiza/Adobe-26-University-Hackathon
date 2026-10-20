@@ -110,6 +110,67 @@ def _reports() -> list[dict]:
     return sorted(out, key=lambda r: -r["updated"])
 
 
+def _active() -> list[dict]:
+    """Long jobs running right now, from the process table: one entry per
+    module + step, with its worker count and the first worker's flags."""
+    try:
+        out = subprocess.run(["pgrep", "-fl", r"dev\.(distill|attention)\."], capture_output=True, text=True).stdout
+    except OSError:
+        return []
+    jobs: dict[tuple, dict] = {}
+    for line in out.splitlines():
+        args = line.split()
+        if len(args) < 3 or "ython" not in Path(args[1]).name or "-m" not in args:
+            continue  # only real Python workers, not shells whose script text mentions the module
+        i = args.index("-m")
+        module = args[i + 1].rsplit(".", 1)[-1] if i + 1 < len(args) else "?"
+        if module in ("publish_status", "status"):
+            continue
+        rest = args[i + 2:]
+        step = rest[0] if rest and not rest[0].startswith("-") else ""
+        flags = {rest[k][2:]: rest[k + 1] for k in range(len(rest) - 1) if rest[k].startswith("--") and not rest[k + 1].startswith("--")}
+        job = jobs.setdefault((module, step), {"job": f"{module} {step}".strip(), "workers": 0, "flags": flags})
+        job["workers"] += 1
+    return sorted(jobs.values(), key=lambda j: -j["workers"])
+
+
+_b2_expected: dict = {}
+
+
+def _b2(active: list[dict]) -> dict | None:
+    """Progress of the floor-plan pipeline (B2), stage by stage."""
+    from dev.distill import floorplans as fp
+    if not any(f.exists() or list(f.parent.glob(f"{f.stem}.shard*")) for f in (fp.PROPOSALS_FILE, fp.BUILDS_FILE)):
+        return None
+    running = [j for j in active if j["job"].startswith("floorplans")]
+    for j in running:
+        if j["job"] == "floorplans propose" and "cells" in j["flags"]:
+            _b2_expected["cells"] = int(j["flags"]["cells"])
+    proposals = fp.read_jsonl(fp.PROPOSALS_FILE)
+    builds = fp.read_jsonl(fp.BUILDS_FILE)
+    judged = [j for j in fp.read_jsonl(fp.JUDGMENTS_FILE) if j.get("rubric_version", RUBRIC_VERSION) == RUBRIC_VERSION]
+    built = sum(1 for b in builds if b.get("built"))
+    eval_builds = fp.read_jsonl(fp.EVAL_BUILDS_FILE)
+    eval_judged = fp.read_jsonl(fp.EVAL_JUDGMENTS_FILE)
+    clusters = json.loads(fp.CLUSTERS_FILE.read_text()) if fp.CLUSTERS_FILE.exists() else None
+    summary = json.loads(fp.EVAL_SUMMARY_FILE.read_text()) if fp.EVAL_SUMMARY_FILE.exists() else None
+    cells = len({p["cell"] for p in proposals})
+    return {
+        "running": [j["job"] + f" x{j['workers']}" for j in running],
+        "stages": [
+            {"name": "Cells with proposals", "done": cells,
+             "expected": _b2_expected.get("cells") or (cells if not any(j["job"] == "floorplans propose" for j in running) else None)},
+            {"name": "Proposals built into layouts", "done": len(builds), "expected": len(proposals) or None,
+             "note": f"{built} built, {len(builds) - built} could not build"},
+            {"name": "Built layouts judged vs current winner", "done": len(judged),
+             "expected": round(built * 1.2) or None, "note": "includes swapped re-asks (~20%)"},
+            {"name": "Holdout check: layouts built", "done": len(eval_builds), "expected": None},
+            {"name": "Holdout check: judged", "done": len(eval_judged), "expected": None},
+        ],
+        "clusters": clusters, "eval_summary": summary,
+    }
+
+
 def snapshot() -> dict:
     corpus = load_corpus()
     rows, plan = _pool()
@@ -165,6 +226,8 @@ def snapshot() -> dict:
         "training": training,
         "events": _events(),
         "runs": _runs(),
+        "active": (active := _active()),
+        "b2": _b2(active),
         "reports": _reports(),
     }
 

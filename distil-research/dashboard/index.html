@@ -80,6 +80,14 @@ button.theme { margin-left: auto; background: none; border: 1px solid var(--line
   </header>
   <p class="sub">CHAMELEON research sandbox: a teacher (Claude Opus 5.5) judges the engine's candidate layouts as a strict senior designer; the judgements train a smaller grader that runs offline. Refreshes every 15 s.</p>
 
+  <section class="card" id="active" style="margin-bottom:14px"></section>
+
+  <section class="grid" style="margin-bottom:14px">
+    <div class="card span-12"><h2>B2: teacher-designed floor plans</h2>
+      <p class="sub">Claude draws floor plans for tall, very tall and square targets → the engine builds them → each is judged against the engine's current best → winners are clustered into new templates → holdout check</p>
+      <div id="b2"></div></div>
+  </section>
+
   <section class="grid" id="tiles"></section>
 
   <section class="grid" style="margin-top:14px">
@@ -150,7 +158,7 @@ function tiles(s) {
   $("tiles").innerHTML =
     tile("Ads in corpus", fmt(c.total), `${fmt((c.by_group["train/solstice"] || 0) + (c.by_group["train/offbrand"] || 0))} train · ${fmt((c.by_group["holdout/solstice"] || 0) + (c.by_group["holdout/offbrand"] || 0))} holdout`) +
     tile("Candidate layouts", fmt(p.candidates), `${fmt(p.cells)} ad × size cells, scored and rendered`) +
-    tile("Teacher judgements", `${fmt(j.done)}<span style="font-size:15px;color:var(--text-muted)"> / ${fmt(j.expected)}</span>`,
+    tile(j.done >= j.expected && !j.workers ? "Main judging run (done)" : "Main judging run", `${fmt(j.done)}<span style="font-size:15px;color:var(--text-muted)"> / ${fmt(j.expected)}</span>`,
          `${j.workers} worker${j.workers === 1 ? "" : "s"} running · rubric ${esc(s.rubric_version)}`, progress) +
     tile("Learned grader", t ? pct(t.accuracy.learned_holdout) : "not trained",
          t ? `holdout accuracy (hand-set weights ${pct(t.accuracy.default_holdout)})` : "trains once judging completes");
@@ -277,6 +285,36 @@ function recent(s) {
     <div style="margin-top:4px">${esc(x.reason)}</div></div>`).join("") : `<div class="empty">No judgements yet.</div>`;
 }
 
+function active(s) {
+  const a = s.active || [];
+  $("active").innerHTML = `<h2>Active jobs</h2>` + (a.length
+    ? `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px">` + a.map((j) =>
+        `<span class="pill" style="font-size:13px;padding:3px 10px"><span class="dot ok" style="display:inline-block;margin-right:6px;vertical-align:0"></span>${esc(j.job)} · ${j.workers} worker${j.workers === 1 ? "" : "s"}</span>`).join("") + `</div>`
+    : `<div class="empty" style="padding:6px 0">Nothing running right now.</div>`);
+}
+
+function b2(s) {
+  const b = s.b2;
+  if (!b) { $("b2").innerHTML = `<div class="empty">Not started.</div>`; return; }
+  const rows = b.stages.map((st) => {
+    const f = st.expected ? Math.min(1, st.done / st.expected) : null;
+    return `<div style="margin:10px 0" data-tip="${esc(st.name)}: ${fmt(st.done)}${st.expected ? " of " + fmt(st.expected) : ""}${st.note ? "<br>" + esc(st.note) : ""}">
+      <div style="display:flex;justify-content:space-between;font-size:13.5px"><span>${esc(st.name)}</span>
+      <span style="color:var(--text-secondary)">${fmt(st.done)}${st.expected ? " / " + fmt(st.expected) : ""}</span></div>
+      <div class="bar"><span style="width:${f == null ? 0 : (100 * f).toFixed(1)}%"></span></div>
+      ${st.note ? `<div class="note" style="color:var(--text-muted);font-size:12px">${esc(st.note)}</div>` : ""}</div>`;
+  }).join("");
+  let clusters = "";
+  if (b.clusters) {
+    clusters = `<h2 style="margin-top:14px">Clusters → candidate templates</h2>` + table(["shape class", "winning plans", "templates (medoids)"],
+      Object.entries(b.clusters.classes || b.clusters).filter(([, v]) => v && typeof v === "object").map(([k, v]) =>
+        [esc(k), fmt(v.n_winning ?? v.winners ?? (v.members || []).length ?? "–"), fmt((v.medoids || []).length)]));
+  }
+  const ev = b.eval_summary ? `<h2 style="margin-top:14px">Holdout check</h2><pre style="white-space:pre-wrap;font:12.5px/1.45 ui-monospace,monospace">${esc(JSON.stringify(b.eval_summary, null, 1)).slice(0, 1500)}</pre>` : "";
+  $("b2").innerHTML = (b.running.length ? `<p class="sub">running now: ${b.running.map(esc).join(", ")}</p>` : "") + rows + clusters + ev;
+  bindTips($("b2"));
+}
+
 function runs(s) {
   const r = s.runs || [];
   const ago = (t) => { if (!t) return "–"; const m = Math.round((Date.now() / 1000 - t) / 60); return m < 1 ? "just now" : m < 60 ? m + " min ago" : Math.round(m / 60) + " h ago"; };
@@ -307,7 +345,7 @@ async function refresh() {
     const age = Date.now() / 1000 - s.generated_at;
     $("dot").className = "dot " + (age < 90 ? "ok" : "stale");
     $("updated").textContent = `updated ${age < 60 ? Math.round(age) + " s" : Math.round(age / 60) + " min"} ago` + (age >= 90 ? " (publisher idle)" : "");
-    tiles(s); historyChart(s); groups(s); scores(s); confidence(s); runs(s); reports(s); shards(s); training(s); recent(s); events(s);
+    active(s); b2(s); tiles(s); historyChart(s); groups(s); scores(s); confidence(s); runs(s); reports(s); shards(s); training(s); recent(s); events(s);
   } catch (e) {
     $("dot").className = "dot down"; $("updated").textContent = "no data: " + e.message;
   }
