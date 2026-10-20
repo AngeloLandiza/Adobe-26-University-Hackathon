@@ -1,0 +1,6 @@
+# Regenerable, large or raw: keep out of git (see each folder's README).
+training-data/candidate-pool/renders/
+training-data/corpus/review/
+training-data/judgments/pilot/sheets/
+training-data/teacher-cache/*
+!training-data/teacher-cache/README.md

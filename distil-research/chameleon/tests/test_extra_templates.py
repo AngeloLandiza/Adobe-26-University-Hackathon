@@ -180,3 +180,13 @@ def test_floor_plan_candidates_pass_gates(monkeypatch, tmp_path, measurer, stem,
     assert mine
     for c in mine:
         assert check_gates(src, c.design, target, plan, measurer) == [], c.candidate_id
+
+
+def test_shipped_floor_plans_valid(capsys):
+    """The research copy ships hand-drawn floor plans (task B1): they must load
+    without a single warning and cover every shape class that had only `stack`."""
+    shipped = Path(extra_templates.__file__).with_name("extra_templates.json")  # the autouse fixture hides EXTRA_PATH
+    plans = extra_templates.load_floor_plans(shipped)
+    assert "[distill]" not in capsys.readouterr().err
+    covered = {c for p in plans for c in p.classes}
+    assert {"square", "tall", "very_tall"} <= covered

@@ -22,7 +22,21 @@ distil-research/
                  F2  extra floor plans read from chameleon/engine/pipeline/layout/extra_templates.json
                With neither file present, the engine behaves exactly like Esteban's.
   docs/        Esteban's pipeline design docs, Angelo's ideas doc, and the distillation plan
+  training-data/  every dataset the distillation loop produces, one folder each, each with a README
+                  (corpus of ads, candidate pool, teacher judgements, floor plans, role labels)
 ```
+
+**The research tools** live in `chameleon/dev/distill/`; run them from `distil-research/chameleon/`:
+
+| Command | What it does | Writes to |
+|---|---|---|
+| `python -m dev.distill.make_corpus` | builds the ad collection | `training-data/corpus/` |
+| `python -m dev.distill.pool` | resizes every ad to several sizes, scores and renders every candidate | `training-data/candidate-pool/` |
+| `python -m dev.distill.pilot make` / `score` | 25-pair calibration check: a person and Claude judge the same pairs | `training-data/judgments/pilot/` |
+| `python -m dev.distill.judge` | Claude Code (Opus 5.5) judges candidate pairs against the official rubric | `training-data/judgments/judgments.jsonl` |
+| `python -m dev.distill.train_grader [--write]` | learns the grader's weights from the judgements | `training-data/judgments/training-report.md`, and with `--write` `chameleon/engine/pipeline/grading/weights.json` |
+
+The judging criteria are the challenge's official rubric (the brief, Section 2.5), quoted in `chameleon/dev/distill/rubric.md`.
 
 **Where it came from:** the exact commits (Esteban's work, then F1 `551c463`, F2 `3a6603a` and review fixes `5e13fe8`) are kept on the local branch `angelo/distill-backup`.
 
@@ -39,11 +53,10 @@ cd distil-research/chameleon
 
 Python imports `engine` from the folder you run in, so these commands use this copy, never `../chameleon/`.
 
-## Known issue
+## Differences from Esteban's engine
 
-`chameleon/tests/test_no_data_files.py` compares output against `tests/no_data_files_expected.json`, which was generated on macOS. Text is measured slightly differently on Linux and Windows (see `chameleon/README.md`, "Linux output differs from Windows output"), so this test will likely fail there.
-
-The fix: compare two runs on the same machine (with and without the hooks) instead of a stored file.
+- **Three extra floor plans ship here** (`chameleon/engine/pipeline/layout/extra_templates.json`): `split_hero_left`, `text_first` and `story_centered`. They were hand-drawn for the square, tall and very-tall shapes that only had the `stack` template; see `training-data/floor-plans/README.md`. Delete the file to get Esteban's behaviour back exactly.
+- **`tests/test_no_data_files.py`** checks that with no data files the engine is unchanged. It runs on every platform: it compares two runs on the same machine. The stored expectation is per platform, in `tests/no_data_files_expected/<platform>.json`, so a missing platform is skipped rather than failing.
 
 ## Rules for this folder
 

@@ -1,0 +1,86 @@
+{
+  "task_id": "c30_story_minimal_glow",
+  "split": "train",
+  "origin": "claude-drafted",
+  "expects_missing_asset": false,
+  "notes": "Minimal story: 5 elements, huge product, one-word headline, text-only call to action.",
+  "features": [
+    "story",
+    "dark",
+    "solid-bg",
+    "5-elements",
+    "no-groups"
+  ],
+  "source": {
+    "canvas": {
+      "width": 1080,
+      "height": 1920
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 1080,
+        "height": 1920,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(43,27,46,1)"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 390,
+        "y": 140,
+        "width": 300,
+        "height": 100,
+        "z_index": 4,
+        "asset_id": "solstice_logo_lockup.png",
+        "fit": "contain"
+      },
+      {
+        "id": "product",
+        "type": "image",
+        "x": 90,
+        "y": 340,
+        "width": 900,
+        "height": 900,
+        "z_index": 3,
+        "asset_id": "solstice_bottle.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 90,
+        "y": 1260,
+        "width": 900,
+        "height": 224,
+        "z_index": 4,
+        "content": "Glow.",
+        "font_family": "Solstice Serif",
+        "font_size": 170,
+        "font_weight": "bold",
+        "color": "rgba(250,242,230,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "cta_text",
+        "type": "text",
+        "x": 290,
+        "y": 1580,
+        "width": 500,
+        "height": 44,
+        "z_index": 4,
+        "content": "SHOP SOLSTICE",
+        "font_family": "Solstice Sans",
+        "font_size": 30,
+        "font_weight": "bold",
+        "color": "rgba(240,178,66,1)",
+        "text_align": "center",
+        "letter_spacing": 6
+      }
+    ]
+  }
+}

@@ -57,7 +57,7 @@
 |---|---|---|---|
 | F1, F2 (engine hooks) | now | nothing | F3, F4 |
 | B1 (hand-drawn floor plans) | after F2 | F2 | everything after it |
-| F3 (ad corpus) | now | nothing (better with the official rubric in hand) | F1, F2, F4 |
+| F3 (ad corpus) | now | nothing | F1, F2, F4 |
 | F4 → F5 → F6 (teacher pipeline) | now | nothing (F5 uses today's weights to pick close contests) | F1, F2, F3 |
 | D | after F1 + F3 + F6 | judgements | B2, A |
 | B2 | after F2 + F3 + F6 | judgements | D, A |
@@ -65,7 +65,7 @@
 | C | after B2 | B2's winning floor plans | — |
 
 **External blockers** (not code):
-1. **The official rubric** (main brief, Section 3). F6's `rubric.md` is a provisional guess until we have it.
+1. ~~The official rubric~~ — found 2026-10-20: the brief (`docs/Final Chameleon Challenge.pdf` in the main repo), Section 2.5, plus the "speed and reliability" row in RULES. F6 uses it verbatim.
 2. **The code-freeze date.** If it's only days away, ship F1, F2, B1 and D only.
 3. **Claude Code usage limits.** The default sizes below (about 300 teacher calls for D) are chosen to fit in a few sessions.
 4. **Extra teachers.** Gemini and GPT need their own keys; the pipeline works with Claude alone.
@@ -79,8 +79,8 @@
 - With no `weights.json` and no `extra_templates.json`, the engine's output must be byte-identical to today's: all 463 existing tests keep passing unchanged.
 - A data file never makes the engine raise. A missing file at the default path is silent; a missing env-var path, an unreadable file or an invalid file prints one `[distill] …` line to stderr, and the engine uses the defaults.
 - The gates G1–G9 and their tolerances are not changed by this plan.
-- Never regenerate or replace pixel content. Corpus ads may only reference images in `brand_kit/assets/`, or in `dev/corpus/assets/` for imported ads, which never ship.
-- Teacher outputs, renders and judgements go in `chameleon/dev/data/` (gitignored). Only the students' output files are committed.
+- Never regenerate or replace pixel content. Corpus ads may only reference images in `brand_kit/assets/`, or in `training-data/corpus/assets/` for imported ads, which never ship.
+- All data lives in `training-data/` (relative to `distil-research/`), one folder per dataset, each with a README saying what it is, how it was made and what it feeds. Datasets are committed; large regenerable files (renders, the raw teacher cache) are gitignored. Code finds the folder through `dev.distill.paths.DATA_ROOT`.
 - Tests use the rule-based ranker (existing autouse fixture). No test may call `claude` or any API: the teacher is injected and faked in tests.
 - Deterministic: every sampling step takes a `seed` (default 0). Ties are broken by `candidate_id`, as in `pick_best`.
 
@@ -159,12 +159,12 @@
 ### Task F3: ad corpus
 
 **Files:**
-- Create: `chameleon/dev/corpus/designs/*.json`, `chameleon/dev/corpus/README.md`
-- Modify: `chameleon/.gitignore` (add `dev/data/`)
+- Create: `training-data/corpus/designs/*.json`, `training-data/corpus/README.md`, `chameleon/dev/distill/paths.py`, `chameleon/dev/distill/corpus.py`
+- Modify: `distil-research/.gitignore` (renders, teacher cache)
 - Test: `chameleon/tests/test_corpus.py`
 
 **Interfaces:**
-- Produces: `dev/corpus/designs/<task_id>.json` = `{"task_id": str, "source": <design>, "split": "train" | "holdout", "origin": "sample" | "hand" | "claude-drafted" | "imported", "expects_missing_asset": bool}`, plus `dev.corpus.load_corpus(split: str | None = None) -> list[dict]` in `chameleon/dev/corpus/__init__.py`.
+- Produces: `training-data/corpus/designs/<task_id>.json` = `{"task_id": str, "source": <design>, "split": "train" | "holdout", "origin": "sample" | "hand" | "claude-drafted" | "imported", "expects_missing_asset": bool}`, plus `dev.distill.corpus.load_corpus(split: str | None = None) -> list[dict]` in `chameleon/dev/distill/corpus.py`, and `DATA_ROOT` (= `distil-research/training-data`) in `chameleon/dev/distill/paths.py`.
 - What to build: **at least 30 ads, at least 8 of them holdout.**
   - The 3 samples go in, as `train`.
   - The rest are drafted by Claude in this session, or by `claude -p`, in the schema, using only `brand_kit/assets` and `brand_kit/fonts`. Angelo reviews each render and rejects ugly or broken sources.
@@ -176,7 +176,7 @@
   - `test_assets_and_fonts_exist`: every `asset_id` exists (unless `expects_missing_asset`) and every `font_family` is in the brand kit
   - `test_designs_plan_and_render`: `heuristic_plan(source)` and `render_to_image(source, max_size=256)` both succeed for each design
 - [ ] **Step 2: Run them.** Expected: FAIL (no corpus yet).
-- [ ] **Step 3: Draft the designs,** render each to `dev/data/corpus_review/` and review them; keep the good ones.
+- [ ] **Step 3: Draft the designs,** render a contact sheet to `training-data/corpus/review/` (gitignored) and review it; keep the good ones.
 - [ ] **Step 4: Run** `.venv/bin/python -m pytest tests/test_corpus.py -v`. Expected: PASS.
 - [ ] **Step 5: Commit** `feat(dev): ad corpus for distillation (N train, M holdout)`
 
@@ -189,7 +189,7 @@
 **Interfaces:**
 - Produces:
   - `TeacherError(Exception)`
-  - `ClaudeCodeTeacher(model: str = "claude-opus-5-5", timeout_s: float = 600, cache_dir: Path = Path("dev/data/teacher_cache"), run=subprocess.run)`, with `.name == f"claude-code:{model}"` and `.ask(prompt: str, schema: dict, images: Sequence[Path] = ()) -> dict`
+  - `ClaudeCodeTeacher(model: str = "claude-opus-5-5", timeout_s: float = 600, cache_dir: Path = DATA_ROOT / "teacher-cache", run=subprocess.run)`, with `.name == f"claude-code:{model}"` and `.ask(prompt: str, schema: dict, images: Sequence[Path] = ()) -> dict`
 - Command (checked against CLI 2026-10-20: the answer is in the top-level `structured_output` key):
   `["claude", "-p", <prompt + "\n\nRead these image files:\n" + absolute paths>, "--model", model, "--allowedTools", "Read", "--json-schema", json.dumps(schema), "--output-format", "json", "--max-turns", "8"]`
 - Behaviour:
@@ -217,7 +217,7 @@
 **Interfaces:**
 - Consumes: `load_corpus` (F3), `generate_candidates`, `safe_fallback`, `check_gates`, `geometry_metrics`, `pixel_metrics`, `render_to_image`
 - Produces:
-  - `build_pool(designs: list[dict], targets: list[dict], out_dir: Path) -> list[dict]` writes one PNG per distinct passing candidate (`max_size=768`) to `out_dir/renders/<task_id>/<target>/<n>.png`, and one row per candidate to `out_dir/pool.jsonl`: `{"cell": "<task_id>@<target>", "task_id", "split", "target", "candidate_id", "png", "is_fallback", "metrics": {12 keys}}`. Exact duplicate designs are dropped. Each ad's original is also rendered once, to `out_dir/renders/<task_id>/source.png`, for the judge (F6).
+  - `build_pool(designs: list[dict], targets: list[dict], out_dir: Path) -> list[dict]` writes one PNG per distinct passing candidate (`max_size=768`) to `out_dir/renders/<task_id>/<target>/<n>.png`, and one row per candidate to `out_dir/pool.jsonl` (default `out_dir` = `DATA_ROOT / "candidate-pool"`): `{"cell": "<task_id>@<target>", "task_id", "split", "target", "candidate_id", "png", "is_fallback", "metrics": {12 keys}}`. Exact duplicate designs are dropped. Each ad's original is also rendered once, to `out_dir/renders/<task_id>/source.png`, for the judge (F6).
   - `sample_pairs(rows: list[dict], per_cell: int = 6, seed: int = 0) -> list[tuple[dict, dict]]`. Pairs stay within a cell, and nothing is paired with itself. About half are among the top 6 by today's total (close contests); the rest pair a top-6 candidate with a random one.
 - Defaults: 6 of the 13 targets per ad, chosen by seed, always covering every aspect class across the corpus. For 30 ads that's about 30 × 6 × 6 ≈ 1,080 pairs.
 
@@ -240,17 +240,17 @@
 **Interfaces:**
 - Consumes: a teacher with `.name` and `.ask(prompt, schema, images)` (F4), pairs from F5
 - Produces:
-  - `judge_pairs(pairs, teacher, source_png: Callable[[str], Path], out: Path, pairs_per_call: int = 4, swap_share: float = 0.2, seed: int = 0) -> list[dict]` appends to `out` (JSONL) `{"cell", "a", "b", "winner": "a" | "b" | "tie", "confidence": 1-3, "reason", "teacher", "swapped": bool}`. It resumes by skipping pairs this teacher already judged in `out`.
+  - `judge_pairs(pairs, teacher, source_png: Callable[[str], Path], out: Path, pairs_per_call: int = 4, swap_share: float = 0.2, seed: int = 0) -> list[dict]` appends to `out` (JSONL; default `DATA_ROOT / "judgments" / "judgments.jsonl"`) `{"cell", "a", "b", "winner": "a" | "b" | "tie", "confidence": 1-3, "reason", "teacher", "swapped": bool}`. It resumes by skipping pairs this teacher already judged in `out`.
   - `position_bias(judgments) -> float`: the share of non-tie answers where the first-shown candidate won.
   - `swap_agreement(judgments) -> float`: agreement between each pair and its swapped re-ask.
 - Each call shows the original ad plus `pairs_per_call` pairs (so 1 + 8 images), and the rubric from `rubric.md`. The order inside each pair is shuffled by seed.
-- **Provisional rubric** (replace with the official one when we get it):
-  1. all text readable at the target size;
-  2. every piece visible, none cropped awkwardly;
-  3. the most important pieces (headline, product, button) are the most prominent;
-  4. still recognisably the same ad as the original;
-  5. balanced use of space, with no large accidental gaps and nothing crammed;
-  6. nothing looks broken or overlapping by accident.
+- **Official rubric** (the brief, Section 2.5 "What a good result looks like", which says these are "the same ones our scoring rewards"; `rubric.md` quotes it verbatim):
+  1. **No unwanted collisions:** overlaps are fine when intentional (layered graphics, deliberate stacking); elements that shouldn't overlap, don't, and text never sits on a busy image.
+  2. **Everything is readable:** text is large enough and has enough contrast; nothing is cut off.
+  3. **It stays on brand:** colours, fonts and the logo survive the resize intact and in proportion.
+  4. **It looks intentional:** things line up, spacing is even, the most important element still stands out, pictures keep their proportions.
+  5. (Not judgeable per pair: "it holds up everywhere" is measured across the corpus, and "speed and reliability" by the engine's run, not by the judge.)
+  The brief also says a resize must "rearrange the design, not simply shrink or stretch it" and stay "unmistakably, the same design".
 
 - [ ] **Step 1: Write the failing tests,** using a fake teacher:
   - `test_resume_skips_judged_pairs`
@@ -264,8 +264,8 @@
   1. Make 25 pairs from the 3 samples.
   2. Claude judges them in-session, and Angelo judges the same 25 blind.
   3. Accept the rubric if Claude and Angelo agree on ≥ 18 of 25, the position bias is between 0.35 and 0.65, and the swap agreement is ≥ 0.8. Otherwise revise `rubric.md` and repeat.
-  4. Record the numbers in `dev/distill/PILOT.md`.
-- [ ] **Step 5: Commit** `feat(dev): pairwise judge with resume, swap checks and provisional rubric`
+  4. Record the pairs, both sets of answers and the numbers in `training-data/judgments/pilot/`.
+- [ ] **Step 5: Commit** `feat(dev): pairwise judge with resume, swap checks and the official rubric`
 
 ---
 
@@ -305,7 +305,7 @@
   - `fit_weights(examples: list[tuple[dict, dict, float]], l2: float = 1e-2, seed: int = 0) -> GraderWeights`. Each example is `(metrics_a, metrics_b, y)` with `y` = 1 if A won and 0 if B won; ties are dropped.
   - `pairwise_accuracy(weights: GraderWeights, examples) -> float`
   - `split_examples(pool_rows, judgments) -> tuple[list, list]`, as (train, holdout) by the ad's `split`. A holdout ad never appears in train.
-  - CLI: `python -m dev.distill.train_grader --pool dev/data/pool.jsonl --judgments dev/data/judgments.jsonl [--write]`
+  - CLI: `python -m dev.distill.train_grader [--pool training-data/candidate-pool/pool.jsonl] [--judgments training-data/judgments/judgments.jsonl] [--write]` (defaults under `DATA_ROOT`)
 - Method: a Bradley–Terry / logistic model on `metrics_a − metrics_b` over the 12 metric names, with no intercept and weights kept ≥ 0 (projected gradient descent, numpy only). Then convert to `GraderWeights`:
   - `geometry_share` = raw geometry sum ÷ raw total;
   - each group normalised to sum to 1.

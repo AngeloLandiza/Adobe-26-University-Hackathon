@@ -1,0 +1,337 @@
+{
+ "generated": "2026-10-20",
+ "by": "hand (Claude, reviewed visually), task B1",
+ "evaluation": "3 samples x 7 targets in square/tall/very_tall/landscape classes, current hand-set grader; a plan is kept if it wins >= 1 cell",
+ "plans": [
+  {
+   "name": "split_hero_right",
+   "classes": [
+    "square",
+    "landscape"
+   ],
+   "slots": [
+    {
+     "name": "logo",
+     "box": [
+      0,
+      0,
+      0.22,
+      0.14
+     ]
+    },
+    {
+     "name": "badge",
+     "box": [
+      0.24,
+      0,
+      0.24,
+      0.14
+     ]
+    },
+    {
+     "name": "text",
+     "box": [
+      0,
+      0.17,
+      0.48,
+      0.47
+     ]
+    },
+    {
+     "name": "cta",
+     "box": [
+      0,
+      0.67,
+      0.48,
+      0.14
+     ]
+    },
+    {
+     "name": "minor",
+     "box": [
+      0,
+      0.84,
+      0.48,
+      0.16
+     ]
+    },
+    {
+     "name": "hero",
+     "box": [
+      0.52,
+      0,
+      0.48,
+      1
+     ]
+    }
+   ],
+   "kept": false,
+   "wins": []
+  },
+  {
+   "name": "split_hero_left",
+   "classes": [
+    "square",
+    "landscape"
+   ],
+   "slots": [
+    {
+     "name": "hero",
+     "box": [
+      0,
+      0,
+      0.48,
+      1
+     ]
+    },
+    {
+     "name": "logo",
+     "box": [
+      0.52,
+      0,
+      0.22,
+      0.14
+     ]
+    },
+    {
+     "name": "badge",
+     "box": [
+      0.76,
+      0,
+      0.24,
+      0.14
+     ]
+    },
+    {
+     "name": "text",
+     "box": [
+      0.52,
+      0.17,
+      0.48,
+      0.47
+     ]
+    },
+    {
+     "name": "cta",
+     "box": [
+      0.52,
+      0.67,
+      0.48,
+      0.14
+     ]
+    },
+    {
+     "name": "minor",
+     "box": [
+      0.52,
+      0.84,
+      0.48,
+      0.16
+     ]
+    }
+   ],
+   "kept": true,
+   "wins": [
+    "level3 @ youtube_thumbnail 1280x720 (beat columns 0.8838 -> 0.9029)"
+   ]
+  },
+  {
+   "name": "hero_band",
+   "classes": [
+    "tall",
+    "square"
+   ],
+   "slots": [
+    {
+     "name": "logo",
+     "box": [
+      0,
+      0,
+      0.5,
+      0.08
+     ]
+    },
+    {
+     "name": "badge",
+     "box": [
+      0.5,
+      0,
+      0.5,
+      0.08
+     ]
+    },
+    {
+     "name": "hero",
+     "box": [
+      0,
+      0.1,
+      1,
+      0.46
+     ]
+    },
+    {
+     "name": "text",
+     "box": [
+      0,
+      0.58,
+      0.62,
+      0.3
+     ]
+    },
+    {
+     "name": "cta",
+     "box": [
+      0.65,
+      0.64,
+      0.35,
+      0.14
+     ]
+    },
+    {
+     "name": "minor",
+     "box": [
+      0,
+      0.9,
+      1,
+      0.1
+     ]
+    }
+   ],
+   "kept": false,
+   "wins": []
+  },
+  {
+   "name": "text_first",
+   "classes": [
+    "tall",
+    "very_tall"
+   ],
+   "slots": [
+    {
+     "name": "logo",
+     "box": [
+      0.3,
+      0,
+      0.4,
+      0.07
+     ]
+    },
+    {
+     "name": "text",
+     "box": [
+      0,
+      0.09,
+      1,
+      0.27
+     ]
+    },
+    {
+     "name": "hero",
+     "box": [
+      0,
+      0.38,
+      1,
+      0.38
+     ]
+    },
+    {
+     "name": "cta",
+     "box": [
+      0.15,
+      0.78,
+      0.7,
+      0.09
+     ]
+    },
+    {
+     "name": "badge",
+     "box": [
+      0,
+      0.89,
+      0.4,
+      0.05
+     ]
+    },
+    {
+     "name": "minor",
+     "box": [
+      0,
+      0.95,
+      1,
+      0.05
+     ]
+    }
+   ],
+   "kept": true,
+   "wins": [
+    "level1 @ instagram_portrait 1080x1350 (beat reflow 0.9699 -> 0.9729)"
+   ]
+  },
+  {
+   "name": "story_centered",
+   "classes": [
+    "very_tall"
+   ],
+   "slots": [
+    {
+     "name": "badge",
+     "box": [
+      0,
+      0,
+      0.45,
+      0.06
+     ]
+    },
+    {
+     "name": "logo",
+     "box": [
+      0.55,
+      0,
+      0.45,
+      0.06
+     ]
+    },
+    {
+     "name": "hero",
+     "box": [
+      0.05,
+      0.08,
+      0.9,
+      0.42
+     ]
+    },
+    {
+     "name": "text",
+     "box": [
+      0,
+      0.52,
+      1,
+      0.24
+     ]
+    },
+    {
+     "name": "cta",
+     "box": [
+      0.1,
+      0.78,
+      0.8,
+      0.08
+     ]
+    },
+    {
+     "name": "minor",
+     "box": [
+      0,
+      0.88,
+      1,
+      0.12
+     ]
+    }
+   ],
+   "kept": true,
+   "wins": [
+    "level2 @ half_page 300x600 (beat stack 0.9115 -> 0.9191)"
+   ]
+  }
+ ]
+}
