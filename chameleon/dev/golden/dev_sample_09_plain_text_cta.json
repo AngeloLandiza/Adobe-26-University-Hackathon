@@ -1,0 +1,17 @@
+{
+  "review": "DRAFT: needs a teammate's review. Drafted by Claude on 2026-10-19; these are team judgements, edit freely.",
+  "roles": {
+    "bg": "background", "logo": "logo", "headline": "headline", "subhead": "subheadline",
+    "product": "hero_image", "cta_text": "cta", "underline": "decoration"
+  },
+  "ranking": ["headline", "product", "cta_text", "logo", "subhead"],
+  "notes": {
+    "bg": "Full-bleed gradient image.",
+    "logo": "Brand mark, top-left.",
+    "headline": "'Your new golden-hour ritual': largest type, the main message.",
+    "subhead": "Ingredient copy under the headline: supporting copy, even though its font is smaller than the CTA's.",
+    "product": "The bottle: hero.",
+    "cta_text": "'Find Solstice in the cold aisle ->' tells the viewer what to do next: a plain-text CTA (no button, arrow plus underline). 'Find' is not one of the usual shop/buy/get verbs.",
+    "underline": "Short gold rule under the CTA; all shape, so decoration. It is not grouped with the CTA."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "review": "DRAFT: needs a teammate's review. Drafted by Claude on 2026-10-19; these are team judgements, edit freely.",
+  "roles": {
+    "bg": "background", "ghost_word": "other_text", "product": "hero_image", "logo": "logo",
+    "headline": "headline", "subhead": "subheadline", "cta": "cta"
+  },
+  "ranking": ["headline", "product", "cta", "logo", "subhead", "ghost_word"],
+  "notes": {
+    "bg": "Full-bleed gradient image.",
+    "ghost_word": "'SUMMER' at 280 px and 8% opacity behind the bottle: background typography. Ideally decoration, but node 1 never lets text be decoration (validate.repair rejects it), so the closest allowed role is other_text, ranked last. Judgement call.",
+    "product": "The bottle: hero.",
+    "logo": "Brand mark, top-left.",
+    "headline": "'Chase the Light' is the message, at 72 px: a quarter of the ghost word's size.",
+    "subhead": "Supporting copy under the headline.",
+    "cta": "'Shop the Summer Line' button."
+  }
+}

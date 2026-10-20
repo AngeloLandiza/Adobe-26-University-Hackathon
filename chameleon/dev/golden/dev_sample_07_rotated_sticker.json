@@ -1,0 +1,18 @@
+{
+  "review": "DRAFT: needs a teammate's review. Drafted by Claude on 2026-10-19; these are team judgements, edit freely.",
+  "roles": {
+    "bg": "background", "logo": "logo", "product": "hero_image", "sticker": "badge", "callout": "badge",
+    "headline": "headline", "subhead": "subheadline", "cta": "cta"
+  },
+  "ranking": ["headline", "product", "cta", "logo", "subhead", "sticker", "callout"],
+  "notes": {
+    "bg": "Full-bleed gradient image.",
+    "logo": "Brand mark, top-left.",
+    "product": "The bottle: hero.",
+    "sticker": "'SAVE 20%' on a rotated red starburst: a promotional label, so badge. It starts with 'save', but it is not how the viewer acts; the button is. First of the badges, since the discount is real information. Judgement call: on a sale ad some would rank it above the subhead.",
+    "callout": "'new flavor!' hand-lettered and rotated next to the bottle, with no shape behind it: a short promotional label, so badge. Last.",
+    "headline": "'Sunset in a Bottle': the main message.",
+    "subhead": "Flavor line under the headline: supporting copy. Its font is smaller than the callout's.",
+    "cta": "'Shop the 4-pack' button."
+  }
+}

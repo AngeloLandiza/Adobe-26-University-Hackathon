@@ -1,0 +1,18 @@
+{
+  "review": "DRAFT: needs a teammate's review. Drafted by Claude on 2026-10-19; these are team judgements, edit freely.",
+  "roles": {
+    "bg": "background", "ring": "decoration", "rule": "decoration", "wordmark": "logo",
+    "headline": "headline", "subhead": "subheadline", "cta": "cta"
+  },
+  "ranking": ["headline", "cta", "wordmark", "subhead"],
+  "notes": {
+    "bg": "Solid plum rectangle covering the canvas: a shape background, not an image.",
+    "ring": "Outline circle, top-right; decorative.",
+    "rule": "Short gold line between headline and subhead; decorative.",
+    "wordmark": "'SOLSTICE' in letter-spaced bold caps at the top does the logo's job, so logo even though it is text. Judgement call: other_text is arguable.",
+    "headline": "Largest type, the main message.",
+    "subhead": "Supporting copy under the rule.",
+    "cta": "'Find your flavor' on an orange pill is the call to action, although 'find' is not one of the usual shop/buy/get verbs.",
+    "_ranking": "No product image, so the usual order minus the hero: headline, CTA, brand, supporting copy."
+  }
+}

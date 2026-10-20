@@ -1,0 +1,18 @@
+{
+  "review": "DRAFT: needs a teammate's review. Drafted by Claude on 2026-10-19; these are team judgements, edit freely.",
+  "roles": {
+    "bg": "background", "logo": "logo", "headline": "headline", "subhead": "subheadline",
+    "lineup": "hero_image", "new_pill": "badge", "cta": "cta", "legal": "legal"
+  },
+  "ranking": ["headline", "lineup", "cta", "logo", "subhead", "new_pill", "legal"],
+  "notes": {
+    "bg": "Full-bleed gradient image.",
+    "logo": "Brand mark, far left.",
+    "headline": "'Five flavors. One golden hour.': largest type, the main message.",
+    "subhead": "Supporting copy under the headline.",
+    "lineup": "Three bottles grouped as one unit: together they are the product, so hero.",
+    "new_pill": "'NEW: YUZU MINT' on a dark pill: a short promotional label, so badge.",
+    "cta": "'Explore the lineup' button.",
+    "legal": "'Please enjoy responsibly.': fine print, last."
+  }
+}

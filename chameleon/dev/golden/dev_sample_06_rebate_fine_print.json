@@ -1,0 +1,24 @@
+{
+  "review": "DRAFT: needs a teammate's review. Drafted by Claude on 2026-10-19; these are team judgements, edit freely.",
+  "roles": {
+    "bg": "background", "logo": "logo", "headline": "headline", "subhead": "subheadline",
+    "step_1": "other_text", "step_2": "other_text", "step_3": "other_text", "product": "hero_image",
+    "cta": "cta", "legal_rebate": "legal", "legal_responsible": "legal", "legal_trademark": "legal"
+  },
+  "ranking": ["headline", "product", "cta", "logo", "subhead", "step_1", "step_2", "step_3",
+              "legal_rebate", "legal_responsible", "legal_trademark"],
+  "notes": {
+    "bg": "Full-bleed gradient image.",
+    "logo": "Brand mark, top-centre.",
+    "headline": "'Get $5 back on any two Solstice 4-packs': the offer is the main message. It starts with a verb but it is the headline (largest type, no button), not the CTA.",
+    "subhead": "The one-sentence explanation of the offer under the headline.",
+    "step_1": "Numbered how-to step: body copy, so other_text rather than subheadline (judgement call). The steps rank in reading order, right after the subhead, because they only make sense in order.",
+    "step_2": "Second step; see step_1.",
+    "step_3": "Third step; see step_1.",
+    "product": "The bottle: hero.",
+    "cta": "'Claim your $5' button.",
+    "legal_rebate": "Offer conditions: legal. Its first 160 characters (all that node 1 sees) carry no 'terms'/'void where' marker; 'terms' only appears at the end.",
+    "legal_responsible": "'Please enjoy responsibly. (c) 2026 ...': legal.",
+    "legal_trademark": "Trademark notice: legal, though it has none of the heuristic's legal marker words. The three legal lines rank in reading order."
+  }
+}
