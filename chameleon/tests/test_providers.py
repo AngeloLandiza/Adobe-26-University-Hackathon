@@ -139,6 +139,16 @@ def test_get_provider_explicit_names(monkeypatch):
         get_provider("gpt")
 
 
+def test_env_example_ships_no_keys_and_names_priced_models(monkeypatch):
+    from pathlib import Path
+    from engine.pipeline.priority.pricing import PRICES_PER_MTOK
+    monkeypatch.setattr(providers.os, "environ", {})  # only what .env.example sets
+    providers._load_env_file(Path(".env.example"))
+    assert get_provider() is None  # no key in the example, so "auto" means the heuristic
+    for var in ("CHAMELEON_CLAUDE_MODEL", "CHAMELEON_GEMINI_MODEL"):
+        assert providers.os.environ.get(var) in PRICES_PER_MTOK, var
+
+
 def test_cost_of_unknown_model_is_nan():
     assert math.isnan(cost_usd("some-new-model", 100, 100))
     assert cost_usd("claude-haiku-5-5", 2_000_000, 1_000_000) == pytest.approx(0.70)

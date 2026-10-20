@@ -274,7 +274,7 @@ A render-based test confirms text sized this way stays inside its box. We import
 |---|---|
 | `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) | enable the hosted LLM path |
 | `CHAMELEON_LLM` | `auto` (default: Claude if its key is set, else Gemini, else heuristic), `claude`, `gemini` or `heuristic` |
-| `CHAMELEON_CLAUDE_MODEL` / `CHAMELEON_GEMINI_MODEL` | override the default models (`claude-opus-5-5`, `gemini-3.8-flash`) |
+| `CHAMELEON_CLAUDE_MODEL` / `CHAMELEON_GEMINI_MODEL` | the model each provider calls, in the engine and in `dev.bench_priority` (unless `--claude-models` / `--gemini-models` is passed); defaults `claude-opus-5-5`, `gemini-3.8-flash`. `.env.example` sets both |
 | `CHAMELEON_LLM_CACHE` | a directory: successful LLM answers are cached there, so repeated runs don't pay again |
 | `CHAMELEON_DEBUG` | `1` writes debug output to `output/debug/` (§5) |
 

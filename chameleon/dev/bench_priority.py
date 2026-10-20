@@ -3,6 +3,10 @@
     python -m dev.bench_priority [--claude-models claude-opus-5-5 ...] [--gemini-models gemini-3.8-flash ...]
                                  [--runs 3] [--samples input/a.json ...] [--out output/bench/priority.csv]
 
+Without --claude-models / --gemini-models, each provider uses the model the
+engine would: CHAMELEON_CLAUDE_MODEL / CHAMELEON_GEMINI_MODEL from the
+environment or chameleon/.env, else the built-in default.
+
 The heuristic always runs as the baseline. An LLM provider is skipped (with a
 note) when its API key isn't set. The response cache is switched off for the
 run, so every call is real and its latency and cost are measured.
@@ -112,8 +116,9 @@ def print_summary(summary: list[dict]) -> None:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--claude-models", nargs="*", default=["claude-opus-5-5"])
-    parser.add_argument("--gemini-models", nargs="*", default=["gemini-3.8-flash"])
+    # Default None runs one provider with no model given, so it reads the env (or .env) like the engine does.
+    parser.add_argument("--claude-models", nargs="*", default=[None])
+    parser.add_argument("--gemini-models", nargs="*", default=[None])
     parser.add_argument("--runs", type=int, default=3)
     parser.add_argument("--samples", type=Path, nargs="*", default=sorted(Path("input").glob("*.json")))
     parser.add_argument("--out", type=Path, default=Path("output/bench/priority.csv"))

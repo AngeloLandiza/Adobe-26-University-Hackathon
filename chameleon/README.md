@@ -56,6 +56,7 @@ For one task's candidates and scores, set `CHAMELEON_DEBUG=1` before `python -m 
 
 - `ANTHROPIC_API_KEY` and/or `GEMINI_API_KEY` enable Claude or Gemini.
 - `CHAMELEON_LLM` = `auto` (default), `claude`, `gemini` or `heuristic`.
+- `CHAMELEON_CLAUDE_MODEL` and `CHAMELEON_GEMINI_MODEL` pick the model each provider calls: a model name such as `claude-opus-5-5`, not a key. The engine and the benchmark both use them; without them, the built-in defaults (`claude-opus-5-5`, `gemini-3.8-flash`) apply.
 - `CHAMELEON_LLM_CACHE=<dir>` caches LLM answers between runs.
 
 The full list is in [`docs/pipeline/README.md` §8](../docs/pipeline/README.md#8-development-loop). Live API tests are opt-in:
