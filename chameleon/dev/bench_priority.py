@@ -1,11 +1,18 @@
 """Compare node 1's providers on the golden set: ranking quality, latency and cost.
 
     python -m dev.bench_priority [--claude-models claude-opus-5-5 ...] [--gemini-models gemini-3.8-flash ...]
-                                 [--runs 3] [--samples input/a.json ...] [--out output/bench/priority.csv]
+                                 [--runs 3] [--samples input/a.json ...]
+                                 [--results-dir dev/bench_results | --out some/file.csv]
 
 Without --claude-models / --gemini-models, each provider uses the model the
 engine would: CHAMELEON_CLAUDE_MODEL / CHAMELEON_GEMINI_MODEL from the
 environment or chameleon/.env, else the built-in default.
+
+Every run is kept: it gets a new timestamped folder under --results-dir with
+runs.csv (one row per provider x sample x run, including the roles and ranking
+the plan ended up with) and summary.csv (the table printed at the end). Rows
+are written as they finish, so a run that dies midway keeps what it measured.
+--out writes the rows to one file instead, with no folder or summary.
 
 The heuristic always runs as the baseline. An LLM provider is skipped (with a
 note) when its API key isn't set. The response cache is switched off for the
@@ -18,6 +25,7 @@ import json
 import math
 import os
 import time
+from datetime import datetime
 from pathlib import Path
 
 from dev.priority_metrics import kendall_tau, role_accuracy, top3_recall
@@ -25,10 +33,12 @@ from engine.pipeline.priority import plan
 from engine.pipeline.priority.providers import ClaudeProvider, GeminiProvider
 
 BENCH_COLUMNS = ["provider", "model", "sample", "run", "source", "latency_s", "input_tokens", "output_tokens",
-                 "cost_usd", "role_accuracy", "kendall_tau", "top3_recall", "repaired_fraction", "error"]
+                 "cost_usd", "role_accuracy", "kendall_tau", "top3_recall", "repaired_fraction", "error",
+                 "roles", "ranking"]
 NUMERIC = ["latency_s", "input_tokens", "output_tokens", "cost_usd", "role_accuracy", "kendall_tau", "top3_recall",
            "repaired_fraction"]
 GOLDEN_DIR = Path("dev/golden")
+RESULTS_DIR = Path("dev/bench_results")
 
 
 def _row(provider: str, model: str, sample: str, run: int, result, latency: float, gold: dict | None) -> dict:
@@ -47,35 +57,58 @@ def _row(provider: str, model: str, sample: str, run: int, result, latency: floa
         "top3_recall": top3_recall(ranking, gold["ranking"]) if gold else nan,
         "repaired_fraction": stats.repaired_fraction if stats else 0.0,
         "error": (stats.error or "") if stats else "",
+        # What the plan ended up with: the LLM's answer after repair, or the heuristic's if it fell back (see source).
+        "roles": json.dumps(roles, sort_keys=True),
+        "ranking": json.dumps(ranking),
     }
 
 
 def bench(providers: list, samples: list[Path], runs: int, out_csv: Path) -> list[dict]:
     """One row per provider x sample x run; `providers` holds provider
-    objects and/or "heuristic". Latency is wall-clock around plan()."""
+    objects and/or "heuristic". Latency is wall-clock around plan(). Each row
+    is written to `out_csv` as soon as it's measured."""
     saved_cache = os.environ.pop("CHAMELEON_LLM_CACHE", None)
     rows = []
+    out_csv.parent.mkdir(parents=True, exist_ok=True)
     try:
-        for provider in providers:
-            name, model = ("heuristic", "-") if provider == "heuristic" else (provider.name, provider.model)
-            for path in samples:
-                source = json.loads(Path(path).read_text())["source"]
-                gold_path = GOLDEN_DIR / f"{Path(path).stem}.json"
-                gold = json.loads(gold_path.read_text()) if gold_path.exists() else None
-                for run in range(runs):
-                    start = time.perf_counter()
-                    result = plan(source, provider=provider)
-                    rows.append(_row(name, model, Path(path).stem, run, result, time.perf_counter() - start, gold))
+        with out_csv.open("w", newline="", encoding="utf-8") as f:
+            writer = csv.DictWriter(f, fieldnames=BENCH_COLUMNS)
+            writer.writeheader()
+            for provider in providers:
+                name, model = ("heuristic", "-") if provider == "heuristic" else (provider.name, provider.model)
+                for path in samples:
+                    source = json.loads(Path(path).read_text())["source"]
+                    gold_path = GOLDEN_DIR / f"{Path(path).stem}.json"
+                    gold = json.loads(gold_path.read_text()) if gold_path.exists() else None
+                    for run in range(runs):
+                        start = time.perf_counter()
+                        result = plan(source, provider=provider)
+                        row = _row(name, model, Path(path).stem, run, result, time.perf_counter() - start, gold)
+                        rows.append(row)
+                        writer.writerow(row)
+                        f.flush()
     finally:
         if saved_cache is not None:
             os.environ["CHAMELEON_LLM_CACHE"] = saved_cache
-
-    out_csv.parent.mkdir(parents=True, exist_ok=True)
-    with out_csv.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=BENCH_COLUMNS)
-        writer.writeheader()
-        writer.writerows(rows)
     return rows
+
+
+def new_run_dir(root: Path) -> Path:
+    """A fresh folder named after the current local time; a second run in the same second gets _2, _3..."""
+    stamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    path, n = root / stamp, 1
+    while path.exists():
+        n += 1
+        path = root / f"{stamp}_{n}"
+    path.mkdir(parents=True)
+    return path
+
+
+def write_summary(summary: list[dict], path: Path) -> None:
+    with path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=list(summary[0]) if summary else ["provider", "model", "runs"])
+        writer.writeheader()
+        writer.writerows(summary)
 
 
 def _mean(values: list[float]) -> float:
@@ -121,7 +154,8 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--gemini-models", nargs="*", default=[None])
     parser.add_argument("--runs", type=int, default=3)
     parser.add_argument("--samples", type=Path, nargs="*", default=sorted(Path("input").glob("*.json")))
-    parser.add_argument("--out", type=Path, default=Path("output/bench/priority.csv"))
+    parser.add_argument("--results-dir", type=Path, default=RESULTS_DIR)
+    parser.add_argument("--out", type=Path, default=None, help="write the rows to this one file instead of a new folder")
     args = parser.parse_args(argv)
 
     providers: list = []
@@ -135,9 +169,14 @@ def main(argv: list[str] | None = None) -> None:
         print("skipping gemini: GEMINI_API_KEY / GOOGLE_API_KEY is not set")
     providers.append("heuristic")
 
-    rows = bench(providers, args.samples, args.runs, args.out)
-    print_summary(summarize(rows))
-    print(f"\n{len(rows)} rows written to {args.out}")
+    run_dir = new_run_dir(args.results_dir) if args.out is None else None
+    out = args.out or run_dir / "runs.csv"
+    rows = bench(providers, args.samples, args.runs, out)
+    summary = summarize(rows)
+    print_summary(summary)
+    if run_dir is not None:
+        write_summary(summary, run_dir / "summary.csv")
+    print(f"\n{len(rows)} rows written to {out}")
 
 
 if __name__ == "__main__":

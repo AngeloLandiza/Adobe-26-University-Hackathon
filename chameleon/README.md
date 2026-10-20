@@ -46,7 +46,7 @@ Design: [`docs/pipeline/`](../docs/pipeline/README.md). Implementation plan and 
 
 For one task's candidates and scores, set `CHAMELEON_DEBUG=1` before `python -m engine.main`; results go to `output/debug/`.
 
-**Compare the priority providers** (ranking quality, latency, cost per call and projected cost per 1,000 designs; writes `output/bench/priority.csv`). The rule-based ranker always runs; Claude and Gemini only run when their API key is set:
+**Compare the priority providers** (ranking quality, latency, cost per call and projected cost per 1,000 designs). Every run is kept in its own timestamped folder under `dev/bench_results/`: `runs.csv` has one row per provider × design × run, including the roles and ranking each one produced, and `summary.csv` has the table printed at the end. The rule-based ranker always runs; Claude and Gemini only run when their API key is set:
 
 ```bash
 .venv/Scripts/python -m dev.bench_priority --runs 3
