@@ -18,3 +18,5 @@
 **Feeds:** `judgments/` (which pairs to show) and student D (the 12 scores of each judged candidate).
 
 ## Generation log
+
+- **2026-10-20:** `python -m dev.distill.pool --per-ad 4 --seed 0 --split all` over the 153-ad corpus gave **612 cells and 10,568 candidates** (mean 17.3 per cell). The cells split as train 420 (216 Solstice, 204 off-brand) and holdout 192 (116 Solstice, 76 off-brand). No ad failed to build. `pool.jsonl` is 6.5 MB; the renders (310 MB) are in `renders.nosync/`, gitignored.

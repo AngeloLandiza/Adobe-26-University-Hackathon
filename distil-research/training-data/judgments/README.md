@@ -20,3 +20,9 @@
 **Caveat:** this is Claude's taste against the official rubric, not the official scorer itself. Results are checked on holdout ads before anything is trusted.
 
 ## Generation log
+
+- **2026-10-20, pilot:** `python -m dev.distill.pilot make` picked 25 pairs from 25 different train cells (`pilot/pairs.json`).
+  - **The person's half:** open `pilot/page.nosync/judge.html` (built by `python -m dev.distill.pilot_page`). It shows each pair at real size next to the original, with A / B / tie buttons. Download the CSV over `pilot/human_answers.csv`.
+  - **Claude's half:** `python -m dev.distill.pilot judge` (every pair is also re-asked swapped) writes `pilot/teacher_judgments.jsonl`, kept separate from training data.
+  - **Scoring:** `python -m dev.distill.pilot score` writes `pilot/RESULTS.md`.
+- **2026-10-20, main run:** `python -m dev.distill.judge --cells 150 --per-cell 4 --pairs-per-call 4 --swap-share 0.2 --split all --seed 0`, with Claude Opus 5.5 through Claude Code.

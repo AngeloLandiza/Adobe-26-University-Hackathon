@@ -1,0 +1,152 @@
+{
+ "p01": {
+  "cell": "c10_story_ritual_steps_v2@mobile_banner",
+  "task_id": "c10_story_ritual_steps_v2",
+  "a": "row/cutoff=None/margin=0.07/mirror=True/split=0.45",
+  "b": "row/cutoff=None/margin=0.04/mirror=False/split=0.35"
+ },
+ "p02": {
+  "cell": "c08_portrait_sunset_sale@billboard",
+  "task_id": "c08_portrait_sunset_sale",
+  "a": "row/cutoff=None/margin=0.07/mirror=False/split=0.45",
+  "b": "row/cutoff=None/margin=0.07/mirror=False/split=0.35"
+ },
+ "p03": {
+  "cell": "c22_skyscraper@billboard",
+  "task_id": "c22_skyscraper",
+  "a": "row/cutoff=None/margin=0.07/mirror=False/split=0.35",
+  "b": "row/cutoff=None/margin=0.04/mirror=False/split=0.35"
+ },
+ "p04": {
+  "cell": "c12_landscape_split_v3@linkedin_banner",
+  "task_id": "c12_landscape_split_v3",
+  "a": "row/cutoff=None/margin=0.07/mirror=False/split=0.55",
+  "b": "row/cutoff=None/margin=0.07/mirror=False/split=0.35"
+ },
+ "p05": {
+  "cell": "c09_story_launch_v2@instagram_portrait",
+  "task_id": "c09_story_launch_v2",
+  "a": "text_first/margin=0.07",
+  "b": "stack/hero_first=True/margin=0.07"
+ },
+ "p06": {
+  "cell": "c16_banner_bottled_glow@billboard",
+  "task_id": "c16_banner_bottled_glow",
+  "a": "row/cutoff=None/margin=0.04/mirror=True/split=0.35",
+  "b": "row/cutoff=None/margin=0.07/mirror=True/split=0.35"
+ },
+ "p07": {
+  "cell": "c05_square_orange_sticker_v2@linkedin_banner",
+  "task_id": "c05_square_orange_sticker_v2",
+  "a": "row/cutoff=None/margin=0.04/mirror=True/split=0.45",
+  "b": "row/cutoff=None/margin=0.07/mirror=False/split=0.35"
+ },
+ "p08": {
+  "cell": "c20_leaderboard_dark_v3@instagram_portrait",
+  "task_id": "c20_leaderboard_dark_v3",
+  "a": "stack/hero_first=False/margin=0.07",
+  "b": "stack/hero_first=False/margin=0.04"
+ },
+ "p09": {
+  "cell": "c30_story_minimal_glow_v3@instagram_portrait",
+  "task_id": "c30_story_minimal_glow_v3",
+  "a": "stack/hero_first=True/margin=0.07",
+  "b": "text_first/margin=0.04"
+ },
+ "p10": {
+  "cell": "c25_square_missing_sticker@story",
+  "task_id": "c25_square_missing_sticker",
+  "a": "stack/hero_first=False/margin=0.07",
+  "b": "stack/hero_first=False/margin=0.04"
+ },
+ "p11": {
+  "cell": "c24_cover_all_summer_v3@story",
+  "task_id": "c24_cover_all_summer_v3",
+  "a": "stack/hero_first=False/margin=0.04",
+  "b": "text_first/margin=0.04"
+ },
+ "p12": {
+  "cell": "c08_portrait_sunset_sale_v2@half_page",
+  "task_id": "c08_portrait_sunset_sale_v2",
+  "a": "stack/hero_first=False/margin=0.07",
+  "b": "stack/hero_first=True/margin=0.04"
+ },
+ "p13": {
+  "cell": "c23_billboard_weekend_lineup@leaderboard",
+  "task_id": "c23_billboard_weekend_lineup",
+  "a": "row/cutoff=None/margin=0.07/mirror=False/split=0.35",
+  "b": "row/cutoff=None/margin=0.04/mirror=False/split=0.35"
+ },
+ "p14": {
+  "cell": "c24_cover_all_summer_v2@leaderboard",
+  "task_id": "c24_cover_all_summer_v2",
+  "a": "row/cutoff=None/margin=0.04/mirror=False/split=0.35",
+  "b": "row/cutoff=3/margin=0.07/mirror=False/split=0.35"
+ },
+ "p15": {
+  "cell": "c08_portrait_sunset_sale_v2@facebook_cover",
+  "task_id": "c08_portrait_sunset_sale_v2",
+  "a": "row/cutoff=4/margin=0.07/mirror=False/split=0.55",
+  "b": "row/cutoff=4/margin=0.04/mirror=False/split=0.55"
+ },
+ "p16": {
+  "cell": "o08_q_banner_tasting@wide_skyscraper",
+  "task_id": "o08_q_banner_tasting",
+  "a": "stack/hero_first=True/margin=0.04",
+  "b": "story_centered/margin=0.04"
+ },
+ "p17": {
+  "cell": "c10_story_ritual_steps@instagram_post",
+  "task_id": "c10_story_ritual_steps",
+  "a": "fallback",
+  "b": "stack/hero_first=True/margin=0.07"
+ },
+ "p18": {
+  "cell": "c05_square_orange_sticker@large_leaderboard",
+  "task_id": "c05_square_orange_sticker",
+  "a": "row/cutoff=3/margin=0.04/mirror=True/split=0.35",
+  "b": "row/cutoff=3/margin=0.07/mirror=False/split=0.35"
+ },
+ "p19": {
+  "cell": "c06_portrait_lineup@linkedin_banner",
+  "task_id": "c06_portrait_lineup",
+  "a": "row/cutoff=None/margin=0.04/mirror=False/split=0.55",
+  "b": "row/cutoff=None/margin=0.04/mirror=False/split=0.45"
+ },
+ "p20": {
+  "cell": "c25_square_missing_sticker_v3@leaderboard",
+  "task_id": "c25_square_missing_sticker_v3",
+  "a": "row/cutoff=None/margin=0.07/mirror=False/split=0.35",
+  "b": "row/cutoff=None/margin=0.07/mirror=True/split=0.55"
+ },
+ "p21": {
+  "cell": "o20_i_landscape_two_for_one@leaderboard",
+  "task_id": "o20_i_landscape_two_for_one",
+  "a": "row/cutoff=4/margin=0.04/mirror=True/split=0.45",
+  "b": "row/cutoff=4/margin=0.07/mirror=False/split=0.35"
+ },
+ "p22": {
+  "cell": "c10_story_ritual_steps_v3@wide_skyscraper",
+  "task_id": "c10_story_ritual_steps_v3",
+  "a": "stack/hero_first=False/margin=0.07",
+  "b": "story_centered/margin=0.04"
+ },
+ "p23": {
+  "cell": "c03_square_text_only_v1@wide_skyscraper",
+  "task_id": "c03_square_text_only_v1",
+  "a": "stack/hero_first=False/margin=0.07",
+  "b": "text_first/margin=0.04"
+ },
+ "p24": {
+  "cell": "c05_square_orange_sticker_v3@half_page",
+  "task_id": "c05_square_orange_sticker_v3",
+  "a": "story_centered/margin=0.07",
+  "b": "story_centered/margin=0.04"
+ },
+ "p25": {
+  "cell": "o03_q_story_cold_brew@half_page",
+  "task_id": "o03_q_story_cold_brew",
+  "a": "stack/hero_first=False/margin=0.07",
+  "b": "stack/hero_first=True/margin=0.04"
+ }
+}
