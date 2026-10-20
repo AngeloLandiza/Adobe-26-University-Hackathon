@@ -10,6 +10,7 @@ first. Every candidate is finalised; ones that can't be built are dropped.
 import math
 
 from engine.pipeline.geometry import Box, align_in, overlap_area, rotated_aabb, union_box
+from engine.pipeline.layout import flex
 from engine.pipeline.layout.aspect import aspect_class
 from engine.pipeline.layout.layers import fit_inside, place_background, place_decoration
 from engine.pipeline.layout.normalize import finalize
@@ -388,6 +389,10 @@ def _template_candidate(template: str, params: dict, source: dict, target: dict,
     b = _Builder(source, target, plan, measurer)
     slots = build_slots(template, b.width, b.height, params)
     assignment = assign(plan, slots, params.get("cutoff"))
+    if flex.enabled():  # CHAMELEON_FLEX=1: size the slots by what their units need (never raises)
+        m = params["margin"] * min(b.width, b.height)
+        slots = flex.flex_slots(slots, assignment, (m, m, b.width - 2 * m, b.height - 2 * m),
+                                b.els, plan, measurer, b.width, b.height)
     # Regular slots first, then the minor zone, then whatever is left over.
     for index in sorted(assignment, key=lambda i: (slots[i].minor, i)):
         slot, items = slots[index], assignment[index]
