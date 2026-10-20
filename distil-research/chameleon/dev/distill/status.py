@@ -69,7 +69,10 @@ def _events(limit: int = 15) -> list[dict]:
 RUN_LABELS = {"judgments/judgments.jsonl": "Main judging run (grader training data)",
               "judgments/d2/judgments.jsonl": "D2: learned vs hand-set picks",
               "floor-plans/judgments.jsonl": "B2: teacher floor plans vs current winner",
-              "floor-plans/proposals.jsonl": "B2: floor-plan proposals"}
+              "floor-plans/proposals.jsonl": "B2: floor-plan proposals",
+              "floor-plans/builds.jsonl": "B2: proposals built into layouts",
+              "floor-plans/eval-builds.jsonl": "B2 holdout check: layouts built from new templates",
+              "floor-plans/eval-judgments.jsonl": "B2 holdout check: new templates vs current winner"}
 
 
 def _runs() -> list[dict]:
