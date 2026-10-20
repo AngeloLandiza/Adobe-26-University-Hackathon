@@ -38,6 +38,8 @@ distil-research/
 
 The judging criteria are the challenge's official rubric (the brief, Section 2.5), quoted in `chameleon/dev/distill/rubric.md`.
 
+**Attention research** (does a model that sees how the pieces relate to each other judge and plan layouts better?) has its own folder: [`docs/attention/`](docs/attention/README.md), tracking GitHub issue #1.
+
 **Where it came from:** the exact commits (Esteban's work, then F1 `551c463`, F2 `3a6603a` and review fixes `5e13fe8`) are kept on the local branch `angelo/distill-backup`.
 
 ## Running it

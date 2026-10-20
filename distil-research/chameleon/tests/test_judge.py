@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from dev.distill.judge import RUBRIC, judge_pairs, position_bias, swap_agreement
+from dev.distill.judge import RUBRIC, judge_pairs, pick_cells, position_bias, swap_agreement
 
 
 def _row(cell, cid, task="t1", split="train"):
@@ -196,3 +196,29 @@ def test_mismatched_answer_skips_batch(tmp_path):
         def ask(self, prompt, schema, images):
             return {"verdicts": [{"pair": 9, "winner": "a", "confidence": 1, "reason": ""}] * 4}
     assert _run(tmp_path, _pairs(4), Bad()) == []
+
+
+def _cell_rows(n_cells, split, brand, prefix):
+    return [{**_row(f"{prefix}{i}@t", "c0", task=f"{prefix}{i}", split=split), "brand": brand} for i in range(n_cells)]
+
+
+def test_pick_cells_is_stratified_seeded_and_capped():
+    rows = (_cell_rows(60, "train", "solstice", "ts") + _cell_rows(20, "train", "offbrand", "to")
+            + _cell_rows(15, "holdout", "solstice", "hs") + _cell_rows(5, "holdout", "offbrand", "ho"))
+    cells = pick_cells(rows, 20, seed=0)
+    assert len(cells) == 20
+    groups = {}
+    for r in rows:
+        if r["cell"] in cells:
+            groups[(r["split"], r["brand"])] = groups.get((r["split"], r["brand"]), 0) + 1
+    assert groups == {("train", "solstice"): 12, ("train", "offbrand"): 4,
+                      ("holdout", "solstice"): 3, ("holdout", "offbrand"): 1}
+    assert pick_cells(rows, 20, seed=0) == cells
+    assert pick_cells(rows, 20, seed=1) != cells
+    assert pick_cells(rows, 500, seed=0) == {r["cell"] for r in rows}
+
+
+def test_pick_cells_keeps_every_group_represented():
+    rows = _cell_rows(97, "train", "solstice", "ts") + _cell_rows(3, "holdout", "offbrand", "ho")
+    cells = pick_cells(rows, 10, seed=0)
+    assert any(c.startswith("ho") for c in cells)

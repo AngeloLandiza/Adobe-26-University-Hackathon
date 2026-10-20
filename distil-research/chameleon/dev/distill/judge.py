@@ -87,6 +87,38 @@ def _plan(pairs, swap_share: float, seed: int) -> list[tuple]:
     return [(a, b, False) for a, b in shown] + [(shown[i][1], shown[i][0], True) for i in picked]
 
 
+def pick_cells(rows: list[dict], n: int, seed: int = 0) -> set[str]:
+    """A seeded sample of `n` cells, split proportionally across (split, brand)
+    groups with at least one cell per group, so a budget-capped run still
+    judges train and holdout, Solstice and off-brand ads, and whole cells
+    (originals and their swapped re-asks) rather than the alphabetically
+    first ones."""
+    groups: dict[tuple, list[str]] = {}
+    for r in rows:
+        cells = groups.setdefault((r["split"], r.get("brand", "unknown")), [])
+        if r["cell"] not in cells:
+            cells.append(r["cell"])
+    total = sum(len(c) for c in groups.values())
+    if n >= total:
+        return {c for cells in groups.values() for c in cells}
+    keys = sorted(groups)
+    share = {g: n * len(groups[g]) / total for g in keys}
+    alloc = {g: min(len(groups[g]), max(1, int(share[g]))) for g in keys}
+    by_remainder = sorted(keys, key=lambda g: (-(share[g] - int(share[g])), g))
+    while sum(alloc.values()) < n:
+        grow = next((g for g in by_remainder if alloc[g] < len(groups[g])), None)
+        if grow is None:
+            break
+        alloc[grow] += 1
+        by_remainder.remove(grow)
+        by_remainder.append(grow)
+    while sum(alloc.values()) > n:
+        shrink = max((g for g in keys if alloc[g] > 1), key=lambda g: (alloc[g], g))
+        alloc[shrink] -= 1
+    rng = random.Random(seed)
+    return {c for g in keys for c in rng.sample(sorted(groups[g]), alloc[g])}
+
+
 def judge_pairs(pairs, teacher, source_png: Callable[[str], Path], out: Path = JUDGMENTS_FILE,
                 pairs_per_call: int = 4, swap_share: float = 0.2, seed: int = 0,
                 pool_dir: Path = POOL_DIR, limit_calls: int | None = None) -> list[dict]:
@@ -173,6 +205,8 @@ def main() -> None:
     ap.add_argument("--swap-share", type=float, default=0.2)
     ap.add_argument("--split", choices=["train", "holdout", "all"], default="all")
     ap.add_argument("--limit-calls", type=int, default=None)
+    ap.add_argument("--cells", type=int, default=None,
+                    help="judge only this many cells, sampled across split x brand (budget control)")
     ap.add_argument("--model", default="claude-opus-5-5")
     ap.add_argument("--seed", type=int, default=0)
     args = ap.parse_args()
@@ -180,6 +214,9 @@ def main() -> None:
     rows = [json.loads(x) for x in (POOL_DIR / "pool.jsonl").read_text().splitlines() if x.strip()]
     if args.split != "all":
         rows = [r for r in rows if r["split"] == args.split]
+    if args.cells is not None:
+        chosen = pick_cells(rows, args.cells, args.seed)
+        rows = [r for r in rows if r["cell"] in chosen]
     pairs = sample_pairs(rows, per_cell=args.per_cell, seed=args.seed)
     teacher = ClaudeCodeTeacher(args.model)
     added = judge_pairs(pairs, teacher, lambda t: POOL_DIR / RENDERS_SUBDIR / t / "source.png", JUDGMENTS_FILE,
