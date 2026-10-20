@@ -1,0 +1,19 @@
+{
+  "review": "DRAFT: needs a teammate's review. Drafted by Claude on 2026-10-19; these are team judgements, edit freely.",
+  "roles": {
+    "bg": "background", "sun_disc": "decoration", "copy_panel": "decoration", "product": "hero_image",
+    "headline": "headline", "subhead": "subheadline", "cta_pill": "cta", "tag_dot": "badge", "logo": "logo"
+  },
+  "ranking": ["headline", "product", "cta_pill", "logo", "subhead", "tag_dot"],
+  "notes": {
+    "bg": "Full-bleed gradient image behind everything.",
+    "sun_disc": "Translucent gold circle behind the bottle; carries no information.",
+    "copy_panel": "Translucent card behind the headline and subhead. Too big to be a button, so it stays its own all-shape unit: decoration.",
+    "product": "The bottle, the only real image: hero. Second, as in the Level 2/3 goldens.",
+    "headline": "Largest type, the main message.",
+    "subhead": "One line of supporting copy under the headline.",
+    "cta_pill": "'Shop now' on an orange pill. Nothing in this design is grouped; build_units pairs the loose shape and label into one unit with the shape's id.",
+    "tag_dot": "'4-PACK' on a red dot: a short promotional label. Last: it qualifies the product, but nothing is lost without it.",
+    "logo": "Brand mark, bottom-right this time. After the CTA, as in the other goldens."
+  }
+}

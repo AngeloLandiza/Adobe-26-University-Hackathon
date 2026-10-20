@@ -1,5 +1,7 @@
+import csv
 import json
 from pathlib import Path
+import pytest
 from dev.run_matrix import run_matrix
 
 
@@ -70,3 +72,73 @@ def test_cli_skips_providers_without_keys(tmp_path, monkeypatch, capsys):
     printed = capsys.readouterr().out
     assert "skipping claude" in printed and "skipping gemini" in printed and "heuristic" in printed
     assert len(out.read_text().splitlines()) == 2  # header + one heuristic row
+
+
+def _bench_models(tmp_path, monkeypatch, keys: dict, argv: list[str]) -> dict[str, list[str]]:
+    """Run the benchmark CLI offline with only `keys` set; provider name -> models in its CSV rows."""
+    from dev.bench_priority import main
+    from engine.pipeline.priority.providers import ClaudeProvider, GeminiProvider, ProviderError
+    for k in ("ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY"):
+        monkeypatch.delenv(k, raising=False)
+    for k, v in keys.items():
+        monkeypatch.setenv(k, v)
+    def offline(self, *args):
+        raise ProviderError("offline")  # plan() falls back to the heuristic; the row still names the model
+    for cls in (ClaudeProvider, GeminiProvider):
+        monkeypatch.setattr(cls, "complete", offline)
+    out = tmp_path / "b.csv"
+    main(["--runs", "1", "--samples", "input/chameleon_sample_level1_warmup.json", "--out", str(out), *argv])
+    models: dict[str, list[str]] = {}
+    for row in csv.DictReader(out.read_text(encoding="utf-8").splitlines()):
+        models.setdefault(row["provider"], []).append(row["model"])
+    return models
+
+
+@pytest.mark.parametrize("key, var, model, name", [
+    ("ANTHROPIC_API_KEY", "CHAMELEON_CLAUDE_MODEL", "claude-sonnet-5-5", "claude"),
+    ("GEMINI_API_KEY", "CHAMELEON_GEMINI_MODEL", "gemini-3.5-flash-lite", "gemini"),
+])
+def test_cli_benchmarks_the_model_named_in_the_env(tmp_path, monkeypatch, key, var, model, name):
+    models = _bench_models(tmp_path, monkeypatch, {key: "test-key", var: model}, [])
+    assert models[name] == [model]
+
+
+def test_cli_model_flags_override_the_env(tmp_path, monkeypatch):
+    keys = {"ANTHROPIC_API_KEY": "test-key", "CHAMELEON_CLAUDE_MODEL": "claude-sonnet-5-5"}
+    models = _bench_models(tmp_path, monkeypatch, keys, ["--claude-models", "claude-haiku-5-5", "claude-opus-5-5"])
+    assert models["claude"] == ["claude-haiku-5-5", "claude-opus-5-5"]
+
+
+def test_cli_saves_each_run_in_its_own_folder_with_the_answers(tmp_path, monkeypatch):
+    from dev.bench_priority import main
+    for k in ("ANTHROPIC_API_KEY", "GEMINI_API_KEY", "GOOGLE_API_KEY"):
+        monkeypatch.delenv(k, raising=False)
+    argv = ["--runs", "1", "--samples", "input/chameleon_sample_level1_warmup.json", "--results-dir", str(tmp_path)]
+    main(argv)
+    main(argv)  # same second, most likely: still a folder of its own
+    folders = sorted(p for p in tmp_path.iterdir() if p.is_dir())
+    assert len(folders) == 2
+    gold = json.loads(Path("dev/golden/chameleon_sample_level1_warmup.json").read_text())
+    for folder in folders:
+        rows = list(csv.DictReader((folder / "runs.csv").read_text(encoding="utf-8").splitlines()))
+        assert [r["provider"] for r in rows] == ["heuristic"]
+        assert json.loads(rows[0]["ranking"]) == gold["ranking"]
+        assert {u: r for u, r in json.loads(rows[0]["roles"]).items() if u in gold["roles"]} == gold["roles"]
+        summary = list(csv.DictReader((folder / "summary.csv").read_text(encoding="utf-8").splitlines()))
+        assert [(s["provider"], s["runs"]) for s in summary] == [("heuristic", "1")]
+
+
+def test_bench_keeps_the_rows_it_finished_when_a_run_dies(tmp_path, monkeypatch):
+    import dev.bench_priority as bp
+    real_plan, calls = bp.plan, []
+    def dies_on_second_call(*args, **kwargs):
+        calls.append(1)
+        if len(calls) == 2:
+            raise KeyboardInterrupt  # e.g. Ctrl+C ten minutes into a paid run
+        return real_plan(*args, **kwargs)
+    monkeypatch.setattr(bp, "plan", dies_on_second_call)
+    out = tmp_path / "b.csv"
+    with pytest.raises(KeyboardInterrupt):
+        bp.bench(["heuristic"], [Path("input/chameleon_sample_level1_warmup.json")], runs=2, out_csv=out)
+    rows = list(csv.DictReader(out.read_text(encoding="utf-8").splitlines()))
+    assert [(r["provider"], r["run"]) for r in rows] == [("heuristic", "0")]

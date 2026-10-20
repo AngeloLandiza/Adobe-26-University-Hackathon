@@ -274,7 +274,7 @@ A render-based test confirms text sized this way stays inside its box. We import
 |---|---|
 | `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` (or `GOOGLE_API_KEY`) | enable the hosted LLM path |
 | `CHAMELEON_LLM` | `auto` (default: Claude if its key is set, else Gemini, else heuristic), `claude`, `gemini` or `heuristic` |
-| `CHAMELEON_CLAUDE_MODEL` / `CHAMELEON_GEMINI_MODEL` | override the default models (`claude-opus-5-5`, `gemini-3.8-flash`) |
+| `CHAMELEON_CLAUDE_MODEL` / `CHAMELEON_GEMINI_MODEL` | the model each provider calls, in the engine and in `dev.bench_priority` (unless `--claude-models` / `--gemini-models` is passed); defaults `claude-opus-5-5`, `gemini-3.8-flash`. `.env.example` sets both |
 | `CHAMELEON_LLM_CACHE` | a directory: successful LLM answers are cached there, so repeated runs don't pay again |
 | `CHAMELEON_DEBUG` | `1` writes debug output to `output/debug/` (§5) |
 
@@ -290,7 +290,7 @@ Tests always use the rule-based ranker (an autouse fixture sets `CHAMELEON_LLM=h
 
 1. **More targets than the three samples.** `dev/targets.json` lists real formats (scoring targets are "real platform formats", per RULES): Instagram post 1080×1080, portrait 1080×1350, story 1080×1920, YouTube thumbnail 1280×720, LinkedIn banner 1584×396, Facebook cover 820×312, leaderboard 728×90, medium rectangle 300×250, wide skyscraper 160×600, billboard 970×250, mobile banner 320×50, half page 300×600, large leaderboard 970×90. `python -m dev.run_matrix` runs every input against every target (about 95 s for 3 × 13) and writes one render per cell, a labelled contact sheet per input and `winners.json` to `output/matrix/`. That's our main way to look at results.
 2. **More sources.** Hand-write more source designs in the schema: different element counts, a design with no groups, one with no images. Give each a golden label file in `dev/golden/`. Three samples are too few to judge the LLM against the heuristic.
-3. **Provider benchmark** (Task 14): Claude vs Gemini vs heuristic on the golden set, measuring cost, latency, role accuracy, Kendall τ and top-3 recall. Run `python -m dev.bench_priority --runs 3`; it writes `output/bench/priority.csv` and prints a summary with each provider's fallback rate and projected cost per 1,000 designs. A provider without its API key is skipped with a note.
+3. **Provider benchmark** (Task 14): Claude vs Gemini vs heuristic on the golden set, measuring cost, latency, role accuracy, Kendall τ and top-3 recall. Run `python -m dev.bench_priority --runs 3`; it prints a summary with each provider's fallback rate and projected cost per 1,000 designs. Each run is kept in a new timestamped folder under `dev/bench_results/` (committed): `runs.csv` holds every row, including the roles and ranking the plan ended up with, written as it finishes; `summary.csv` holds the printed table. `--out FILE` writes the rows to one file instead. A provider without its API key is skipped with a note.
 4. **Claude as a development helper.** Beyond being a node 1 provider, it can draft golden labels for new designs (a teammate reviews them), and act as a rubric judge to calibrate node 3's weights ([03-grading-node.md §5](03-grading-node.md)).
 
 ---

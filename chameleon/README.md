@@ -46,16 +46,17 @@ Design: [`docs/pipeline/`](../docs/pipeline/README.md). Implementation plan and 
 
 For one task's candidates and scores, set `CHAMELEON_DEBUG=1` before `python -m engine.main`; results go to `output/debug/`.
 
-**Compare the priority providers** (ranking quality, latency, cost per call and projected cost per 1,000 designs; writes `output/bench/priority.csv`). The rule-based ranker always runs; Claude and Gemini only run when their API key is set:
+**Compare the priority providers** (ranking quality, latency, cost per call and projected cost per 1,000 designs). Every run is kept in its own timestamped folder under `dev/bench_results/`: `runs.csv` has one row per provider × design × run, including the roles and ranking each one produced, and `summary.csv` has the table printed at the end. The rule-based ranker always runs; Claude and Gemini only run when their API key is set:
 
 ```bash
 .venv/Scripts/python -m dev.bench_priority --runs 3
 ```
 
-**LLM settings for the priority node** (optional; without them it uses its built-in rule-based ranker, which is also what runs in the no-network scored Docker run):
+**LLM settings for the priority node** (optional; without them it uses its built-in rule-based ranker, which is also what runs in the no-network scored Docker run). Put them in `chameleon/.env`: copy `.env.example` to `.env` and fill in your keys. The file is read automatically and is gitignored.
 
 - `ANTHROPIC_API_KEY` and/or `GEMINI_API_KEY` enable Claude or Gemini.
 - `CHAMELEON_LLM` = `auto` (default), `claude`, `gemini` or `heuristic`.
+- `CHAMELEON_CLAUDE_MODEL` and `CHAMELEON_GEMINI_MODEL` pick the model each provider calls: a model name such as `claude-opus-5-5`, not a key. The engine and the benchmark both use them; without them, the built-in defaults (`claude-opus-5-5`, `gemini-3.8-flash`) apply.
 - `CHAMELEON_LLM_CACHE=<dir>` caches LLM answers between runs.
 
 The full list is in [`docs/pipeline/README.md` §8](../docs/pipeline/README.md#8-development-loop). Live API tests are opt-in:
