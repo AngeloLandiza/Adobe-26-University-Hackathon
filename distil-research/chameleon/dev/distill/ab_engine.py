@@ -11,6 +11,18 @@ winning designs differ, the teacher judges A vs B.
     python -m dev.distill.ab_engine judge --a base --b flex --merge
     python -m dev.distill.ab_engine report --a base --b flex
 
+`--split challenge` runs the challenge ads (training-data/corpus/challenge/,
+evaluation only) instead of pool cells: every challenge ad x every target in
+dev/targets.json except those near the ad's own aspect. Their source renders
+(the judge's "original" image) are written to `_sources.nosync/<task>/source.png`
+under the A/B root, and `judge` uses them for challenge cells. Run each variant
+under its own --name (e.g. base_chl, flex_chl) so challenge winners never mix
+with holdout winners.
+
+The report adds wins by target aspect class and by brand family (solstice /
+offbrand / challenge) and a generalisation score: the minimum, over slices with
+at least MIN_SLICE decided cells, of B's win share.
+
 Every step is resumable (a rerun skips cells already done) and shardable.
 """
 
@@ -32,6 +44,10 @@ AB_ROOT = DATA_ROOT / "ab"
 TARGETS_PATH = Path(__file__).resolve().parents[1] / "targets.json"
 RENDER_SIZE = 768
 MIN_CONFIDENCE = 2
+SOURCES_SUBDIR = "_sources.nosync"  # challenge ads' source renders, under the A/B root
+NEAR_SOURCE = 0.02                  # same rule as pool.py: a target this close to the source aspect is skipped
+MIN_SLICE = 5                       # a slice needs this many decided cells to count for the generalisation score
+FAMILIES = ("solstice", "offbrand", "challenge")
 
 
 # ---------------------------------------------------------------- helpers
@@ -76,6 +92,46 @@ def pool_cells(pool_dir: Path, split: str = "holdout", n: int | None = None, see
     return [cells[c] for c in sorted(cells)]
 
 
+def challenge_cells(designs: list[dict], targets: list[dict], n: int | None = None, seed: int = 0) -> list[dict]:
+    """One row per (challenge ad, target) cell: every target except those within
+    NEAR_SOURCE of the ad's own aspect (the engine only reflows those). Built from
+    the designs and dev/targets.json; pool.jsonl is not involved."""
+    rows = []
+    for d in sorted(designs, key=lambda d: d["task_id"]):
+        cw, ch = d["source"]["canvas"]["width"], d["source"]["canvas"]["height"]
+        for t in targets:
+            if abs((t["width"] / t["height"]) / (cw / ch) - 1) <= NEAR_SOURCE:
+                continue
+            rows.append({"cell": f"{d['task_id']}@{t['name']}", "task_id": d["task_id"],
+                         "split": d.get("split", "challenge"), "brand": d.get("brand", "challenge"),
+                         "target": t["name"]})
+    if n is not None:
+        chosen = judge_mod.pick_cells(rows, n, seed)
+        rows = [r for r in rows if r["cell"] in chosen]
+    return sorted(rows, key=lambda r: r["cell"])
+
+
+def source_png(root: Path, task_id: str) -> Path:
+    return Path(root) / SOURCES_SUBDIR / task_id / "source.png"
+
+
+def write_sources(designs: list[dict], root: Path = AB_ROOT) -> int:
+    """Render each design's source (the judge's "original") once; returns how
+    many were newly written."""
+    from engine.pipeline.render import render_to_image
+    from dev.distill.assets import merged_assets_dir
+
+    todo = [d for d in designs if not source_png(root, d["task_id"]).exists()]
+    if not todo:
+        return 0
+    with merged_assets_dir() as assets:
+        for d in todo:
+            path = source_png(root, d["task_id"])
+            path.parent.mkdir(parents=True, exist_ok=True)
+            render_to_image(d["source"], assets_dir=assets, max_size=RENDER_SIZE).save(path)
+    return len(todo)
+
+
 def winners_files(name: str, root: Path = AB_ROOT) -> list[Path]:
     main = Path(root) / name / "winners.jsonl"
     return [main, *sorted(main.parent.glob("winners.shard*of*.jsonl"))]
@@ -113,6 +169,9 @@ def _resize(source: dict, canvas: dict):
 def _worker_init(env: dict):
     os.environ.update(env)
     os.environ["CHAMELEON_LLM"] = "heuristic"
+    # Plan, score and render against the same images the pool used (brand kit + synthetic),
+    # otherwise synthetic images count as missing and roles and pixel scores change.
+    os.environ["CHAMELEON_ASSETS_DIR"] = str(_assets())
 
 
 def run_cell(job: dict) -> dict:
@@ -162,9 +221,10 @@ def run_variant(name: str, env: dict, cells: list[dict], designs: dict, targets:
         added.append(row)
 
     if workers <= 1:
-        saved = {k: os.environ.get(k) for k in [*env, "CHAMELEON_LLM"]}
+        saved = {k: os.environ.get(k) for k in [*env, "CHAMELEON_LLM", "CHAMELEON_ASSETS_DIR"]}
         os.environ.update(env)
         os.environ["CHAMELEON_LLM"] = "heuristic"
+        os.environ["CHAMELEON_ASSETS_DIR"] = str(_assets())  # same images as the pool (see _worker_init)
         try:
             for job in jobs:
                 record(_safe_run_cell(job))
@@ -215,8 +275,13 @@ def judge_variants(a: str, b: str, teacher, root: Path = AB_ROOT, pool_dir: Path
     pairs, _, _ = changed_pairs(a, b, root)
     main = pair_dir(a, b, root) / "judgments.jsonl"
     out = judge_mod.shard_file(main, *shard) if shard else main
+    challenge = {p[0]["task_id"] for p in pairs if p[0]["split"] == "challenge"}
+
+    def original(task_id: str) -> Path:  # challenge ads aren't in the pool: their source renders live under root
+        return source_png(root, task_id) if task_id in challenge else Path(pool_dir) / RENDERS_SUBDIR / task_id / "source.png"
+
     return judge_mod.judge_pairs(
-        pairs, teacher, lambda t: Path(pool_dir) / RENDERS_SUBDIR / t / "source.png", out,
+        pairs, teacher, original, out,
         pairs_per_call=4, swap_share=0.2, seed=seed, pool_dir=Path(root), limit_calls=limit_calls,
         shard=shard, done_files=[main] if shard else None)
 
@@ -240,6 +305,29 @@ def cell_verdicts(judgments: list[dict], a: str, b: str) -> dict[str, str]:
     return out
 
 
+def family(brand: str | None) -> str:
+    return brand if brand in FAMILIES else "other"
+
+
+def _target_classes() -> dict[str, str]:
+    from engine.pipeline.layout.aspect import aspect_class
+    return {t["name"]: aspect_class(t["width"], t["height"]) for t in json.loads(TARGETS_PATH.read_text())}
+
+
+def b_share(tally: dict) -> float | None:
+    decided = tally["a"] + tally["b"]
+    return tally["b"] / decided if decided else None
+
+
+def generalisation(slices: dict[str, dict], overall: dict) -> dict:
+    """The minimum of B's win share over slices with >= MIN_SLICE decided cells
+    (None when no slice qualifies), which slice that is, and the overall share."""
+    eligible = {k: b_share(v) for k, v in slices.items() if v["a"] + v["b"] >= MIN_SLICE}
+    worst = min(sorted(eligible), key=lambda k: eligible[k]) if eligible else None
+    return {"score": eligible[worst] if worst else None, "worst": worst, "slices": len(eligible),
+            "overall": b_share(overall), "min_slice": MIN_SLICE}
+
+
 def compute_report(a: str, b: str, root: Path = AB_ROOT) -> dict:
     wa, wb = load_winners(a, root), load_winners(b, root)
     pairs, compared, same = changed_pairs(a, b, root)
@@ -251,9 +339,15 @@ def compute_report(a: str, b: str, root: Path = AB_ROOT) -> dict:
     verdicts = cell_verdicts(js, a, b)
     tally = {"a": 0, "b": 0, "unsure": 0}
     by_brand = defaultdict(lambda: {"a": 0, "b": 0, "unsure": 0})
+    by_aspect = defaultdict(lambda: {"a": 0, "b": 0, "unsure": 0})
+    by_family = defaultdict(lambda: {"a": 0, "b": 0, "unsure": 0})
+    classes = _target_classes()
     for c, v in verdicts.items():
         tally[v] += 1
         by_brand[wb[c].get("brand") or "unknown"][v] += 1
+        by_aspect[classes.get(wb[c]["target"], "unknown")][v] += 1
+        by_family[family(wb[c].get("brand"))][v] += 1
+    slices = {f"aspect:{k}": v for k, v in by_aspect.items()} | {f"family:{k}": v for k, v in by_family.items()}
     scores = {a: [], b: []}
     for j in js:
         scores[j["a"]].append(j["score_a"])
@@ -264,6 +358,9 @@ def compute_report(a: str, b: str, root: Path = AB_ROOT) -> dict:
             "judged": len(verdicts), "unjudged": len(changed_cells - set(verdicts)),
             "wins": {"a": tally["a"], "b": tally["b"], "unsure": tally["unsure"]},
             "by_brand": {k: dict(v) for k, v in sorted(by_brand.items())},
+            "by_aspect": {k: dict(v) for k, v in sorted(by_aspect.items())},
+            "by_family": {k: dict(v) for k, v in sorted(by_family.items())},
+            "generalisation": generalisation(slices, tally),
             "mean_score": {a: mean(scores[a]), b: mean(scores[b])},
             "mean_seconds": {a: mean([wa[c]["seconds"] for c in common]), b: mean([wb[c]["seconds"] for c in common])}}
 
@@ -295,7 +392,17 @@ def write_report(a: str, b: str, root: Path = AB_ROOT) -> Path:
              f"| | {a} wins (A) | {b} wins (B) | tie / unsure |", "|---|---|---|---|",
              f"| all | {r['wins']['a']} | {r['wins']['b']} | {r['wins']['unsure']} |"]
     lines += [f"| {k} | {v['a']} | {v['b']} | {v['unsure']} |" for k, v in r["by_brand"].items()]
-    lines += ["", "Mean ship-readiness score (1-5) on changed cells:", "",
+    g = r["generalisation"]
+    f2 = lambda x: "n/a" if x is None else f"{x:.2f}"
+    lines += ["", f"**Generalisation score (B's worst-slice win share, slices with >= {g['min_slice']} decided "
+              f"cells): {f2(g['score'])}**" + (f" (worst slice: {g['worst']}; {g['slices']} slices qualify)"
+                                               if g["worst"] else " (no slice has enough decided cells)"),
+              f"Overall B win share: {f2(g['overall'])}", ""]
+    for title, key in (("By target aspect class", "by_aspect"), ("By brand family", "by_family")):
+        lines += [f"{title}:", "", f"| | {a} wins (A) | {b} wins (B) | tie / unsure | B share |", "|---|---|---|---|---|"]
+        lines += [f"| {k} | {v['a']} | {v['b']} | {v['unsure']} | {f2(b_share(v))} |" for k, v in r[key].items()]
+        lines += [""]
+    lines += ["Mean ship-readiness score (1-5) on changed cells:", "",
               f"- A ({a}): {r['mean_score'][a]:.2f}", f"- B ({b}): {r['mean_score'][b]:.2f}", "",
               "Mean engine seconds per cell (all compared cells):", "",
               f"- A ({a}): {r['mean_seconds'][a]:.2f}", f"- B ({b}): {r['mean_seconds'][b]:.2f}", ""]
@@ -313,7 +420,7 @@ def main(argv=None) -> int:
     r = sub.add_parser("run")
     r.add_argument("--name", required=True)
     r.add_argument("--env", action="append", default=[])
-    r.add_argument("--split", default="holdout", choices=["train", "holdout", "all"])
+    r.add_argument("--split", default="holdout", choices=["train", "holdout", "all", "challenge"])
     r.add_argument("--cells", type=int, default=None)
     r.add_argument("--seed", type=int, default=0)
     r.add_argument("--shard", default=None)
@@ -337,9 +444,16 @@ def main(argv=None) -> int:
             print(f"merged {merge_winners(args.name)} rows")
             return 0
         from dev.distill.corpus import load_corpus
-        cells = pool_cells(POOL_DIR, args.split, args.cells, args.seed)
-        designs = {d["task_id"]: d for d in load_corpus(None if args.split == "all" else args.split)}
-        targets = {t["name"]: t for t in json.loads(TARGETS_PATH.read_text())}
+        target_list = json.loads(TARGETS_PATH.read_text())
+        if args.split == "challenge":
+            chl = load_corpus("challenge")
+            cells = challenge_cells(chl, target_list, args.cells, args.seed)
+            print(f"wrote {write_sources(chl)} new challenge source renders to {AB_ROOT / SOURCES_SUBDIR}")
+            designs = {d["task_id"]: d for d in chl}
+        else:
+            cells = pool_cells(POOL_DIR, args.split, args.cells, args.seed)
+            designs = {d["task_id"]: d for d in load_corpus(None if args.split == "all" else args.split)}
+        targets = {t["name"]: t for t in target_list}
         rows = run_variant(args.name, parse_env(args.env), cells, designs, targets, shard=parse_shard(args.shard),
                            workers=args.workers)
         print(f"ran {len(rows)} new cells of {len(cells)} for {args.name}")

@@ -53,7 +53,7 @@ def _weighted(pairs) -> float:
     return sum(w * s for w, s in pairs) / total if total else 1.0
 
 
-def pixel_metrics(design: dict, plan: PriorityPlan, assets_dir: str | Path = "brand_kit/assets") -> dict[str, float]:
+def pixel_metrics(design: dict, plan: PriorityPlan, assets_dir: str | Path | None = None) -> dict[str, float]:
     width, height = design["canvas"]["width"], design["canvas"]["height"]
     els = {e["id"]: e for e in design["elements"]}
     backdrop = dict(design, elements=[e for e in design["elements"] if e["type"] != "text"])

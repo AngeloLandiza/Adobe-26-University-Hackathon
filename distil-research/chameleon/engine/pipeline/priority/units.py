@@ -2,6 +2,7 @@
 and attach the hard signals the LLM can't override
 (docs/pipeline/01-priority-node.md §1-2)."""
 
+from engine.pipeline.assets import default_assets_dir
 from pathlib import Path
 
 from engine.pipeline.geometry import Box, element_box, overlap_area
@@ -68,7 +69,8 @@ def _is_background(el: dict, elements: list[dict], width: float, height: float) 
     return all(_z(o) >= _z(el) for o in elements if o is not el and overlap_area(box, element_box(o)) > 0)
 
 
-def build_units(source: dict, assets_dir: str | Path = "brand_kit/assets") -> list[Unit]:
+def build_units(source: dict, assets_dir: str | Path | None = None) -> list[Unit]:
+    assets_dir = default_assets_dir() if assets_dir is None else assets_dir
     elements = source["elements"]
     width, height = source["canvas"]["width"], source["canvas"]["height"]
     element_ids = {el["id"] for el in elements}

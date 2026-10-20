@@ -46,7 +46,7 @@ def _heuristic_parts(source: dict, assets_dir: str | Path):
     return units, features, roles, heuristic_ranking(features, roles)
 
 
-def heuristic_plan(source: dict, assets_dir: str | Path = "brand_kit/assets") -> PriorityPlan:
+def heuristic_plan(source: dict, assets_dir: str | Path | None = None) -> PriorityPlan:
     units, _, roles, ranking = _heuristic_parts(source, assets_dir)
     return _assemble(units, roles, ranking, "heuristic", None)
 
@@ -59,7 +59,7 @@ def _bare_plan(source, exc: Exception) -> PriorityPlan:
     return PriorityPlan("heuristic", units, LLMCallStats("none", "-", error=f"could not analyse design: {exc!r}"))
 
 
-def plan(source: dict, assets_dir: str | Path = "brand_kit/assets", provider=None) -> PriorityPlan:
+def plan(source: dict, assets_dir: str | Path | None = None, provider=None) -> PriorityPlan:
     """Node 1's entry point; never raises. `provider` is a provider object or
     a name for `get_provider` (None follows env CHAMELEON_LLM). Without a
     provider, or when the LLM fails or its answer needs too many repairs,
