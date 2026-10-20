@@ -92,7 +92,11 @@ button.theme { margin-left: auto; background: none; border: 1px solid var(--line
       <div id="scores"></div></div>
     <div class="card span-4"><h2>Judge reliability</h2><p class="sub">confidence of each answer (1 = guess, 3 = obvious)</p><div id="confidence"></div></div>
 
-    <div class="card span-12"><h2>Workers</h2><p class="sub">judgements done per parallel shard</p><div id="shards"></div></div>
+    <div class="card span-12"><h2>Runs</h2><p class="sub">every teacher run so far, current rubric only (rows include in-progress shards)</p><div id="runs"></div></div>
+
+    <div class="card span-12"><h2>Experiments &amp; reports</h2><p class="sub">attention experiment logs and run reports, newest first</p><div id="reports"></div></div>
+
+    <div class="card span-12"><h2>Workers (main judging run)</h2><p class="sub">judgements done per parallel shard</p><div id="shards"></div></div>
 
     <div class="card span-12"><h2>Training: learned grader (student D)</h2><p class="sub" id="trainsub">pairwise accuracy: how often the grader prefers the layout the teacher preferred</p><div id="training"></div></div>
 
@@ -273,6 +277,23 @@ function recent(s) {
     <div style="margin-top:4px">${esc(x.reason)}</div></div>`).join("") : `<div class="empty">No judgements yet.</div>`;
 }
 
+function runs(s) {
+  const r = s.runs || [];
+  const ago = (t) => { if (!t) return "–"; const m = Math.round((Date.now() / 1000 - t) / 60); return m < 1 ? "just now" : m < 60 ? m + " min ago" : Math.round(m / 60) + " h ago"; };
+  $("runs").innerHTML = r.length ? `<table><tr><th>Run</th><th>Rows</th><th>Active shard files</th><th>Last write</th></tr>` +
+    r.map((x) => `<tr><td>${esc(x.name)}</td><td>${fmt(x.rows)}</td><td>${x.shards || "–"}</td><td>${ago(x.updated)}</td></tr>`).join("") + `</table>`
+    : `<div class="empty">No runs yet.</div>`;
+}
+
+function reports(s) {
+  const r = s.reports || [];
+  $("reports").innerHTML = r.length ? r.map((x) => `<div class="crit"><div><b>${esc(x.title)}</b>
+    <span class="meta"> · ${esc(x.path)} · ${new Date(x.updated * 1000).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span></div>
+    ${x.decision ? `<div style="margin-top:4px"><span class="pill">decision</span>${esc(x.decision)}</div>` : ""}
+    <details><summary>Excerpt</summary><pre style="white-space:pre-wrap;font:12.5px/1.45 ui-monospace,monospace;margin:6px 0 0">${esc(x.excerpt)}</pre></details></div>`).join("")
+    : `<div class="empty">No experiment logs or reports yet: they appear here when written.</div>`;
+}
+
 function events(s) {
   $("events").innerHTML = (s.events || []).map((e) => `<li><code>${esc(e.sha)}</code> ${esc(e.subject.replace(/^research: /, ""))}
     <span style="color:var(--text-muted)">· ${new Date(e.time).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span></li>`).join("");
@@ -286,7 +307,7 @@ async function refresh() {
     const age = Date.now() / 1000 - s.generated_at;
     $("dot").className = "dot " + (age < 90 ? "ok" : "stale");
     $("updated").textContent = `updated ${age < 60 ? Math.round(age) + " s" : Math.round(age / 60) + " min"} ago` + (age >= 90 ? " (publisher idle)" : "");
-    tiles(s); historyChart(s); groups(s); scores(s); confidence(s); shards(s); training(s); recent(s); events(s);
+    tiles(s); historyChart(s); groups(s); scores(s); confidence(s); runs(s); reports(s); shards(s); training(s); recent(s); events(s);
   } catch (e) {
     $("dot").className = "dot down"; $("updated").textContent = "no data: " + e.message;
   }

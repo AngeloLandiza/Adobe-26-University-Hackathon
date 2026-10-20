@@ -66,6 +66,47 @@ def _events(limit: int = 15) -> list[dict]:
     return [dict(zip(("sha", "time", "subject"), line.split("|", 2))) for line in out.splitlines() if line.count("|") >= 2]
 
 
+RUN_LABELS = {"judgments/judgments.jsonl": "Main judging run (grader training data)",
+              "judgments/d2/judgments.jsonl": "D2: learned vs hand-set picks",
+              "floor-plans/judgments.jsonl": "B2: teacher floor plans vs current winner",
+              "floor-plans/proposals.jsonl": "B2: floor-plan proposals"}
+
+
+def _runs() -> list[dict]:
+    """Every judgement-style file under training-data (shards counted in),
+    current rubric only, so new runs show up without dashboard changes."""
+    runs = []
+    for rel, label in RUN_LABELS.items():
+        main = DATA_ROOT / rel
+        files = [main, *sorted(main.parent.glob(f"{main.stem}.shard*of*{main.suffix}"))]
+        rows = [r for f in files for r in _jsonl(f) if r.get("rubric_version", RUBRIC_VERSION) == RUBRIC_VERSION]
+        if rows or any(f.exists() for f in files):
+            newest = max((f.stat().st_mtime for f in files if f.exists()), default=None)
+            runs.append({"name": label, "rows": len(rows), "shards": len(files) - 1, "updated": newest})
+    return runs
+
+
+def _reports() -> list[dict]:
+    """Experiment logs and run reports, newest first: title, decision line, short excerpt."""
+    research = DATA_ROOT.parent
+    paths = sorted((research / "docs" / "attention" / "experiments").glob("20*.md"))
+    paths += [p for p in (DATA_ROOT / "judgments" / "d2" / "REPORT.md", DATA_ROOT / "floor-plans" / "REPORT.md") if p.exists()]
+    out = []
+    for path in paths:
+        text = path.read_text()
+        lines = [l.strip() for l in text.splitlines() if l.strip()]
+        title = next((l.lstrip("# ") for l in lines if l.startswith("#")), path.stem)
+        decision = ""
+        for i, l in enumerate(lines):
+            if l.lower().startswith("## decision"):
+                decision = next((x for x in lines[i + 1:] if not x.startswith("#")), "")
+                break
+        body = [l for l in lines if not l.startswith("#") and not l.startswith("```")]
+        out.append({"title": title, "path": str(path.relative_to(research)), "updated": path.stat().st_mtime,
+                    "decision": decision[:300], "excerpt": "\n".join(body[:8])[:900]})
+    return sorted(out, key=lambda r: -r["updated"])
+
+
 def snapshot() -> dict:
     corpus = load_corpus()
     rows, plan = _pool()
@@ -120,6 +161,8 @@ def snapshot() -> dict:
         },
         "training": training,
         "events": _events(),
+        "runs": _runs(),
+        "reports": _reports(),
     }
 
 
