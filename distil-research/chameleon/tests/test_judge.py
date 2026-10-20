@@ -233,3 +233,44 @@ def test_rows_carry_scores_and_rubric_version_and_resume_ignores_other_versions(
     rows = _run(tmp_path, pairs, FakeTeacher())
     assert len(rows) == 2  # the row judged under another rubric does not count as done
     assert all(r["rubric_version"] == RUBRIC_VERSION and r["score_a"] == 3 and r["score_b"] == 2 for r in rows)
+
+
+def test_shards_split_cells_disjointly_and_cover_everything(tmp_path):
+    pairs = [p for c in range(6) for p in _pairs(2, cell=f"c{c}")]
+    _touch(tmp_path, pairs)
+    seen = []
+    for k in range(3):
+        rows = judge_pairs(pairs, FakeTeacher(), lambda t: _src_file(tmp_path), tmp_path / f"s{k}.jsonl",
+                           swap_share=0.0, pool_dir=tmp_path, shard=(k, 3))
+        seen.append({r["cell"] for r in rows})
+    assert set().union(*seen) == {f"c{c}" for c in range(6)}
+    assert sum(len(s) for s in seen) == 6  # no cell judged by two shards
+
+
+def test_shard_skips_pairs_already_in_the_main_file(tmp_path):
+    pairs = _pairs(2)
+    _touch(tmp_path, pairs)
+    main_file = tmp_path / "main.jsonl"
+    first = judge_pairs(pairs[:1], FakeTeacher(), lambda t: _src_file(tmp_path), main_file, swap_share=0.0, pool_dir=tmp_path)
+    rows = judge_pairs(pairs, FakeTeacher(), lambda t: _src_file(tmp_path), tmp_path / "shard.jsonl", swap_share=0.0,
+                       pool_dir=tmp_path, shard=(0, 1), done_files=[main_file])
+    assert len(first) == 1 and len(rows) == 1
+
+
+def test_merge_shards_appends_new_rows_once_and_removes_shards(tmp_path):
+    from dev.distill.judge import merge_shards
+    main_file = tmp_path / "judgments.jsonl"
+    row = {"cell": "c1", "a": "x", "b": "y", "swapped": False, "teacher": "t", "rubric_version": "v"}
+    main_file.write_text(json.dumps(row) + "\n")
+    (tmp_path / "judgments.shard0of2.jsonl").write_text(json.dumps(row) + "\n" + json.dumps({**row, "a": "z"}) + "\n")
+    (tmp_path / "judgments.shard1of2.jsonl").write_text(json.dumps({**row, "cell": "c2"}) + "\n")
+    assert merge_shards(main_file) == 2
+    assert len(_lines(main_file)) == 3
+    assert not list(tmp_path.glob("judgments.shard*"))
+
+
+def _src_file(tmp_path):
+    src = tmp_path / "renders" / "t1" / "source.png"
+    src.parent.mkdir(parents=True, exist_ok=True)
+    src.write_text("SOURCE")
+    return src

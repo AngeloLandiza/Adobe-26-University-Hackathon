@@ -17,6 +17,7 @@ import random
 import shutil
 import sys
 import tempfile
+import zlib
 from pathlib import Path
 from typing import Callable
 
@@ -32,12 +33,47 @@ def _key(cell: str, x: str, y: str, swapped: bool) -> tuple:
     return cell, frozenset((x, y)), swapped
 
 
-def _done(out: Path, teacher_name: str) -> set:
-    if not out.exists():
-        return set()
-    rows = (json.loads(x) for x in out.read_text().splitlines() if x.strip())
-    return {_key(r["cell"], r["a"], r["b"], r["swapped"]) for r in rows
-            if r["teacher"] == teacher_name and r.get("rubric_version") == RUBRIC_VERSION}
+def _done(files, teacher_name: str) -> set:
+    done = set()
+    for path in files:
+        if Path(path).exists():
+            rows = (json.loads(x) for x in Path(path).read_text().splitlines() if x.strip())
+            done |= {_key(r["cell"], r["a"], r["b"], r["swapped"]) for r in rows
+                     if r["teacher"] == teacher_name and r.get("rubric_version") == RUBRIC_VERSION}
+    return done
+
+
+def _in_shard(cell: str, shard) -> bool:
+    """Stable (process-independent) assignment of a cell to one of N shards."""
+    return shard is None or zlib.crc32(cell.encode()) % shard[1] == shard[0]
+
+
+def shard_file(main: Path, k: int, n: int) -> Path:
+    return main.with_name(f"{main.stem}.shard{k}of{n}{main.suffix}")
+
+
+def merge_shards(main: Path = JUDGMENTS_FILE) -> int:
+    """Append every shard file's rows that `main` doesn't already hold, then
+    delete the shard files. Returns the number of rows added."""
+    main = Path(main)
+    have = set()
+    if main.exists():
+        have = {json.dumps(json.loads(x), sort_keys=True) for x in main.read_text().splitlines() if x.strip()}
+    added = []
+    shards = sorted(main.parent.glob(f"{main.stem}.shard*of*{main.suffix}"))
+    for path in shards:
+        for line in path.read_text().splitlines():
+            if line.strip():
+                key = json.dumps(json.loads(line), sort_keys=True)
+                if key not in have:
+                    have.add(key)
+                    added.append(line.strip())
+    if added:
+        with main.open("a") as f:
+            f.writelines(x + "\n" for x in added)
+    for path in shards:
+        path.unlink()
+    return len(added)
 
 
 def _schema(n: int) -> dict:
@@ -131,12 +167,15 @@ def pick_cells(rows: list[dict], n: int, seed: int = 0) -> set[str]:
 
 def judge_pairs(pairs, teacher, source_png: Callable[[str], Path], out: Path = JUDGMENTS_FILE,
                 pairs_per_call: int = 4, swap_share: float = 0.2, seed: int = 0,
-                pool_dir: Path = POOL_DIR, limit_calls: int | None = None) -> list[dict]:
+                pool_dir: Path = POOL_DIR, limit_calls: int | None = None,
+                shard: tuple[int, int] | None = None, done_files=None) -> list[dict]:
     """Judge pairs batch by batch (one cell per call); return the rows added to `out`."""
     out = Path(out)
-    done = _done(out, teacher.name)
+    done = _done([out, *(done_files or [])], teacher.name)
+    # Plan over ALL pairs, then shard: every worker sees the same A/B order and swap picks.
     todo = [it for it in _plan(pairs, swap_share, seed)
-            if _key(it[0]["cell"], it[0]["candidate_id"], it[1]["candidate_id"], it[2]) not in done]
+            if _key(it[0]["cell"], it[0]["candidate_id"], it[1]["candidate_id"], it[2]) not in done
+            and _in_shard(it[0]["cell"], shard)]
     batches = []
     for swapped in (False, True):  # all originals first, so a call never holds both orders of a pair
         by_cell: dict[str, list] = {}
@@ -220,7 +259,15 @@ def main() -> None:
                     help="judge only this many cells, sampled across split x brand (budget control)")
     ap.add_argument("--model", default="claude-opus-5-5")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--shard", default=None, help="K/N: judge only cells in shard K of N (run N workers in parallel), "
+                                                  "writing judgments.shardKofN.jsonl; then run --merge")
+    ap.add_argument("--merge", action="store_true", help="fold the shard files into the main judgements file")
     args = ap.parse_args()
+    if args.merge:
+        print(f"merged {merge_shards(JUDGMENTS_FILE)} new rows into {JUDGMENTS_FILE}")
+        return
+    shard = tuple(int(x) for x in args.shard.split("/")) if args.shard else None
+    out = shard_file(JUDGMENTS_FILE, *shard) if shard else JUDGMENTS_FILE
 
     rows = [json.loads(x) for x in (POOL_DIR / "pool.jsonl").read_text().splitlines() if x.strip()]
     if args.split != "all":
@@ -230,9 +277,10 @@ def main() -> None:
         rows = [r for r in rows if r["cell"] in chosen]
     pairs = sample_pairs(rows, per_cell=args.per_cell, seed=args.seed)
     teacher = ClaudeCodeTeacher(args.model)
-    added = judge_pairs(pairs, teacher, lambda t: POOL_DIR / RENDERS_SUBDIR / t / "source.png", JUDGMENTS_FILE,
-                        args.pairs_per_call, args.swap_share, args.seed, POOL_DIR, args.limit_calls)
-    mine = [json.loads(x) for x in JUDGMENTS_FILE.read_text().splitlines() if x.strip()]
+    added = judge_pairs(pairs, teacher, lambda t: POOL_DIR / RENDERS_SUBDIR / t / "source.png", out,
+                        args.pairs_per_call, args.swap_share, args.seed, POOL_DIR, args.limit_calls,
+                        shard=shard, done_files=[JUDGMENTS_FILE] if shard else None)
+    mine = [json.loads(x) for f in {JUDGMENTS_FILE, out} if f.exists() for x in f.read_text().splitlines() if x.strip()]
     mine = [j for j in mine if j["teacher"] == teacher.name]
     print(f"judged {len(added)} new of {len(pairs)} pairs ({len(mine)} total by {teacher.name})")
     print(f"position bias {position_bias(mine):.2f}  swap agreement {swap_agreement(mine):.2f}")

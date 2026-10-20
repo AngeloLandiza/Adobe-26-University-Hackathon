@@ -222,6 +222,18 @@ def main(argv=None) -> int:
     print("\n".join(summary))
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text("# Grader training report\n\n" + "\n".join(summary) + "\n")
+    by_brand = {brand: {"examples": len(ex), "default": pairwise_accuracy(DEFAULT_WEIGHTS, ex),
+                        "learned": pairwise_accuracy(learned, ex)}
+                for brand, ex in holdout_by_brand(pool_rows, judgments).items()}
+    args.report.with_suffix(".json").write_text(json.dumps({  # machine-readable twin, read by the dashboard
+        "trained_at": datetime.datetime.now().isoformat(timespec="seconds"),
+        "rubric_version": version, "min_confidence": args.min_confidence, "dropped": dropped,
+        "examples": {"train": len(train), "holdout": len(holdout), "ties": counts["ties"], "skipped": counts["skipped"]},
+        "accuracy": {f"{name}_{split}": acc[name, split] for name, split in acc}, "holdout_gain": gain,
+        "holdout_by_brand": by_brand,
+        "weights": {"default": {**DEFAULT_WEIGHTS.geometry, **DEFAULT_WEIGHTS.pixels, "geometry_share": DEFAULT_WEIGHTS.geometry_share},
+                    "learned": {**learned.geometry, **learned.pixels, "geometry_share": learned.geometry_share}},
+    }, indent=1))
 
     if args.write:
         if gain < MIN_GAIN - 1e-9:

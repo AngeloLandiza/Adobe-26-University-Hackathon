@@ -1,0 +1,67 @@
+{
+ "trained_at": "2026-10-20T16:56:51",
+ "rubric_version": "f80dbb11",
+ "min_confidence": 2,
+ "dropped": {
+  "teacher": 0,
+  "low_confidence": 227,
+  "rubric_version": 0
+ },
+ "examples": {
+  "train": 326,
+  "holdout": 135,
+  "ties": 27,
+  "skipped": 0
+ },
+ "accuracy": {
+  "default_train": 0.6349693251533742,
+  "default_holdout": 0.7037037037037037,
+  "learned_train": 0.6840490797546013,
+  "learned_holdout": 0.7777777777777778
+ },
+ "holdout_gain": 0.07407407407407407,
+ "holdout_by_brand": {
+  "solstice": {
+   "examples": 83,
+   "default": 0.7349397590361446,
+   "learned": 0.7590361445783133
+  },
+  "offbrand": {
+   "examples": 52,
+   "default": 0.6538461538461539,
+   "learned": 0.8076923076923077
+  }
+ },
+ "weights": {
+  "default": {
+   "hierarchy": 0.2,
+   "legibility": 0.2,
+   "overlap": 0.15,
+   "degradation": 0.1,
+   "faithfulness": 0.08,
+   "space_use": 0.08,
+   "alignment": 0.07,
+   "spacing": 0.07,
+   "balance": 0.05,
+   "text_contrast": 0.6,
+   "busyness": 0.25,
+   "placeholder": 0.15,
+   "geometry_share": 0.7
+  },
+  "learned": {
+   "hierarchy": 0.0,
+   "legibility": 0.17770841859536324,
+   "overlap": 0.00042579505742688847,
+   "degradation": 0.17366772405974182,
+   "faithfulness": 0.3330632101774679,
+   "space_use": 0.08930349450445241,
+   "alignment": 0.04567203910539617,
+   "spacing": 0.13273115344384664,
+   "balance": 0.04742816505630496,
+   "text_contrast": 0.4565447465266036,
+   "busyness": 0.5343805702692265,
+   "placeholder": 0.00907468320416985,
+   "geometry_share": 0.9203568757642464
+  }
+ }
+}

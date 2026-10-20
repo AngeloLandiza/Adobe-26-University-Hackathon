@@ -200,3 +200,13 @@ def test_select_judgments_filters_teacher_confidence_and_rubric_version():
     assert dropped == {"teacher": 1, "low_confidence": 1, "rubric_version": 2}
     kept_any, _ = select_judgments(rows, min_confidence=1, rubric_version=None)
     assert kept_any == rows
+
+
+def test_report_has_a_json_twin(tmp_path):
+    _dataset(tmp_path, _known(), n_train=30, n_hold=20)
+    tg.main(["--rubric-version", "any", "--pool", str(tmp_path / "pool.jsonl"), "--judgments",
+             str(tmp_path / "judgments.jsonl"), "--report", str(tmp_path / "r.md")])
+    data = json.loads((tmp_path / "r.json").read_text())
+    assert data["examples"]["train"] == 30 and data["examples"]["holdout"] == 20
+    assert {"default_holdout", "learned_holdout"} <= set(data["accuracy"])
+    assert abs(sum(v for k, v in data["weights"]["learned"].items() if k != "geometry_share") - 2) < 1e-6

@@ -37,3 +37,19 @@
 - **Training uses confidence ≥ 2 only** (`train_grader --min-confidence 2`, the default). Under the earlier rubric, confidence-1 answers flipped when A and B were swapped (68% consistent overall; 86% once they count as ties).
 - **The earlier rubric's 180 judgements are archived** in `archive/2026-10-20-lenient-rubric/` and never used for training.
 - **The main run under the harsh rubric:** `python -m dev.distill.judge --cells 150 --per-cell 4 --pairs-per-call 4 --swap-share 0.2 --split all --seed 0` (rubric `f80dbb11`).
+
+## First training run (2026-10-20)
+
+- **Data:** 715 judgements under rubric `f80dbb11`, from 16 parallel workers with no failed batches. Position bias is 46%; the same winner comes back when A and B are swapped 86% of the time.
+- **Training:** `python -m dev.distill.train_grader` used 326 train and 135 holdout pairs with confidence ≥ 2. Pairwise accuracy:
+
+| | hand-set | learned |
+|---|---|---|
+| holdout, all | 70.4% | **77.8%** |
+| holdout, Solstice | 73.5% | 75.9% |
+| holdout, off-brand | 65.4% | 80.8% |
+
+  Full numbers are in `training-report.md` and `training-report.json`.
+- **Not shipped yet, even inside the research copy.** With the learned weights, the engine picks the plain-shrink fallback for Level 3 at 300×250 (`tests/test_resize.py::test_small_square_gets_a_real_layout_for_level_3` fails). The learned weights put 0.33 on faithfulness and 0 on hierarchy and overlap, and a uniform shrink is perfectly "faithful". Pairwise accuracy on judged pairs doesn't yet mean better final picks everywhere.
+- **Next (plan step D2):** run the 13-size matrix with and without the weights and have the teacher judge every changed winner. Consider a penalty or constraint so the fallback can't win on faithfulness alone.
+- **Finding:** across 715 pairs, the *better* layout scored 5/5 zero times and 4/5 only 29 times. Even the engine's best candidates are rarely shippable by a senior designer's standard, so better *candidates* (new floor plans, B2) matter more than better *picking*.
