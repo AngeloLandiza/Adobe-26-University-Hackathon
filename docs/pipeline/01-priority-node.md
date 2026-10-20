@@ -137,11 +137,16 @@ A cut-off answer (`max_tokens`) or non-JSON also raises `ProviderError`. Other S
 2. **Background is a hard signal.**
    - Background units always stay background, and the LLM may skip them (the prompt only lists them by id), so that isn't a fix.
    - The LLM may **not** label any other unit `background`: node 2 would stretch it over the whole canvas. That label is treated as invalid.
-   - Nor may it label text or an image `decoration`: node 2 would park it in a corner at a fraction of its size (a headline came out at 4.7 px). Only units the heuristic also calls decoration (all-shape units) can be; otherwise the label is invalid and counts as a fix.
+   - Nor may it label text or an image `decoration`: node 2 would park it in a corner at a fraction of its size (a headline came out at 4.7 px). Only units the heuristic also calls decoration (all-shape units) can be. Any other unit labelled `decoration` counts as a fix, but keeps the LLM's meaning ("least important") instead of taking the heuristic's role:
+     - an image (a unit the heuristic gives an image role) becomes `secondary_image`, the role for watermarks and other minor images;
+     - anything else (text, a button, a badge) becomes `other_text`.
+
+     Falling back to the heuristic's role went wrong exactly when the LLM was right. In `dev_sample_08_ghost_word`, a faint 280 px "SUMMER" behind the bottle is the largest font, so the heuristic calls it `headline`. Claude and Gemini both labelled it `decoration` and left it unranked, and the fallback put it at rank 1. An image has the same trap: a faint texture bigger than the product would have become `hero_image`.
 3. **Ranking.**
    - Unknown ids are dropped.
    - Duplicates, and units whose role is `background` or `decoration`, are removed and count as fixes.
    - Each missing content unit is inserted right after the nearest unit that precedes it in the heuristic's ranking, or at the front if there's none.
+   - The exception is a unit the LLM called `decoration` (see 2): if the LLM left it out of the ranking, it goes last, after the other units. If the LLM did rank it, it keeps that place.
 4. **Fraction:** the number of units involved in any fix ÷ the number of units.
 
 `plan()` **gives up on the LLM answer** if more than 30% of units needed fixing (`MAX_REPAIR_FRACTION`). It uses the heuristic plan wholesale and sets `stats.error = "too_many_repairs"`.
