@@ -72,14 +72,27 @@ RUN_LABELS = {"judgments/judgments.jsonl": "Main judging run (grader training da
               "floor-plans/proposals.jsonl": "B2: floor-plan proposals",
               "floor-plans/builds.jsonl": "B2: proposals built into layouts",
               "floor-plans/eval-builds.jsonl": "B2 holdout check: layouts built from new templates",
-              "floor-plans/eval-judgments.jsonl": "B2 holdout check: new templates vs current winner"}
+              "floor-plans/eval-judgments.jsonl": "B2 holdout check: new templates vs current winner",
+              "floor-plans/retrieval-builds.jsonl": "Retrieval: per-ad plans built (holdout)",
+              "floor-plans/retrieval-judgments.jsonl": "Retrieval: per-ad plans vs current winner"}
+
+
+def _dynamic_labels() -> dict:
+    """A/B engine runs live in training-data/ab/<variant>/ and ab/<A>__vs__<B>/: list whatever exists."""
+    out = {}
+    for d in sorted((DATA_ROOT / "ab").glob("*/")):
+        if "__vs__" in d.name:
+            out[f"ab/{d.name}/judgments.jsonl"] = f"A/B judging: {d.name.replace('__vs__', ' vs ')}"
+        else:
+            out[f"ab/{d.name}/winners.jsonl"] = f"A/B engine run: {d.name} (winners built)"
+    return out
 
 
 def _runs() -> list[dict]:
     """Every judgement-style file under training-data (shards counted in),
     current rubric only, so new runs show up without dashboard changes."""
     runs = []
-    for rel, label in RUN_LABELS.items():
+    for rel, label in {**RUN_LABELS, **_dynamic_labels()}.items():
         main = DATA_ROOT / rel
         files = [main, *sorted(main.parent.glob(f"{main.stem}.shard*of*{main.suffix}"))]
         rows = [r for f in files for r in _jsonl(f) if r.get("rubric_version", RUBRIC_VERSION) == RUBRIC_VERSION]
@@ -93,7 +106,9 @@ def _reports() -> list[dict]:
     """Experiment logs and run reports, newest first: title, decision line, short excerpt."""
     research = DATA_ROOT.parent
     paths = sorted((research / "docs" / "attention" / "experiments").glob("20*.md"))
-    paths += [p for p in (DATA_ROOT / "judgments" / "d2" / "REPORT.md", DATA_ROOT / "floor-plans" / "REPORT.md") if p.exists()]
+    paths += [p for p in (DATA_ROOT / "judgments" / "d2" / "REPORT.md", DATA_ROOT / "floor-plans" / "REPORT.md",
+                          DATA_ROOT / "floor-plans" / "RETRIEVAL.md") if p.exists()]
+    paths += sorted((DATA_ROOT / "ab").glob("*__vs__*/REPORT.md"))
     out = []
     for path in paths:
         text = path.read_text()
