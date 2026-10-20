@@ -1,0 +1,8 @@
+{
+  "roles": {
+    "bg": "background", "logo": "logo", "product": "hero_image", "headline": "headline",
+    "subhead": "subheadline", "badge1": "badge", "badge2": "badge", "badge3": "badge",
+    "ribbon": "badge", "cta": "cta", "legal_text": "legal", "holiday_watermark": "secondary_image"
+  },
+  "ranking": ["headline", "product", "cta", "logo", "subhead", "ribbon", "badge2", "badge1", "badge3", "legal_text", "holiday_watermark"]
+}
