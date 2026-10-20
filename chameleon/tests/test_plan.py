@@ -142,9 +142,39 @@ def test_missing_units_are_inserted_where_the_heuristic_puts_them(l2):
 
 
 def test_llm_cannot_make_copy_or_images_decoration(l2):
-    # node 2 parks decorations in corners at source scale; the headline would shrink to a few px
+    # node 2 parks decorations in corners at source scale; the headline would shrink to a few px.
+    # The LLM still ranked both, so they keep its places.
     data = dict(L2_GOOD, roles=[dict(r, role="decoration") if r["unit_id"] in ("headline", "product") else r
                                 for r in L2_GOOD["roles"]])
     p = plan(l2["source"], provider=Fake(data))
-    assert p.unit_for_element("headline").role == "headline" and p.unit_for_element("product").role == "hero_image"
+    assert p.unit_for_element("headline").role == "other_text" and p.unit_for_element("product").role == "secondary_image"
+    assert [u.unit_id for u in p.ranked_units()][:2] == ["headline", "product"]
     assert p.stats.repaired_fraction == pytest.approx(2 / 9)
+
+
+# What Claude and Gemini both answered for dev_sample_08 (2026-10-19): the ghost word is decoration, unranked.
+GHOST_ANSWER = {"summary": "s", "roles": [
+    {"unit_id": u, "role": r} for u, r in [("bg", "background"), ("ghost_word", "decoration"), ("product", "hero_image"),
+    ("logo", "logo"), ("headline", "headline"), ("subhead", "subheadline"), ("cta", "cta")]],
+    "ranking": ["headline", "product", "cta", "logo", "subhead"]}
+
+
+def test_decoration_text_becomes_other_text_ranked_last():
+    # the heuristic takes the 280 px ghost word for the headline; falling back to it put the ghost word first
+    from tests.designs import GHOST_WORD
+    p = plan(GHOST_WORD, provider=Fake(GHOST_ANSWER))
+    assert p.source == "llm" and p.unit_for_element("ghost_word").role == "other_text"
+    assert [u.unit_id for u in p.ranked_units()] == ["headline", "product", "cta", "logo", "subhead", "ghost_word"]
+    assert p.stats.repaired_fraction == pytest.approx(1 / 7)
+
+
+def test_decoration_image_becomes_secondary_image_ranked_last():
+    # a faint glow bigger than the bottle: the heuristic calls it the hero image
+    from tests.designs import GHOST_WORD, image
+    source = dict(GHOST_WORD, elements=GHOST_WORD["elements"]
+                  + [image("glow", "solstice_bg_gradient.png", 190, 100, 700, 700, z_index=2, opacity=0.1)])
+    data = dict(GHOST_ANSWER, roles=GHOST_ANSWER["roles"] + [{"unit_id": "glow", "role": "decoration"}])
+    p = plan(source, provider=Fake(data))
+    assert p.unit_for_element("glow").role == "secondary_image" and p.unit_for_element("product").role == "hero_image"
+    assert [u.unit_id for u in p.ranked_units()] == ["headline", "product", "cta", "logo", "subhead", "ghost_word", "glow"]
+    assert p.stats.repaired_fraction == pytest.approx(2 / 8)
