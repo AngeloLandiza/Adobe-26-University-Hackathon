@@ -109,6 +109,7 @@ def _reports() -> list[dict]:
     paths += [p for p in (DATA_ROOT / "judgments" / "d2" / "REPORT.md", DATA_ROOT / "floor-plans" / "REPORT.md",
                           DATA_ROOT / "floor-plans" / "RETRIEVAL.md") if p.exists()]
     paths += sorted((DATA_ROOT / "ab").glob("*__vs__*/REPORT.md"))
+    paths += [p for p in (research / "docs" / "optimization-program.md",) if p.exists()]
     out = []
     for path in paths:
         text = path.read_text()
