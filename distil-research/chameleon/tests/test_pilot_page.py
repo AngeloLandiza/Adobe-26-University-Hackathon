@@ -1,5 +1,6 @@
 """The person's pilot page: every pair, its three images and the rubric."""
 
+import html
 import json
 
 from PIL import Image
@@ -30,4 +31,4 @@ def test_page_has_every_pair_images_and_rubric(tmp_path):
     assert page.count("data:image/png;base64,") == 9
     for pid in pairs:
         assert page.count(f'name="{pid}"') == 3
-    assert RUBRIC.splitlines()[0] in page
+    assert html.escape(RUBRIC.splitlines()[0]) in page

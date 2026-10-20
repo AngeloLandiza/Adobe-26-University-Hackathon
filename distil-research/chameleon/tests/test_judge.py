@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from dev.distill.judge import RUBRIC, judge_pairs, pick_cells, position_bias, swap_agreement
+from dev.distill.judge import RUBRIC, RUBRIC_VERSION, judge_pairs, pick_cells, position_bias, swap_agreement
 
 
 def _row(cell, cid, task="t1", split="train"):
@@ -34,7 +34,7 @@ class FakeTeacher:
         if self.fail_on_call == len(self.calls):
             raise RuntimeError("rate limited")
         n = schema["properties"]["verdicts"]["maxItems"]
-        return {"verdicts": [{"pair": i + 1, "winner": self.winner, "confidence": 2, "reason": "r"}
+        return {"verdicts": [{"pair": i + 1, "winner": self.winner, "confidence": 2, "score_a": 3, "score_b": 2, "reason": "r"}
                              for i in range(n)]}
 
 
@@ -102,14 +102,16 @@ BAD_ANSWERS = [
     {"verdicts": [{"pair": 1, "winner": "a", "confidence": 2}]},                       # no reason
     {"verdicts": [{"pair": 1, "winner": "a", "reason": "r"}]},                         # no confidence
     {"verdicts": ["a"]},                                                               # not a dict
-    {"verdicts": [{"pair": 1, "winner": "a", "confidence": 5, "reason": "r"}]},        # confidence out of range
-    {"verdicts": [{"pair": 1, "winner": "x", "confidence": 1, "reason": "r"}]},        # bad winner
-    {"verdicts": [{"pair": 1, "winner": "a", "confidence": 1, "reason": "r"}] * 2},    # pair 1 twice
-    {"verdicts": [{"pair": 1, "winner": "a", "confidence": 1, "reason": 7}]},          # reason not text
+    {"verdicts": [{"pair": 1, "winner": "a", "confidence": 5, "score_a": 3, "score_b": 2, "reason": "r"}]},        # confidence out of range
+    {"verdicts": [{"pair": 1, "winner": "x", "confidence": 1, "score_a": 3, "score_b": 2, "reason": "r"}]},        # bad winner
+    {"verdicts": [{"pair": 1, "winner": "a", "confidence": 1, "score_a": 3, "score_b": 2, "reason": "r"}] * 2},    # pair 1 twice
+    {"verdicts": [{"pair": 1, "winner": "a", "confidence": 1, "score_a": 3, "score_b": 2, "reason": 7}]},          # reason not text
+    {"verdicts": [{"pair": 1, "winner": "a", "confidence": 1, "score_b": 2, "reason": "r"}]},          # no score_a
+    {"verdicts": [{"pair": 1, "winner": "a", "confidence": 1, "score_a": 6, "score_b": 2, "reason": "r"}]},  # score out of range
     {"verdicts": None},
     ["not", "a", "dict"],
 ]
-GOOD = {"verdicts": [{"pair": 1, "winner": "a", "confidence": 2, "reason": "r"}]}
+GOOD = {"verdicts": [{"pair": 1, "winner": "a", "confidence": 2, "score_a": 3, "score_b": 2, "reason": "r"}]}
 
 
 class Scripted(FakeTeacher):
@@ -193,8 +195,8 @@ def test_teacher_failure_keeps_progress(tmp_path):
 
 def test_mismatched_answer_skips_batch(tmp_path):
     class Bad(FakeTeacher):
-        def ask(self, prompt, schema, images):
-            return {"verdicts": [{"pair": 9, "winner": "a", "confidence": 1, "reason": ""}] * 4}
+        def ask(self, prompt, schema, images, validate=None):
+            return {"verdicts": [{"pair": 9, "winner": "a", "confidence": 1, "score_a": 3, "score_b": 2, "reason": ""}] * 4}
     assert _run(tmp_path, _pairs(4), Bad()) == []
 
 
@@ -222,3 +224,12 @@ def test_pick_cells_keeps_every_group_represented():
     rows = _cell_rows(97, "train", "solstice", "ts") + _cell_rows(3, "holdout", "offbrand", "ho")
     cells = pick_cells(rows, 10, seed=0)
     assert any(c.startswith("ho") for c in cells)
+
+
+def test_rows_carry_scores_and_rubric_version_and_resume_ignores_other_versions(tmp_path):
+    pairs = _pairs(2)
+    (tmp_path / "j.jsonl").write_text(json.dumps({"cell": "c1", "a": "a0", "b": "b0", "swapped": False, "teacher": FakeTeacher.name,
+                               "rubric_version": "older000"}) + "\n")
+    rows = _run(tmp_path, pairs, FakeTeacher())
+    assert len(rows) == 2  # the row judged under another rubric does not count as done
+    assert all(r["rubric_version"] == RUBRIC_VERSION and r["score_a"] == 3 and r["score_b"] == 2 for r in rows)

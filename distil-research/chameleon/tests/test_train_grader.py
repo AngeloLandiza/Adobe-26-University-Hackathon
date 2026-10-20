@@ -134,7 +134,7 @@ def test_write_refused_without_gain(tmp_path, monkeypatch, capsys):
     out = tmp_path / "weights.json"
     monkeypatch.setenv("CHAMELEON_GRADER_WEIGHTS", str(out))
     _dataset(tmp_path, DEFAULT_WEIGHTS)
-    code = tg.main(["--pool", str(tmp_path / "pool.jsonl"), "--judgments", str(tmp_path / "judgments.jsonl"),
+    code = tg.main(["--rubric-version", "any", "--pool", str(tmp_path / "pool.jsonl"), "--judgments", str(tmp_path / "judgments.jsonl"),
                     "--report", str(tmp_path / "report.md"), "--write"])
     assert code == 0 and not out.exists()
     assert "refus" in capsys.readouterr().out.lower()
@@ -145,7 +145,7 @@ def test_write_when_gain(tmp_path, monkeypatch):
     out = tmp_path / "weights.json"
     monkeypatch.setenv("CHAMELEON_GRADER_WEIGHTS", str(out))
     _dataset(tmp_path, _known(), n_train=400, n_hold=200)
-    code = tg.main(["--pool", str(tmp_path / "pool.jsonl"), "--judgments", str(tmp_path / "judgments.jsonl"),
+    code = tg.main(["--rubric-version", "any", "--pool", str(tmp_path / "pool.jsonl"), "--judgments", str(tmp_path / "judgments.jsonl"),
                     "--report", str(tmp_path / "report.md"), "--write"])
     assert code == 0 and out.exists()
     data = json.loads(out.read_text())
@@ -160,7 +160,7 @@ def test_teacher_filter_and_per_teacher_counts(tmp_path):
     for i, r in enumerate(rows):
         r["teacher"] = "one" if i % 2 else "two"
     _write_jsonl(tmp_path / "judgments.jsonl", rows)
-    common = ["--pool", str(tmp_path / "pool.jsonl"), "--judgments", str(tmp_path / "judgments.jsonl")]
+    common = ["--rubric-version", "any", "--pool", str(tmp_path / "pool.jsonl"), "--judgments", str(tmp_path / "judgments.jsonl")]
     tg.main(common + ["--report", str(tmp_path / "all.md")])
     text = (tmp_path / "all.md").read_text()
     assert "teachers: one: 25, two: 25" in text and "examples: train 30, holdout 20" in text
@@ -175,7 +175,7 @@ def test_report_breaks_holdout_down_by_brand(tmp_path):
     for r in rows:  # holdout ads t40..t69: the first 20 solstice, the last 10 offbrand
         r["brand"] = "offbrand" if int(r["task_id"][1:]) >= 60 else "solstice"
     _write_jsonl(tmp_path / "pool.jsonl", rows)
-    tg.main(["--pool", str(tmp_path / "pool.jsonl"), "--judgments", str(tmp_path / "judgments.jsonl"),
+    tg.main(["--rubric-version", "any", "--pool", str(tmp_path / "pool.jsonl"), "--judgments", str(tmp_path / "judgments.jsonl"),
              "--report", str(tmp_path / "r.md")])
     text = (tmp_path / "r.md").read_text()
     assert "| holdout brand | examples | default | learned |" in text
@@ -186,3 +186,17 @@ def test_holdout_by_brand_defaults_unknown():
     pool = [_row("d", "p", "holdout"), _row("d", "q", "holdout")]
     groups = tg.holdout_by_brand(pool, [_judge("d", "p", "q", "a")])
     assert list(groups) == ["unknown"] and len(groups["unknown"]) == 1
+
+
+def test_select_judgments_filters_teacher_confidence_and_rubric_version():
+    from dev.distill.train_grader import select_judgments
+    rows = [{"teacher": "t1", "confidence": 3, "rubric_version": "v2"},
+            {"teacher": "t1", "confidence": 1, "rubric_version": "v2"},   # a guess: dropped
+            {"teacher": "t1", "confidence": 2, "rubric_version": "v1"},   # older rubric: dropped
+            {"teacher": "t1", "confidence": 2},                            # no version: dropped
+            {"teacher": "t2", "confidence": 3, "rubric_version": "v2"}]   # other teacher: dropped
+    kept, dropped = select_judgments(rows, teacher="t1", min_confidence=2, rubric_version="v2")
+    assert kept == [rows[0]]
+    assert dropped == {"teacher": 1, "low_confidence": 1, "rubric_version": 2}
+    kept_any, _ = select_judgments(rows, min_confidence=1, rubric_version=None)
+    assert kept_any == rows

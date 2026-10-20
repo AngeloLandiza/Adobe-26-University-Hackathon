@@ -11,6 +11,7 @@ appended to the output file straight away, and a rerun skips what is done.
 """
 
 import argparse
+import hashlib
 import json
 import random
 import shutil
@@ -23,6 +24,8 @@ from dev.distill.paths import JUDGMENTS_FILE, POOL_DIR, RENDERS_SUBDIR
 from dev.distill.teacher import TeacherUnavailable
 
 RUBRIC = (Path(__file__).parent / "rubric.md").read_text()
+# Stamped on every judgement: rows made under another rubric are never mixed in or treated as done.
+RUBRIC_VERSION = hashlib.sha1(RUBRIC.encode()).hexdigest()[:8]
 
 
 def _key(cell: str, x: str, y: str, swapped: bool) -> tuple:
@@ -33,13 +36,15 @@ def _done(out: Path, teacher_name: str) -> set:
     if not out.exists():
         return set()
     rows = (json.loads(x) for x in out.read_text().splitlines() if x.strip())
-    return {_key(r["cell"], r["a"], r["b"], r["swapped"]) for r in rows if r["teacher"] == teacher_name}
+    return {_key(r["cell"], r["a"], r["b"], r["swapped"]) for r in rows
+            if r["teacher"] == teacher_name and r.get("rubric_version") == RUBRIC_VERSION}
 
 
 def _schema(n: int) -> dict:
-    verdict = {"type": "object", "required": ["pair", "winner", "confidence", "reason"],
+    verdict = {"type": "object", "required": ["pair", "winner", "confidence", "score_a", "score_b", "reason"],
                "properties": {"pair": {"type": "integer"}, "winner": {"enum": ["a", "b", "tie"]},
-                              "confidence": {"enum": [1, 2, 3]}, "reason": {"type": "string"}}}
+                              "confidence": {"enum": [1, 2, 3]}, "score_a": {"enum": [1, 2, 3, 4, 5]},
+                              "score_b": {"enum": [1, 2, 3, 4, 5]}, "reason": {"type": "string"}}}
     return {"type": "object", "required": ["verdicts"],
             "properties": {"verdicts": {"type": "array", "items": verdict, "minItems": n, "maxItems": n}}}
 
@@ -48,10 +53,12 @@ def _prompt(n: int) -> str:
     labels = ["Image 1: the ORIGINAL design."]
     for i in range(n):
         labels.append(f"Image {2 + 2 * i}: pair {i + 1}, candidate A. Image {3 + 2 * i}: pair {i + 1}, candidate B.")
-    return (f"{RUBRIC}\n\n{' '.join(labels)}\n\nFor each pair, say which candidate (a or b) is the better "
-            f"resize, or tie if you truly cannot separate them. Confidence: 1 = a guess, 2 = fairly sure, "
-            f"3 = obvious. Give one short reason. Answer with one verdict per pair, numbered 1 to {n}. "
-            f"Read all of the listed image files, in parallel in one step, before you answer.")
+    return (f"{RUBRIC}\n\n{' '.join(labels)}\n\nFor each pair: give each candidate its ship-readiness "
+            f"score (score_a, score_b, 1-5, absolute). Then say which candidate (a or b) is the better resize. "
+            f"If both are bad, still pick the less bad one; answer tie only when they are genuinely equivalent. "
+            f"Confidence: 1 = a guess, 2 = fairly sure, 3 = obvious. In reason, name the specific flaws of each "
+            f"(which element, what is wrong) in one or two sentences. Answer with one verdict per pair, "
+            f"numbered 1 to {n}. Read all of the listed image files, in parallel in one step, before you answer.")
 
 
 def _validator(n: int) -> Callable[[dict], None]:
@@ -70,6 +77,9 @@ def _validator(n: int) -> Callable[[dict], None]:
                 raise ValueError(f"bad winner {v.get('winner')!r}")
             if type(v.get("confidence")) is not int or v["confidence"] not in (1, 2, 3):
                 raise ValueError(f"bad confidence {v.get('confidence')!r}")
+            for score in ("score_a", "score_b"):
+                if type(v.get(score)) is not int or not 1 <= v[score] <= 5:
+                    raise ValueError(f"bad {score} {v.get(score)!r}")
             if not isinstance(v.get("reason"), str):
                 raise ValueError("reason is not a string")
             seen.append(v["pair"])
@@ -167,8 +177,9 @@ def judge_pairs(pairs, teacher, source_png: Callable[[str], Path], out: Path = J
             a, b, swapped = batch[v["pair"] - 1]
             rows.append({"cell": a["cell"], "task_id": a["task_id"], "split": a["split"],
                          "a": a["candidate_id"], "b": b["candidate_id"], "winner": v["winner"],
-                         "confidence": v["confidence"], "reason": v["reason"],
-                         "teacher": teacher.name, "swapped": swapped})
+                         "confidence": v["confidence"], "score_a": v["score_a"], "score_b": v["score_b"],
+                         "reason": v["reason"], "teacher": teacher.name, "rubric_version": RUBRIC_VERSION,
+                         "swapped": swapped})
         out.parent.mkdir(parents=True, exist_ok=True)
         with out.open("a") as f:
             f.writelines(json.dumps(r) + "\n" for r in rows)

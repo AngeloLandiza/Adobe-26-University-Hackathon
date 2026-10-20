@@ -99,7 +99,7 @@ class AlwaysA:
     def ask(self, prompt, schema, images, validate=None):
         self.calls += 1
         n = schema["properties"]["verdicts"]["maxItems"]
-        return {"verdicts": [{"pair": i + 1, "winner": "a", "confidence": 2, "reason": "r"} for i in range(n)]}
+        return {"verdicts": [{"pair": i + 1, "winner": "a", "confidence": 2, "score_a": 3, "score_b": 2, "reason": "r"} for i in range(n)]}
 
 
 def test_make_judge_score_round_trip(tmp_path):

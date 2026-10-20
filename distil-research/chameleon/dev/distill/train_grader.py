@@ -159,18 +159,39 @@ def _write_json(path: Path, weights: GraderWeights, source: str) -> None:
                                 "geometry_share": weights.geometry_share, "source": source}, indent=2) + "\n")
 
 
+def select_judgments(judgments, teacher=None, min_confidence: int = 2, rubric_version=None):
+    """(kept, dropped counts). Keep one teacher's judgements (if given), made
+    under `rubric_version` (if given), with confidence >= `min_confidence`.
+    The pilot showed confidence-1 answers flip when A and B are swapped, so by
+    default they count as "no preference" rather than as training labels."""
+    kept, dropped = [], {"teacher": 0, "low_confidence": 0, "rubric_version": 0}
+    for j in judgments:
+        if teacher and j["teacher"] != teacher:
+            dropped["teacher"] += 1
+        elif rubric_version and j.get("rubric_version") != rubric_version:
+            dropped["rubric_version"] += 1
+        elif j.get("confidence", 3) < min_confidence:
+            dropped["low_confidence"] += 1
+        else:
+            kept.append(j)
+    return kept, dropped
+
+
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--pool", type=Path, default=POOL_DIR / "pool.jsonl")
     ap.add_argument("--judgments", type=Path, default=JUDGMENTS_FILE)
     ap.add_argument("--teacher", default=None, help="use only this teacher's judgements (default: every teacher in the file)")
+    ap.add_argument("--min-confidence", type=int, default=2, help="drop judgements below this confidence (1-3)")
+    ap.add_argument("--rubric-version", default=None,
+                    help="only judgements made under this rubric (default: the current rubric.md; 'any' for all)")
     ap.add_argument("--report", type=Path, default=REPORT_FILE)
     ap.add_argument("--write", action="store_true", help="write the engine's weights.json if holdout accuracy gains >= 0.03")
     args = ap.parse_args(argv)
 
-    judgments = _read_jsonl(args.judgments)
-    if args.teacher:
-        judgments = [j for j in judgments if j["teacher"] == args.teacher]
+    from dev.distill.judge import RUBRIC_VERSION
+    version = None if args.rubric_version == "any" else (args.rubric_version or RUBRIC_VERSION)
+    judgments, dropped = select_judgments(_read_jsonl(args.judgments), args.teacher, args.min_confidence, version)
     per_teacher: dict[str, int] = {}
     for j in judgments:
         per_teacher[j["teacher"]] = per_teacher.get(j["teacher"], 0) + 1
@@ -187,6 +208,7 @@ def main(argv=None) -> int:
 
     teachers = ", ".join(f"{t}: {n}" for t, n in sorted(per_teacher.items())) or "none"
     summary = [f"teachers: {teachers}",
+               f"filters: rubric {version or 'any'}, confidence >= {args.min_confidence}; dropped {dropped}",
                f"examples: train {len(train)}, holdout {len(holdout)}, ties dropped {counts['ties']}, "
                f"skipped (candidate missing from pool) {counts['skipped']}",
                "| accuracy | train | holdout |", "|---|---|---|"]
