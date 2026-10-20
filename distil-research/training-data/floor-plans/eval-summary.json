@@ -1,0 +1,128 @@
+{
+ "b2_tall_1": {
+  "cells": 30,
+  "built": 30,
+  "judged": 30,
+  "wins": 8,
+  "win_rate": 0.26666666666666666,
+  "engine_picks_new": 5,
+  "engine_picks_new_and_wins": 4
+ },
+ "b2_tall_2": {
+  "cells": 30,
+  "built": 30,
+  "judged": 30,
+  "wins": 1,
+  "win_rate": 0.03333333333333333,
+  "engine_picks_new": 1,
+  "engine_picks_new_and_wins": 0
+ },
+ "b2_tall_3": {
+  "cells": 30,
+  "built": 30,
+  "judged": 30,
+  "wins": 16,
+  "win_rate": 0.5333333333333333,
+  "engine_picks_new": 6,
+  "engine_picks_new_and_wins": 5
+ },
+ "b2_tall_4": {
+  "cells": 30,
+  "built": 30,
+  "judged": 30,
+  "wins": 13,
+  "win_rate": 0.43333333333333335,
+  "engine_picks_new": 6,
+  "engine_picks_new_and_wins": 5
+ },
+ "b2_tall_5": {
+  "cells": 30,
+  "built": 30,
+  "judged": 30,
+  "wins": 0,
+  "win_rate": 0.0,
+  "engine_picks_new": 0,
+  "engine_picks_new_and_wins": 0
+ },
+ "b2_square_1": {
+  "cells": 29,
+  "built": 29,
+  "judged": 29,
+  "wins": 13,
+  "win_rate": 0.4482758620689655,
+  "engine_picks_new": 6,
+  "engine_picks_new_and_wins": 4
+ },
+ "b2_square_2": {
+  "cells": 29,
+  "built": 29,
+  "judged": 29,
+  "wins": 6,
+  "win_rate": 0.20689655172413793,
+  "engine_picks_new": 0,
+  "engine_picks_new_and_wins": 0
+ },
+ "b2_square_3": {
+  "cells": 29,
+  "built": 29,
+  "judged": 29,
+  "wins": 15,
+  "win_rate": 0.5172413793103449,
+  "engine_picks_new": 9,
+  "engine_picks_new_and_wins": 8
+ },
+ "b2_square_4": {
+  "cells": 29,
+  "built": 29,
+  "judged": 29,
+  "wins": 6,
+  "win_rate": 0.20689655172413793,
+  "engine_picks_new": 7,
+  "engine_picks_new_and_wins": 4
+ },
+ "b2_square_5": {
+  "cells": 29,
+  "built": 29,
+  "judged": 29,
+  "wins": 2,
+  "win_rate": 0.06896551724137931,
+  "engine_picks_new": 5,
+  "engine_picks_new_and_wins": 1
+ },
+ "b2_very_tall_1": {
+  "cells": 26,
+  "built": 26,
+  "judged": 26,
+  "wins": 11,
+  "win_rate": 0.4230769230769231,
+  "engine_picks_new": 9,
+  "engine_picks_new_and_wins": 5
+ },
+ "b2_very_tall_2": {
+  "cells": 26,
+  "built": 26,
+  "judged": 26,
+  "wins": 4,
+  "win_rate": 0.15384615384615385,
+  "engine_picks_new": 0,
+  "engine_picks_new_and_wins": 0
+ },
+ "b2_very_tall_3": {
+  "cells": 26,
+  "built": 26,
+  "judged": 26,
+  "wins": 2,
+  "win_rate": 0.07692307692307693,
+  "engine_picks_new": 4,
+  "engine_picks_new_and_wins": 0
+ },
+ "b2_very_tall_4": {
+  "cells": 26,
+  "built": 26,
+  "judged": 26,
+  "wins": 7,
+  "win_rate": 0.2692307692307692,
+  "engine_picks_new": 11,
+  "engine_picks_new_and_wins": 4
+ }
+}

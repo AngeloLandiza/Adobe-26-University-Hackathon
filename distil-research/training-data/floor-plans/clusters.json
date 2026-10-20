@@ -1,0 +1,1135 @@
+{
+ "rubric_version": "f80dbb11",
+ "rule": "a plan wins when every verdict on it picks it over the cell's current winner with confidence >= 2; medoids by k-medoids per aspect class, k by silhouette",
+ "classes": {
+  "very_tall": {
+   "n_proposals": 123,
+   "n_built": 122,
+   "n_judged": 122,
+   "n_wins": 66,
+   "win_rate": 0.5409836065573771,
+   "k": 4,
+   "silhouette": {
+    "2": 0.2799704159984122,
+    "3": 0.37123581607152456,
+    "4": 0.37613043711874944,
+    "5": 0.34932502405195853
+   },
+   "medoids": [
+    {
+     "proposal_id": "p0061a834",
+     "cell": "o10_v_story_countdown@half_page",
+     "members": 32,
+     "judged": 39,
+     "win_rate": 0.8205128205128205,
+     "member_ids": [
+      "p0061a834",
+      "p025c0776",
+      "p1432b9f2",
+      "p16be66f0",
+      "p190f153c",
+      "p221dc395",
+      "p2de2905f",
+      "p326a9191",
+      "p338b63da",
+      "p3c24faed",
+      "p413efb3b",
+      "p55c93dc6",
+      "p5fc9fb49",
+      "p66d9fd5a",
+      "p6b72c7ee",
+      "p6ce422d5",
+      "p7fba3843",
+      "p80c38a0a",
+      "p952d013f",
+      "p985c542a",
+      "pa37a2d6a",
+      "pa88f7485",
+      "pa8c79f04",
+      "pb869bee7",
+      "pc57855cf",
+      "pc5c0c88d",
+      "pccd23e57",
+      "pdbf30115",
+      "pdf1c9e3d",
+      "pe9a6ea37",
+      "pf14ee988",
+      "pfbdbaa03"
+     ],
+     "name": "b2_very_tall_1",
+     "plan": {
+      "name": "b2_very_tall_1",
+      "classes": [
+       "very_tall"
+      ],
+      "margins": [
+       0.07,
+       0.05
+      ],
+      "slots": [
+       {
+        "name": "logo",
+        "box": [
+         0.25,
+         0.0,
+         0.5,
+         0.06
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.0,
+         0.09,
+         1.0,
+         0.32
+        ]
+       },
+       {
+        "name": "hero",
+        "box": [
+         0.0,
+         0.44,
+         1.0,
+         0.28
+        ]
+       },
+       {
+        "name": "badge",
+        "box": [
+         0.12,
+         0.75,
+         0.76,
+         0.08
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.0,
+         0.86,
+         1.0,
+         0.14
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "p7b6f3ea7",
+     "cell": "c28_square_panel_v2@half_page",
+     "members": 17,
+     "judged": 50,
+     "win_rate": 0.34,
+     "member_ids": [
+      "p0a58a428",
+      "p0e2a1ab4",
+      "p3142e9e0",
+      "p35cd1930",
+      "p4032282a",
+      "p4ad6dcf5",
+      "p56c5e123",
+      "p5caacabc",
+      "p64a42212",
+      "p7b6f3ea7",
+      "p86cd8690",
+      "p9b4d9fef",
+      "pb36cdd07",
+      "pdd70d412",
+      "pedc2a001",
+      "pf5141f8e",
+      "pfdb99071"
+     ],
+     "name": "b2_very_tall_2",
+     "plan": {
+      "name": "b2_very_tall_2",
+      "classes": [
+       "very_tall"
+      ],
+      "margins": [
+       0.06,
+       0.08
+      ],
+      "slots": [
+       {
+        "name": "logo",
+        "box": [
+         0.22,
+         0.02,
+         0.56,
+         0.07
+        ]
+       },
+       {
+        "name": "hero",
+        "box": [
+         0.12,
+         0.13,
+         0.76,
+         0.38
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.05,
+         0.56,
+         0.9,
+         0.19
+        ]
+       },
+       {
+        "name": "cta",
+        "box": [
+         0.16,
+         0.79,
+         0.68,
+         0.09
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.3,
+         0.92,
+         0.4,
+         0.05
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "p0edc93c7",
+     "cell": "c03_square_text_only_v3@half_page",
+     "members": 10,
+     "judged": 16,
+     "win_rate": 0.625,
+     "member_ids": [
+      "p0edc93c7",
+      "p1430b1df",
+      "p59045435",
+      "p5ff8b141",
+      "p6a6c1e32",
+      "p6ac5183f",
+      "p6dfd9b5d",
+      "p85d29b40",
+      "ped90efba",
+      "pff05bdb9"
+     ],
+     "name": "b2_very_tall_3",
+     "plan": {
+      "name": "b2_very_tall_3",
+      "classes": [
+       "very_tall"
+      ],
+      "margins": [
+       0.07,
+       0.04
+      ],
+      "slots": [
+       {
+        "name": "text",
+        "box": [
+         0.0,
+         0.2,
+         1.0,
+         0.46
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.3,
+         0.93,
+         0.4,
+         0.05
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "pfc51b6ec",
+     "cell": "o08_q_banner_tasting@wide_skyscraper",
+     "members": 7,
+     "judged": 17,
+     "win_rate": 0.4117647058823529,
+     "member_ids": [
+      "p34f0d802",
+      "p6974ba7c",
+      "p9bd75c8f",
+      "pb168b424",
+      "pdb113296",
+      "pdbcf61c2",
+      "pfc51b6ec"
+     ],
+     "name": "b2_very_tall_4",
+     "plan": {
+      "name": "b2_very_tall_4",
+      "classes": [
+       "very_tall"
+      ],
+      "margins": [
+       0.07,
+       0.04
+      ],
+      "slots": [
+       {
+        "name": "hero",
+        "box": [
+         0.15,
+         0.03,
+         0.7,
+         0.18
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.0,
+         0.25,
+         1.0,
+         0.37
+        ]
+       },
+       {
+        "name": "badge",
+        "box": [
+         0.0,
+         0.65,
+         1.0,
+         0.06
+        ]
+       },
+       {
+        "name": "cta",
+        "box": [
+         0.05,
+         0.75,
+         0.9,
+         0.1
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.0,
+         0.91,
+         1.0,
+         0.06
+        ]
+       }
+      ]
+     }
+    }
+   ]
+  },
+  "tall": {
+   "n_proposals": 117,
+   "n_built": 117,
+   "n_judged": 117,
+   "n_wins": 61,
+   "win_rate": 0.5213675213675214,
+   "k": 5,
+   "silhouette": {
+    "2": 0.31841101352824097,
+    "3": 0.30986838972603536,
+    "4": 0.29357469730742664,
+    "5": 0.32486400687156974
+   },
+   "medoids": [
+    {
+     "proposal_id": "p0210c3c2",
+     "cell": "c01_square_golden_hour@story",
+     "members": 25,
+     "judged": 38,
+     "win_rate": 0.6578947368421053,
+     "member_ids": [
+      "p0210c3c2",
+      "p025a7a57",
+      "p08577e83",
+      "p1027d315",
+      "p2785b018",
+      "p35ae0b24",
+      "p522747cf",
+      "p536c689c",
+      "p55b70589",
+      "p60cf7e6f",
+      "p6691603d",
+      "p6b33ab08",
+      "p6d9c0f9b",
+      "p9324b438",
+      "p9a6e2d66",
+      "p9b84ece8",
+      "padbb459b",
+      "pc47aa28c",
+      "pcfc000fc",
+      "pd0932dbe",
+      "pd647858f",
+      "pd7de1c0d",
+      "pdfd341be",
+      "pe0297b6f",
+      "pfb2045cc"
+     ],
+     "name": "b2_tall_1",
+     "plan": {
+      "name": "b2_tall_1",
+      "classes": [
+       "tall"
+      ],
+      "margins": [
+       0.05,
+       0.07
+      ],
+      "slots": [
+       {
+        "name": "logo",
+        "box": [
+         0.34,
+         0.0,
+         0.32,
+         0.055
+        ]
+       },
+       {
+        "name": "hero",
+        "box": [
+         0.08,
+         0.08,
+         0.84,
+         0.43
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.04,
+         0.54,
+         0.92,
+         0.24
+        ]
+       },
+       {
+        "name": "badge",
+        "box": [
+         0.18,
+         0.81,
+         0.64,
+         0.075
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.3,
+         0.94,
+         0.4,
+         0.04
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "p87a1de23",
+     "cell": "c22_skyscraper@instagram_portrait",
+     "members": 21,
+     "judged": 46,
+     "win_rate": 0.45652173913043476,
+     "member_ids": [
+      "p1ff4ea18",
+      "p3f7a182d",
+      "p40f2fac2",
+      "p43fc5c3a",
+      "p4f9646b3",
+      "p4fb1227b",
+      "p55f21758",
+      "p63716e01",
+      "p644be49a",
+      "p83e09ea7",
+      "p87a1de23",
+      "p9bed857b",
+      "pb3b06873",
+      "pb891dbed",
+      "pbe900bbe",
+      "pc83a20e9",
+      "pd7ac0c75",
+      "pda58b80e",
+      "pdc5cc37f",
+      "pe9eb9254",
+      "pf661d687"
+     ],
+     "name": "b2_tall_2",
+     "plan": {
+      "name": "b2_tall_2",
+      "classes": [
+       "tall"
+      ],
+      "margins": [
+       0.05,
+       0.07
+      ],
+      "slots": [
+       {
+        "name": "logo",
+        "box": [
+         0.3,
+         0.0,
+         0.4,
+         0.08
+        ]
+       },
+       {
+        "name": "hero",
+        "box": [
+         0.15,
+         0.11,
+         0.7,
+         0.45
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.08,
+         0.59,
+         0.84,
+         0.24
+        ]
+       },
+       {
+        "name": "cta",
+        "box": [
+         0.3,
+         0.855,
+         0.4,
+         0.085
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.35,
+         0.955,
+         0.3,
+         0.045
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "p2bd90f1b",
+     "cell": "c09_story_launch_v3@instagram_portrait",
+     "members": 9,
+     "judged": 12,
+     "win_rate": 0.75,
+     "member_ids": [
+      "p01ab45ae",
+      "p2bd90f1b",
+      "p31f00bfb",
+      "p4f01f1f7",
+      "p7f1c30dc",
+      "pba9a71f6",
+      "pbee32e47",
+      "pd13c0768",
+      "pe5d33e53"
+     ],
+     "name": "b2_tall_3",
+     "plan": {
+      "name": "b2_tall_3",
+      "classes": [
+       "tall"
+      ],
+      "margins": [
+       0.06,
+       0.08
+      ],
+      "slots": [
+       {
+        "name": "logo",
+        "box": [
+         0.3,
+         0.0,
+         0.4,
+         0.07
+        ]
+       },
+       {
+        "name": "hero",
+        "box": [
+         0.15,
+         0.1,
+         0.7,
+         0.42
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.05,
+         0.55,
+         0.9,
+         0.2
+        ]
+       },
+       {
+        "name": "badge",
+        "box": [
+         0.25,
+         0.77,
+         0.5,
+         0.05
+        ]
+       },
+       {
+        "name": "cta",
+        "box": [
+         0.22,
+         0.85,
+         0.56,
+         0.1
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.3,
+         0.97,
+         0.4,
+         0.03
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "p0a61bd68",
+     "cell": "c23_billboard_weekend_lineup_v3@instagram_portrait",
+     "members": 3,
+     "judged": 6,
+     "win_rate": 0.5,
+     "member_ids": [
+      "p0a61bd68",
+      "p8d56c949",
+      "p93a9cd58"
+     ],
+     "name": "b2_tall_4",
+     "plan": {
+      "name": "b2_tall_4",
+      "classes": [
+       "tall"
+      ],
+      "margins": [
+       0.06,
+       0.08
+      ],
+      "slots": [
+       {
+        "name": "text",
+        "box": [
+         0.0,
+         0.0,
+         1.0,
+         0.22
+        ]
+       },
+       {
+        "name": "hero",
+        "box": [
+         0.12,
+         0.25,
+         0.76,
+         0.46
+        ]
+       },
+       {
+        "name": "badge",
+        "box": [
+         0.15,
+         0.74,
+         0.7,
+         0.06
+        ]
+       },
+       {
+        "name": "cta",
+        "box": [
+         0.25,
+         0.83,
+         0.5,
+         0.08
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.0,
+         0.95,
+         1.0,
+         0.05
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "pc186efc5",
+     "cell": "warmup_01@instagram_portrait",
+     "members": 3,
+     "judged": 15,
+     "win_rate": 0.2,
+     "member_ids": [
+      "p6b0b0281",
+      "paabda19c",
+      "pc186efc5"
+     ],
+     "name": "b2_tall_5",
+     "plan": {
+      "name": "b2_tall_5",
+      "classes": [
+       "tall"
+      ],
+      "margins": [
+       0.07,
+       0.04
+      ],
+      "slots": [
+       {
+        "name": "logo",
+        "box": [
+         0.36,
+         0.03,
+         0.28,
+         0.09
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.05,
+         0.36,
+         0.9,
+         0.17
+        ]
+       },
+       {
+        "name": "cta",
+        "box": [
+         0.2,
+         0.56,
+         0.6,
+         0.07
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.35,
+         0.95,
+         0.3,
+         0.04
+        ]
+       }
+      ]
+     }
+    }
+   ]
+  },
+  "square": {
+   "n_proposals": 120,
+   "n_built": 120,
+   "n_judged": 120,
+   "n_wins": 79,
+   "win_rate": 0.6583333333333333,
+   "k": 5,
+   "silhouette": {
+    "2": 0.19008352888755156,
+    "3": 0.19798288097383948,
+    "4": 0.20161477751002632,
+    "5": 0.22660043835920102
+   },
+   "medoids": [
+    {
+     "proposal_id": "p5977e654",
+     "cell": "o20_i_landscape_two_for_one@instagram_post",
+     "members": 25,
+     "judged": 29,
+     "win_rate": 0.8620689655172413,
+     "member_ids": [
+      "p38747e76",
+      "p3ff97752",
+      "p4902b80f",
+      "p50da390a",
+      "p5977e654",
+      "p5ff5587d",
+      "p64988a65",
+      "p6b1c2880",
+      "p76438a1c",
+      "p85165b9f",
+      "p86917ee0",
+      "p88a048fd",
+      "p94858fa7",
+      "p9f170150",
+      "pa333244e",
+      "pa66d0d5d",
+      "pc6374262",
+      "pc6474143",
+      "pc73920ff",
+      "pd7f58079",
+      "pd9a5a63e",
+      "pda59d597",
+      "pdbd0495c",
+      "pdc7842e7",
+      "pe398a066"
+     ],
+     "name": "b2_square_1",
+     "plan": {
+      "name": "b2_square_1",
+      "classes": [
+       "square"
+      ],
+      "margins": [
+       0.06,
+       0.08
+      ],
+      "slots": [
+       {
+        "name": "text",
+        "box": [
+         0.0,
+         0.08,
+         0.5,
+         0.5
+        ]
+       },
+       {
+        "name": "badge",
+        "box": [
+         0.0,
+         0.63,
+         0.36,
+         0.1
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.0,
+         0.9,
+         0.5,
+         0.08
+        ]
+       },
+       {
+        "name": "hero",
+        "box": [
+         0.53,
+         0.12,
+         0.47,
+         0.72
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "p1fc8b255",
+     "cell": "c18_mrec_chase_light@instagram_post",
+     "members": 14,
+     "judged": 34,
+     "win_rate": 0.4117647058823529,
+     "member_ids": [
+      "p02af9885",
+      "p1fc8b255",
+      "p2a775f08",
+      "p2bc61f09",
+      "p32304df9",
+      "p4e7c045e",
+      "p52451fdc",
+      "p53ed5f60",
+      "p5942622a",
+      "p779a441e",
+      "p8912954a",
+      "pba207508",
+      "pbad8e2bd",
+      "pf80a835c"
+     ],
+     "name": "b2_square_2",
+     "plan": {
+      "name": "b2_square_2",
+      "classes": [
+       "square"
+      ],
+      "margins": [
+       0.06,
+       0.08
+      ],
+      "slots": [
+       {
+        "name": "logo",
+        "box": [
+         0.35,
+         0.0,
+         0.3,
+         0.1
+        ]
+       },
+       {
+        "name": "hero",
+        "box": [
+         0.0,
+         0.14,
+         0.5,
+         0.78
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.54,
+         0.26,
+         0.46,
+         0.34
+        ]
+       },
+       {
+        "name": "cta",
+        "box": [
+         0.54,
+         0.64,
+         0.36,
+         0.11
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.62,
+         0.95,
+         0.38,
+         0.05
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "p6e6aae28",
+     "cell": "c23_billboard_weekend_lineup_v2@medium_rectangle",
+     "members": 14,
+     "judged": 17,
+     "win_rate": 0.8235294117647058,
+     "member_ids": [
+      "p013cea2c",
+      "p0b8224e9",
+      "p1255c0f2",
+      "p16db40a8",
+      "p39fbdfde",
+      "p587cb7b3",
+      "p5a752be2",
+      "p6e6aae28",
+      "p825d2c80",
+      "p9dbc0482",
+      "pa54a4bce",
+      "pc61154bc",
+      "pdbef192e",
+      "pfc9bbaba"
+     ],
+     "name": "b2_square_3",
+     "plan": {
+      "name": "b2_square_3",
+      "classes": [
+       "square"
+      ],
+      "margins": [
+       0.05,
+       0.07
+      ],
+      "slots": [
+       {
+        "name": "hero",
+        "box": [
+         0.0,
+         0.04,
+         0.4,
+         0.72
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.44,
+         0.0,
+         0.56,
+         0.54
+        ]
+       },
+       {
+        "name": "badge",
+        "box": [
+         0.44,
+         0.57,
+         0.56,
+         0.12
+        ]
+       },
+       {
+        "name": "cta",
+        "box": [
+         0.44,
+         0.72,
+         0.56,
+         0.14
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.0,
+         0.89,
+         1.0,
+         0.11
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "pbd9873d7",
+     "cell": "c24_cover_all_summer@instagram_post",
+     "members": 13,
+     "judged": 16,
+     "win_rate": 0.8125,
+     "member_ids": [
+      "p00cbe81f",
+      "p0b931b76",
+      "p18adb705",
+      "p2341fe7b",
+      "p2e7b96ef",
+      "p3b478394",
+      "p5f2a165a",
+      "p785b72aa",
+      "p7b445816",
+      "p7e097655",
+      "p8453c3d4",
+      "p9beaf71b",
+      "pbd9873d7"
+     ],
+     "name": "b2_square_4",
+     "plan": {
+      "name": "b2_square_4",
+      "classes": [
+       "square"
+      ],
+      "margins": [
+       0.07,
+       0.04
+      ],
+      "slots": [
+       {
+        "name": "logo",
+        "box": [
+         0.35,
+         0.0,
+         0.3,
+         0.1
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.06,
+         0.13,
+         0.88,
+         0.3
+        ]
+       },
+       {
+        "name": "hero",
+        "box": [
+         0.2,
+         0.46,
+         0.6,
+         0.54
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.84,
+         0.94,
+         0.16,
+         0.06
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "pf3d92d69",
+     "cell": "o14_v_mobile_banner@medium_rectangle",
+     "members": 13,
+     "judged": 24,
+     "win_rate": 0.5416666666666666,
+     "member_ids": [
+      "p0feeb3e5",
+      "p1ee48a1e",
+      "p35923f59",
+      "p5dfd92e7",
+      "p85da18cb",
+      "p987cfe56",
+      "pa7e34e89",
+      "pb56bda0a",
+      "pbf315c9e",
+      "pd24bd603",
+      "pe8c56aa6",
+      "pf25a1666",
+      "pf3d92d69"
+     ],
+     "name": "b2_square_5",
+     "plan": {
+      "name": "b2_square_5",
+      "classes": [
+       "square"
+      ],
+      "margins": [
+       0.07,
+       0.04
+      ],
+      "slots": [
+       {
+        "name": "text",
+        "box": [
+         0.04,
+         0.14,
+         0.92,
+         0.44
+        ]
+       },
+       {
+        "name": "cta",
+        "box": [
+         0.29,
+         0.64,
+         0.42,
+         0.18
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.35,
+         0.9,
+         0.3,
+         0.1
+        ]
+       }
+      ]
+     }
+    }
+   ]
+  }
+ }
+}
