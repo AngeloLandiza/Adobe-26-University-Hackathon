@@ -1,0 +1,7 @@
+{
+  "name": "llm_sonnet",
+  "env": {
+    "LLM_LAYOUT": "claude-sonnet-5-5",
+    "fallback": "v5"
+  }
+}

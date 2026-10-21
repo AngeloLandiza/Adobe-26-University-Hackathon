@@ -119,7 +119,7 @@ def execute(source: dict, target: dict, plan, measurer, answer: dict) -> dict:
     return {"canvas": {"width": W, "height": H}, "elements": out}
 
 
-def run(name: str, baseline: str, n: int, model: str) -> None:
+def run(name: str, baseline: str, n: int, model: str, image: bool = True) -> None:
     os.environ["CHAMELEON_LLM"] = "heuristic"
     os.environ["CHAMELEON_ASSETS_DIR"] = str(ab._assets())
     from dev.distill.corpus import load_corpus
@@ -134,7 +134,7 @@ def run(name: str, baseline: str, n: int, model: str) -> None:
     base_dir = ab.AB_ROOT / baseline
     out_dir = ab.AB_ROOT / name
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "variant.json").write_text(json.dumps({"name": name, "env": {"LLM_LAYOUT": model, "fallback": baseline}}, indent=2))
+    (out_dir / "variant.json").write_text(json.dumps({"name": name, "env": {"LLM_LAYOUT": model, "fallback": baseline, "image": image}}, indent=2))
     teacher = ClaudeCodeTeacher(model)
     measurer = _get_measurer()
     rows, stats = [], defaultdict(int)
@@ -144,11 +144,11 @@ def run(name: str, baseline: str, n: int, model: str) -> None:
         target = {"width": t["width"], "height": t["height"]}
         plan = priority_plan(source)
         els = [{k: e[k] for k in KEEP if k in e} for e in source["elements"]]
-        prompt = PROMPT.format(sw=source["canvas"]["width"], sh=source["canvas"]["height"], tw=t["width"], th=t["height"],
+        prompt = (PROMPT if image else PROMPT.replace("\nThe source ad image is attached (read it first).", "")).format(sw=source["canvas"]["width"], sh=source["canvas"]["height"], tw=t["width"], th=t["height"],
                                elements=json.dumps(els, separators=(",", ":")))
         png = Path(r["png"])
         try:
-            answer = teacher.ask(prompt, SCHEMA, images=[_source_png(r)])
+            answer = teacher.ask(prompt, SCHEMA, images=[_source_png(r)] if image else [])
             design = execute(source, target, plan, measurer, answer)
             failed = check_gates(source, design, target, plan, measurer)
         except Exception as exc:  # a bad plan falls back like a failed gate
@@ -182,8 +182,9 @@ def main() -> None:
     r.add_argument("--baseline", default="v5")
     r.add_argument("--cells", type=int, default=20)
     r.add_argument("--model", default="claude-opus-5-5")
+    r.add_argument("--no-image", action="store_true", help="JSON only: do not show the source render")
     a = p.parse_args()
-    run(a.name, a.baseline, a.cells, a.model)
+    run(a.name, a.baseline, a.cells, a.model, image=not a.no_image)
 
 
 if __name__ == "__main__":

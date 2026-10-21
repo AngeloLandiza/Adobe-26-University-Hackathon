@@ -1,0 +1,8 @@
+{
+  "name": "llm_sonnet_noimg",
+  "env": {
+    "LLM_LAYOUT": "claude-sonnet-5-5",
+    "fallback": "v5",
+    "image": false
+  }
+}

@@ -654,3 +654,15 @@ Claude Sonnet 5.5 re-judged two key comparisons on the same cells (`*_s` symlink
 - v3L vs anchored (holdout): Sonnet 43-12, Opus 46-11; where both decided, agreement 43/51 (84%), opposite verdicts 8.
 - today vs v3L (real ads): Sonnet 68-21, Opus 73-17; agreement 80/83 (96%), opposite 3.
 The big wins are not one judge's taste.
+
+## LLM as the layout designer (2026-10-21): ceiling test
+`dev/distill/llm_layout.py`: the LLM proposes every element's box and font size from the source JSON (optionally + render); the engine fits text with the official wrap, keeps image proportions, checks the gates, and falls back to v5 when a plan fails. 20 holdout cells, both image orders:
+
+| Designer | Judge | vs v5 | Ship-readiness (v5 -> LLM) | Gate fallbacks |
+|---|---|---|---|---|
+| Opus + image | Opus | 14-1 | 2.34 -> 3.38 | 4/20 |
+| Opus + image | Sonnet (blind second judge) | 14-1 | 2.12 -> 3.09 | 4/20 |
+| Sonnet + image | Opus | 11-1 | 2.29 -> 3.39 | 6/20 |
+| Sonnet, JSON only | Opus | 13-1 | 2.22 -> 3.28 | 4/20 |
+
+An LLM designer is worth about +1 point of 5, more than every algorithmic step combined; it isn't self-preference (the second judge agrees), Sonnet matches Opus at half the cost, and vision isn't needed. Next: distil into a small open text model (LoRA, trained on Colab) that runs offline in the engine. The brief allows a locally hosted model but the approved-model list and size limit are not published yet.
