@@ -1,0 +1,4 @@
+[{"id":"story","name":"Story","w":1080,"h":1920},{"id":"portrait","name":"Portrait","w":1080,"h":1350},
+ {"id":"square","name":"Square","w":1080,"h":1080},{"id":"youtube","name":"YouTube","w":1280,"h":720},
+ {"id":"linkedin","name":"LinkedIn","w":1584,"h":396},{"id":"mrec","name":"Rectangle","w":300,"h":250},
+ {"id":"skyscraper","name":"Skyscraper","w":160,"h":600},{"id":"leaderboard","name":"Leaderboard","w":728,"h":90}]

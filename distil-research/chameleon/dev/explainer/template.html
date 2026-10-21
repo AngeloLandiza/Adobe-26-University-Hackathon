@@ -1,0 +1,411 @@
+<title>Cut to Fit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+__FONTS_CSS__
+/* Layout: a designer's cutting mat. One live stage up top, the ladder of judged steps below it, then what was dropped and what is left. */
+:root {
+  --mat: #e7efe9;        /* page ground: pale cutting-mat green */
+  --mat-line: #cfdcd3;   /* mat grid */
+  --panel: #f7faf8;
+  --ink: #142019;
+  --ink-soft: #4c5d53;
+  --blade: #c98a00;      /* stage marker, cut lines */
+  --win: #1f8a5b;        /* the new pipeline */
+  --old: #8a7f9a;        /* today's engine */
+  --empty: #c2463b;      /* losses, warnings */
+  --stage-bg: #24302a;   /* behind the ad canvas */
+  --f-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --mat: #111a15; --mat-line: #1f2c25; --panel: #18231d; --ink: #e6efe9; --ink-soft: #9db0a5;
+  --blade: #ffbf2e; --win: #3fc488; --old: #a99bbd; --empty: #ff7a6b; --stage-bg: #0b110e; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --mat: #111a15; --mat-line: #1f2c25; --panel: #18231d; --ink: #e6efe9; --ink-soft: #9db0a5;
+  --blade: #ffbf2e; --win: #3fc488; --old: #a99bbd; --empty: #ff7a6b; --stage-bg: #0b110e; color-scheme: dark }
+
+* { box-sizing: border-box; }
+body {
+  background: var(--mat); color: var(--ink); font: 16px/1.6 var(--f-body);
+  background-image: linear-gradient(var(--mat-line) 1px, transparent 1px), linear-gradient(90deg, var(--mat-line) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+.wrap { max-width: 1000px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 40px 72px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; letter-spacing: -0.01em; margin: 0; }
+h1 { font-size: clamp(2.4rem, 6vw, 4.2rem); font-weight: 800; line-height: 1; }
+h2 { font-size: clamp(1.5rem, 3.2vw, 2rem); font-weight: 700; line-height: 1.15; }
+h3 { font-size: 1.05rem; font-weight: 700; }
+p { margin: 0; max-width: 65ch; }
+.eyebrow { font: 500 0.75rem/1 var(--f-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+.lede { font-size: 1.15rem; color: var(--ink-soft); }
+section { display: grid; gap: 18px; margin-top: 64px; }
+.panel { background: var(--panel); border: 1px solid var(--mat-line); border-radius: 14px; padding: 20px; min-width: 0; }
+.note { font-size: 0.82rem; color: var(--ink-soft); }
+
+/* ---------- controls ---------- */
+.demo { display: grid; gap: 14px; }
+.ctl { display: grid; gap: 6px; min-width: 0; }
+.ctl > .eyebrow { font-size: 0.68rem; }
+.seg { display: flex; flex-wrap: wrap; gap: 4px; background: var(--mat); border: 1px solid var(--mat-line); border-radius: 12px; padding: 3px; }
+.seg button { font: 500 0.86rem var(--f-body); color: var(--ink-soft); background: none; border: 0; border-radius: 9px; padding: 6px 12px; cursor: pointer; text-align: left; }
+.seg button:hover { color: var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--panel); }
+.seg button small { font-family: var(--f-mono); opacity: 0.7; margin-left: 5px; font-size: 0.72rem; }
+button:focus-visible, .switch input:focus-visible + span { outline: 2px solid var(--blade); outline-offset: 2px; }
+
+/* stage ladder: the pipeline as a sequence of stops */
+.ladder { position: relative; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; padding-top: 4px; }
+.ladder::before { content: ""; position: absolute; left: 8.33%; right: 8.33%; top: 15px; height: 2px; background: var(--mat-line); }
+.ladder .fillbar { position: absolute; left: 8.33%; top: 15px; height: 2px; background: var(--blade); width: 0; transition: width .6s cubic-bezier(.65,0,.25,1); }
+.stop { position: relative; display: grid; justify-items: center; gap: 6px; background: none; border: 0; cursor: pointer; padding: 0 2px; color: var(--ink-soft); font: 500 0.78rem/1.25 var(--f-body); text-align: center; }
+.stop .dot { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--mat-line); background: var(--panel); display: grid; place-items: center; font: 500 0.66rem var(--f-mono); transition: all .3s; }
+.stop.done .dot { border-color: var(--blade); }
+.stop[aria-pressed="true"] { color: var(--ink); font-weight: 600; }
+.stop[aria-pressed="true"] .dot { background: var(--blade); border-color: var(--blade); color: var(--panel); transform: scale(1.12); }
+.row { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; }
+.play { font: 600 0.88rem var(--f-body); border: 1px solid var(--ink); background: none; color: var(--ink); border-radius: 999px; padding: 7px 16px; cursor: pointer; }
+.play[aria-pressed="true"] { background: var(--ink); color: var(--panel); }
+.switch { display: inline-flex; align-items: center; gap: 8px; font-size: 0.86rem; color: var(--ink-soft); cursor: pointer; }
+.switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.switch span { width: 36px; height: 20px; border-radius: 999px; background: var(--mat-line); position: relative; transition: background .2s; flex: none; }
+.switch span::after { content: ""; position: absolute; left: 3px; top: 3px; width: 14px; height: 14px; border-radius: 50%; background: var(--panel); transition: transform .2s; }
+.switch input:checked + span { background: var(--win); }
+.switch input:checked + span::after { transform: translateX(16px); }
+
+/* ---------- the stage ---------- */
+.stage { position: relative; height: clamp(300px, 54vw, 500px); display: grid; place-items: center; background: var(--stage-bg); border-radius: 12px; overflow: hidden; }
+.canvas { position: relative; overflow: hidden; background: #000; box-shadow: 0 12px 34px rgba(0,0,0,.45);
+  transition: width .85s cubic-bezier(.65,0,.25,1), height .85s cubic-bezier(.65,0,.25,1); }
+.el { position: absolute; transition: left .85s cubic-bezier(.65,0,.25,1), top .85s cubic-bezier(.65,0,.25,1), width .85s cubic-bezier(.65,0,.25,1), height .85s cubic-bezier(.65,0,.25,1), font-size .85s cubic-bezier(.65,0,.25,1), border-radius .85s, opacity .5s, letter-spacing .85s; }
+.el.img { background-repeat: no-repeat; background-position: center; }
+.el.missing { background: repeating-linear-gradient(45deg, rgba(255,255,255,.18) 0 6px, transparent 6px 12px); outline: 1px dashed rgba(255,255,255,.5); }
+.el.txt { white-space: pre-wrap; overflow-wrap: break-word; line-height: 1.2; }
+.real { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .35s; pointer-events: none; }
+.real.on { opacity: 1; }
+.chip { display: inline-block; font: 500 0.72rem var(--f-mono); padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--blade) 18%, transparent); color: var(--ink); white-space: nowrap; }
+.chip.same { background: color-mix(in srgb, var(--ink-soft) 16%, transparent); }
+.caption { font-size: 0.95rem; min-height: 4.8em; display: grid; gap: 6px; }
+.caption b { font-weight: 600; }
+
+/* original / today / final strip of real renders */
+.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: end; }
+.trio figure { margin: 0; display: grid; gap: 6px; min-width: 0; }
+.trio .frame { height: 150px; display: grid; place-items: center; background: var(--stage-bg); border-radius: 8px; padding: 8px; }
+.trio img { max-width: 100%; max-height: 134px; display: block; }
+.trio figcaption { font: 500 0.74rem var(--f-mono); color: var(--ink-soft); letter-spacing: .04em; }
+.trio figcaption b { color: var(--ink); font-weight: 500; }
+
+/* ---------- steps ---------- */
+.steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
+.step { display: grid; gap: 8px; align-content: start; }
+.step .n { font: 500 0.8rem var(--f-mono); color: var(--blade); }
+
+/* ---------- ladder of judged results ---------- */
+.results { display: grid; gap: 12px; }
+.res { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1.6fr) 74px; gap: 6px 14px; align-items: center; }
+.res .what { font-size: 0.9rem; line-height: 1.3; }
+.res .what span { display: block; font-size: 0.78rem; color: var(--ink-soft); }
+.res .p { font: 500 0.78rem var(--f-mono); color: var(--ink-soft); text-align: right; font-variant-numeric: tabular-nums; }
+.res .p.sig { color: var(--win); }
+.split { display: flex; height: 26px; border-radius: 6px; overflow: hidden; font: 600 0.78rem var(--f-mono); background: var(--mat); }
+.split div { display: flex; align-items: center; padding: 0 8px; color: #fff; width: 50%; transition: width 1.1s cubic-bezier(.3,.7,.2,1); white-space: nowrap; overflow: hidden; }
+.split .w { background: var(--win); } .split .l { background: var(--old); justify-content: flex-end; }
+@media (max-width: 620px) { .res { grid-template-columns: minmax(0, 1fr) 64px; } .res .split { grid-column: 1 / -1; grid-row: 2; } }
+.big { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 720px) { .big { grid-template-columns: 1fr; } }
+.score { font: 800 clamp(2.6rem, 7vw, 3.8rem)/1 var(--f-display); color: var(--win); font-variant-numeric: tabular-nums; }
+.score span { color: var(--old); }
+.bars { display: grid; gap: 6px; }
+.bar { display: grid; grid-template-columns: 70px 1fr 44px; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--ink-soft); }
+.bar .track { height: 10px; background: var(--mat); border-radius: 5px; overflow: hidden; }
+.bar .fill { height: 100%; width: 0; border-radius: 5px; transition: width 1.1s cubic-bezier(.3,.7,.2,1); }
+.bar .fill.old { background: var(--old); } .bar .fill.new { background: var(--win); }
+.bar .v { font-family: var(--f-mono); text-align: right; color: var(--ink); font-variant-numeric: tabular-nums; }
+.shapes { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+.shape { display: grid; gap: 6px; font-size: 0.82rem; }
+.shape .meter { height: 8px; background: var(--mat); border-radius: 4px; position: relative; overflow: hidden; }
+.shape .meter::after { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--ink-soft); }
+.shape .meter i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--win); transition: width 1.1s cubic-bezier(.3,.7,.2,1); }
+.shape .k { display: flex; justify-content: space-between; font-family: var(--f-mono); color: var(--ink-soft); }
+
+/* ---------- table ---------- */
+.tablewrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.9rem; min-width: 600px; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--mat-line); vertical-align: top; }
+th { font: 500 0.72rem var(--f-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); }
+td.r { font-family: var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pill { display: inline-block; font: 600 0.72rem var(--f-mono); padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.pill.win { background: color-mix(in srgb, var(--win) 18%, transparent); color: var(--win); }
+.pill.mid { background: color-mix(in srgb, var(--blade) 20%, transparent); color: var(--ink); }
+.pill.lose { background: color-mix(in srgb, var(--empty) 16%, transparent); color: var(--empty); }
+ul.limits { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; max-width: 70ch; }
+footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width: 70ch; }
+@media (prefers-reduced-motion: reduce) { .canvas, .el, .real, .bar .fill, .split div, .shape .meter i, .ladder .fillbar, .stop .dot { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header style="display:grid;gap:14px">
+    <div class="eyebrow">CHAMELEON · research engine · resize pipeline</div>
+    <h1>Cut to Fit</h1>
+    <p class="lede">Follow one ad through every stage of the resize pipeline, from today's engine to the current best version. Every frame is the engine's real output for that ad and size. Pick an ad, a size and a stage, and watch the pieces move.</p>
+  </header>
+
+  <section class="panel demo" aria-labelledby="demo-h" style="margin-top:28px">
+    <h2 id="demo-h" class="eyebrow" style="font-size:.72rem">Live demo · real engine output</h2>
+    <div class="ctl"><span class="eyebrow" id="ex-l">Ad</span><div class="seg" role="group" aria-labelledby="ex-l" id="exs"></div></div>
+    <div class="ctl"><span class="eyebrow" id="sz-l">Resize to</span><div class="seg" role="group" aria-labelledby="sz-l" id="sizes"></div></div>
+    <div class="ctl"><span class="eyebrow" id="st-l">Pipeline stage</span>
+      <div class="ladder" role="group" aria-labelledby="st-l" id="ladder"><span class="fillbar" id="fillbar"></span></div></div>
+    <div class="row">
+      <button class="play" id="play" type="button" aria-pressed="false">Play the pipeline</button>
+      <label class="switch"><input type="checkbox" id="real"><span></span>Show the official renderer's image</label>
+    </div>
+    <div class="stage" id="stage"><div class="canvas" id="canvas"><img class="real" id="realimg" alt=""></div></div>
+    <div class="caption" id="caption" aria-live="polite"></div>
+    <div class="trio" id="trio"></div>
+  </section>
+
+  <section aria-labelledby="how-h">
+    <div class="eyebrow">How it works</div>
+    <h2 id="how-h">Five stages, each judged before it stayed</h2>
+    <div class="steps">
+      <div class="panel step"><span class="n">1 · today</span><h3>Fixed floor plans</h3><p>Today's engine tries a few fixed plans (a stack, a row, columns), fits the pieces in, and its grader picks the best-scoring one.</p></div>
+      <div class="panel step"><span class="n">2 · bisection</span><h3>Cut to the content</h3><p>Cut the canvas along its long side, again and again, so each piece gets space by importance and by what it needs to stay readable.</p></div>
+      <div class="panel step"><span class="n">3 · detail fixes</span><h3>Fix what the judge named</h3><p>Safer margins, a minimum logo size, legal text that fits in a few lines, no stranded last words, one alignment axis, decorations kept round and whole.</p></div>
+      <div class="panel step"><span class="n">4 · hierarchy &amp; near-fit</span><h3>Keep the order of importance</h3><p>The CTA, subhead and fine print stay clearly smaller than the headline. When the shape barely changes, a plain shrink of the original is kept.</p></div>
+      <div class="panel step"><span class="n">5 · layers</span><h3>Keep what sits on what</h3><p>Backgrounds fill the new canvas, and text stays inside the card, band or circle it sat on, moving with it as one piece.</p></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="ev-h">
+    <div class="eyebrow">Evidence</div>
+    <h2 id="ev-h">Each step had to beat the one before</h2>
+    <p>Both versions of the engine resize the same ads. Claude, acting as a strict senior designer with the official judging criteria, compares the two results wherever they differ. Wins and losses are counted per ad and size; "p" is the chance a split this lopsided is luck.</p>
+    <div class="panel results" id="results"></div>
+
+    <div class="panel big">
+      <div style="display:grid;gap:10px;min-width:0">
+        <h3>Today vs the final pipeline, on real ads</h3>
+        <div class="score">73<span>–17</span></div>
+        <p class="note">100 resize tasks from 50 real ad templates (Crello) that nothing was developed on. Every pair was judged in both image orders; a disagreement counted as unsure (10 were). The two orders agreed 91 times in 100. p &lt; 0.001.</p>
+        <div class="shapes" id="shapes"></div>
+        <p class="note">Share of decided tasks the final pipeline won, by target shape; the tick marks 50%.</p>
+      </div>
+      <div style="display:grid;gap:10px;min-width:0">
+        <h3>Ship-readiness, out of 5</h3>
+        <div class="bars" data-bars='[["Today",1.62,"old","1.62"],["Final",2.13,"new","2.13"]]' data-max="5"></div>
+        <p class="note">Claude's 1–5 score on the tasks where the two differ. 2 means "clearly broken in at least one important way", 3 means "acceptable, needs a designer's fix". Better, still far from 5.</p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="why-h">
+    <div class="eyebrow">Tried and dropped</div>
+    <h2 id="why-h">Every idea faced the same judge</h2>
+    <div class="panel tablewrap">
+      <table>
+        <thead><tr><th>Idea</th><th>What it does</th><th>Judged result</th><th>Verdict</th></tr></thead>
+        <tbody>
+          <tr><td>Per-ad lookup</td><td>reuses Claude-designed layouts from similar ads</td><td class="r">31–20 · 56–31 vs today</td><td><span class="pill mid">parked</span> added nothing on top of bisection</td></tr>
+          <tr><td>Design grid</td><td>snaps everything to a grid</td><td class="r">27–24 · 51–33</td><td><span class="pill mid">mixed</span> loses on strips</td></tr>
+          <tr><td>Content-aware sizing</td><td>resizes the template boxes to fit content</td><td class="r">24–29 · 32–47</td><td><span class="pill lose">lost</span></td></tr>
+          <tr><td>Rule repair</td><td>nudges the winner to fix mined rules</td><td class="r">16–19 · 18–34</td><td><span class="pill lose">lost</span></td></tr>
+          <tr><td>Learned grader (ML)</td><td>trains the picker on Claude's preferences</td><td class="r">coin flip</td><td><span class="pill lose">lost</span></td></tr>
+          <tr><td>Relationship score</td><td>picks layouts that keep the original's order</td><td class="r">28–26</td><td><span class="pill lose">dropped</span> a coin flip</td></tr>
+          <tr><td>Real-ad templates</td><td>layout families clustered from 1,606 real ads</td><td class="r">changed 1 of 192 picks</td><td><span class="pill lose">dropped</span> text got too small</td></tr>
+          <tr><td>Polish + near-fit guard</td><td>detail fixes on every layout, stricter near-fit</td><td class="r">13–7 · 5–13</td><td><span class="pill mid">off</span> opposite directions</td></tr>
+          <tr><td>Anchored retargeting</td><td>keeps each piece on its original anchor, fills the canvas</td><td class="r">being judged</td><td><span class="pill mid">pending</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="lim-h">
+    <div class="eyebrow">Limits</div>
+    <h2 id="lim-h">Better, not finished</h2>
+    <ul class="limits">
+      <li>Real ads still average about 2 out of 5. The gain is real and confirmed on ads nothing was tuned on, but the bar is still low.</li>
+      <li>On the default ad, the final pipeline is not better at every size. At LinkedIn size it builds the cleaner row layout and then picks a weaker one, by 0.921 to 0.917 on the engine's grader. Picking between good layouts is the next target.</li>
+      <li>Near-fit keeps a plain shrink when the shape barely changes (Portrait from a square ad). Claude preferred that, but the brief asks to "rearrange the design, not simply shrink or stretch it", so the official judge may disagree.</li>
+      <li>The judge is Claude applying the official criteria, not the official evaluator. The real-ad tests use Crello templates set in the two Solstice fonts.</li>
+      <li>Everything lives in the research copy of the engine, behind switches that are off by default.</li>
+    </ul>
+  </section>
+
+  <footer>Results from the CHAMELEON research sandbox (distil-research/), October 2026. The demo redraws each layout in your browser from the engine's output JSON, so text can wrap slightly differently; switch on the official renderer's image to see exactly what the judge sees.</footer>
+</div>
+
+<script>
+(() => {
+  const D = __DATA__;
+  const STAGES = [
+    { id: "orig", name: "Original", desc: "The source ad at its own size." },
+    { id: "base", name: "Today", desc: "Today's engine: a few fixed floor plans, and the grader picks the best-scoring one." },
+    { id: "bisect", name: "+ Bisection", desc: "Adds bisection: the canvas is cut along its long side, giving each piece space by importance and need." },
+    { id: "v2", name: "+ Detail fixes", desc: "Adds the fixes Claude's critiques kept asking for: safer margins, a minimum logo size, legal text that fits, no stranded words, one alignment axis, whole decorations." },
+    { id: "v3", name: "+ Hierarchy & near-fit", desc: "Adds the hierarchy lock (CTA, subhead and fine print stay clearly smaller than the headline) and near-fit (a plain shrink is kept when the shape barely changes)." },
+    { id: "v3L", name: "+ Layers · final", desc: "Adds layers: backgrounds fill the new canvas and text stays on the card or band it sat on. This is the current best pipeline." },
+  ];
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const $ = (s) => document.querySelector(s);
+  const stage = $("#stage"), canvas = $("#canvas"), realimg = $("#realimg");
+  const state = { ex: D.examples[0], size: D.sizes.find((s) => s.id === "mrec"), st: 5, real: false, timer: null };
+  let nodes = {};
+
+  const esc = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+  const fam = (f) => /serif/i.test(f || "") && !/sans/i.test(f || "") ? "SolSerif, Georgia, serif" : "SolSans, 'IBM Plex Sans', system-ui, sans-serif";
+  const bold = (w) => /bold|[6-9]00/i.test(String(w || "")) ? 700 : 400;
+  function textHTML(e) {
+    const runs = e.style_runs || [];
+    if (!runs.length) return esc(e.content);
+    let out = "", cur = null, buf = "";
+    const colorAt = (i) => { let c = null; for (const r of runs) if (i >= (r.start || 0) && i <= (r.end ?? 1e9) && r.color) c = r.color; return c; };
+    [...e.content].forEach((ch, i) => { const c = colorAt(i); if (c !== cur) { if (buf) out += cur ? `<span style="color:${cur}">${esc(buf)}</span>` : esc(buf); buf = ""; cur = c; } buf += ch; });
+    if (buf) out += cur ? `<span style="color:${cur}">${esc(buf)}</span>` : esc(buf);
+    return out;
+  }
+
+  function build() {
+    canvas.querySelectorAll(".el").forEach((n) => n.remove()); nodes = {};
+    for (const e of state.ex.els) {
+      const n = document.createElement("div"); n.className = "el";
+      if (e.type === "image") {
+        const src = D.assets[e.asset_id];
+        n.classList.add("img"); if (!src) n.classList.add("missing");
+        else { n.style.backgroundImage = `url(${src})`; n.style.backgroundSize = e.fit === "fill" ? "100% 100%" : (e.fit || "cover"); }
+      } else if (e.type === "shape") {
+        n.style.background = e.fill_color || "transparent";
+      } else {
+        n.classList.add("txt"); n.innerHTML = textHTML(e);
+        n.style.fontFamily = fam(e.font_family); n.style.fontWeight = bold(e.font_weight);
+        n.style.fontStyle = /italic/i.test(e.font_style || "") ? "italic" : "normal";
+        n.style.color = e.color || "#000"; n.style.textAlign = e.text_align || "left";
+      }
+      canvas.insertBefore(n, realimg); nodes[e.id] = n;
+    }
+  }
+
+  function current() {
+    const ex = state.ex, s = STAGES[state.st];
+    if (s.id === "orig") return { W: ex.canvas.width, H: ex.canvas.height, els: ex.els, png: ex.png, out: null };
+    const out = ex.outs[state.size.id][s.id];
+    return { W: state.size.w, H: state.size.h, els: ex.els.map((e) => ({ ...e, ...(out.g[e.id] || {}) })), png: out.png, out };
+  }
+
+  function pickText(out) {
+    if (!out) return "";
+    const fam = out.c.split("/")[0].split(":")[0];
+    if (out.f) return "the plain shrink of the original";
+    if (fam === "bisection") return "a bisection layout";
+    if (["row", "stack", "columns"].includes(fam)) return `the “${fam}” floor plan`;
+    if (fam === "reflow") return "a reflow of the original";
+    return "an extra floor plan";
+  }
+
+  function render() {
+    const cur = current(), s = STAGES[state.st];
+    const k = Math.min((stage.clientWidth * 0.94) / cur.W, (stage.clientHeight * 0.9) / cur.H);
+    canvas.style.width = cur.W * k + "px"; canvas.style.height = cur.H * k + "px";
+    for (const e of cur.els) {
+      const n = nodes[e.id]; if (!n) continue;
+      n.style.left = e.x * k + "px"; n.style.top = e.y * k + "px"; n.style.width = e.width * k + "px"; n.style.height = e.height * k + "px";
+      n.style.zIndex = e.z_index || 0;
+      n.style.opacity = e.opacity ?? 1;
+      n.style.transform = e.rotation ? `rotate(${e.rotation}deg)` : "";
+      if (e.type === "shape") n.style.borderRadius = e.shape_type === "ellipse" ? "50%" : (e.corner_radius || 0) * k + "px";
+      if (e.type === "text") { n.style.fontSize = e.font_size * k + "px"; n.style.letterSpacing = (e.letter_spacing || 0) * k + "px"; }
+    }
+    realimg.src = cur.png;
+    realimg.classList.toggle("on", state.real);
+
+    // ladder
+    document.querySelectorAll(".stop").forEach((b, i) => { b.setAttribute("aria-pressed", String(i === state.st)); b.classList.toggle("done", i <= state.st); });
+    $("#fillbar").style.width = (state.st / 5) * 83.34 + "%";
+
+    // caption: what this stage adds, what it picked, whether it changed anything
+    const size = s.id === "orig" ? `${cur.W}×${cur.H}` : `${state.size.name} ${state.size.w}×${state.size.h}`;
+    let chip = "";
+    if (state.st >= 2) {
+      const prev = state.ex.outs[state.size.id][STAGES[state.st - 1].id];
+      const same = JSON.stringify(prev.g) === JSON.stringify(cur.out.g);
+      chip = same ? `<span class="chip same">same layout as the previous stage</span>` : `<span class="chip">changed at this stage</span>`;
+    }
+    $("#caption").innerHTML = `<span><b>${s.name}, ${size}.</b> ${s.desc}</span>` +
+      (cur.out ? `<span>Picked: ${pickText(cur.out)}. ${chip}</span>` : `<span class="note">${state.ex.name} · ${state.ex.note}</span>`);
+
+    // trio of real renders
+    const o = state.ex.outs[state.size.id];
+    $("#trio").innerHTML = [["Original", state.ex.png, `${state.ex.canvas.width}×${state.ex.canvas.height}`], ["Today", o.base.png, `${state.size.w}×${state.size.h}`], ["Final", o.v3L.png, `${state.size.w}×${state.size.h}`]]
+      .map(([n, src, d]) => `<figure><div class="frame"><img src="${src}" alt="${n}: ${state.ex.name} at ${d}"></div><figcaption><b>${n}</b> · ${d}</figcaption></figure>`).join("");
+  }
+
+  function go(st) { state.st = st; render(); }
+  function stopPlay() { clearTimeout(state.timer); state.timer = null; $("#play").setAttribute("aria-pressed", "false"); $("#play").textContent = "Play the pipeline"; }
+  function play() {
+    if (state.timer) return stopPlay();
+    $("#play").setAttribute("aria-pressed", "true"); $("#play").textContent = "Pause";
+    let i = 0; go(0);
+    const tick = () => { i += 1; if (i > 5) return stopPlay(); go(i); state.timer = setTimeout(tick, reduce ? 1400 : 1900); };
+    state.timer = setTimeout(tick, reduce ? 1400 : 1700);
+  }
+
+  // controls
+  const exs = $("#exs"), sizes = $("#sizes"), ladder = $("#ladder");
+  D.examples.forEach((ex) => {
+    const b = document.createElement("button"); b.type = "button"; b.id = "ex-" + ex.id; b.textContent = ex.name;
+    b.setAttribute("aria-pressed", String(ex === state.ex));
+    b.onclick = () => { stopPlay(); state.ex = ex; [...exs.children].forEach((c) => c.setAttribute("aria-pressed", String(c === b))); build(); render(); };
+    exs.appendChild(b);
+  });
+  D.sizes.forEach((sz) => {
+    const b = document.createElement("button"); b.type = "button"; b.id = "size-" + sz.id;
+    b.innerHTML = `${sz.name}<small>${sz.w}×${sz.h}</small>`;
+    b.setAttribute("aria-pressed", String(sz === state.size));
+    b.onclick = () => { stopPlay(); state.size = sz; if (state.st === 0) state.st = 5; [...sizes.children].forEach((c) => c.setAttribute("aria-pressed", String(c === b))); render(); };
+    sizes.appendChild(b);
+  });
+  STAGES.forEach((s, i) => {
+    const b = document.createElement("button"); b.type = "button"; b.className = "stop"; b.id = "stage-" + s.id;
+    b.innerHTML = `<span class="dot">${i}</span><span>${s.name}</span>`;
+    b.onclick = () => { stopPlay(); go(i); };
+    ladder.appendChild(b);
+  });
+  $("#play").onclick = play;
+  $("#real").onchange = (e) => { state.real = e.target.checked; render(); };
+  let rt; addEventListener("resize", () => { clearTimeout(rt); rt = setTimeout(render, 120); });
+  build(); render();
+
+  // evidence
+  const RES = [
+    ["Today → Bisection", "held-back ads", 38, 17, "0.006", true],
+    ["Today → Bisection", "40 invented challenge ads", 57, 37, "0.049", true],
+    ["Bisection → + Detail fixes", "held-back ads", 33, 9, "<0.001", true],
+    ["Bisection → + Detail fixes", "50 real ads", 26, 17, "0.22", false],
+    ["+ Hierarchy lock", "held-back ads", 14, 4, "0.031", true],
+    ["+ Near-fit", "held-back, the 15 tasks it changes", 11, 4, "0.12", false],
+    ["Detail fixes → + Hierarchy & near-fit", "50 real ads", 25, 9, "0.009", true],
+    ["+ Layers", "50 real ads", 49, 21, "0.001", true],
+    ["+ Layers", "held-back ads", 31, 20, "0.16", false],
+  ];
+  $("#results").innerHTML = RES.map(([w, set, a, b, p, sig]) =>
+    `<div class="res"><div class="what">${w}<span>${set}</span></div><div class="split" data-w="${a}" data-l="${b}"><div class="w">${a}</div><div class="l">${b}</div></div><div class="p ${sig ? "sig" : ""}">p ${p.startsWith("<") ? "" : "= "}${p}</div></div>`).join("");
+  document.querySelectorAll(".bars").forEach((box) => {
+    const max = +box.dataset.max;
+    JSON.parse(box.dataset.bars).forEach(([label, v, cls, txt]) => {
+      const row = document.createElement("div"); row.className = "bar";
+      row.innerHTML = `<span>${label}</span><span class="track"><span class="fill ${cls}" data-w="${(v / max) * 100}"></span></span><span class="v">${txt}</span>`;
+      box.appendChild(row);
+    });
+  });
+  const SHAPES = [["Strip", 23, 1], ["Wide", 19, 6], ["Square", 10, 3], ["Very tall", 9, 3], ["Tall", 8, 2], ["Landscape", 4, 2]];
+  $("#shapes").innerHTML = SHAPES.map(([n, w, l]) => `<div class="shape"><span>${n}</span><span class="meter"><i data-w="${(w / (w + l)) * 100}"></i></span><span class="k"><span>${w}–${l}</span><span>${Math.round((w / (w + l)) * 100)}%</span></span></div>`).join("");
+  const grow = () => {
+    document.querySelectorAll(".fill[data-w], .shape .meter i").forEach((f) => { f.style.width = f.dataset.w + "%"; });
+    document.querySelectorAll(".split").forEach((sp) => { const w = +sp.dataset.w, l = +sp.dataset.l; sp.children[0].style.width = (w / (w + l)) * 100 + "%"; sp.children[1].style.width = (l / (w + l)) * 100 + "%"; });
+  };
+  setTimeout(grow, reduce ? 0 : 350);
+})();
+</script>

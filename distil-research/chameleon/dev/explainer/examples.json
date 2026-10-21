@@ -1,0 +1,7 @@
+[{"id":"core","task_id":"core_01","name":"Solstice · New Flavor","note":"official sample, level 2"},
+ {"id":"warmup","task_id":"warmup_01","name":"Solstice · Chase the Light","note":"official sample, level 1"},
+ {"id":"advanced","task_id":"advanced_01","name":"Solstice · Limited Batch","note":"official sample, level 3"},
+ {"id":"story","task_id":"c11_story_longest_day","name":"Solstice · Longest Day","note":"story source, held-back ad"},
+ {"id":"sunset","task_id":"c26_portrait_sunset_sessions_v2","name":"Ember · Sunset Sessions","note":"off-brand event ad, 19 pieces"},
+ {"id":"cucumber","task_id":"c13_landscape_cucumber_mint_v1","name":"Off-brand · Cucumber Mint","note":"off-brand landscape ad"},
+ {"id":"flavours","task_id":"c17_banner_summer_flavours_v3","name":"Off-brand · Summer Flavours","note":"text-only banner"}]
