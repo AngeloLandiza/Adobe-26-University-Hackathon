@@ -306,3 +306,164 @@ Weak spots left: strips on real ads (layers lose 6-8 there) and wide formats on 
 - **v3L wins 73-17 (10 unsure), p < 0.001**, on 100 judged changed cells; 91 of 100 cells got the same verdict in both orders.
 - Every aspect slice favours v3L: strip 23-1, wide 19-6, square 10-3, very tall 9-3, tall 8-2, landscape 4-2 (worst-slice share 0.67).
 - Mean ship-readiness on changed cells 1.62 -> 2.13; engine time 0.39 -> 0.76 s per cell.
+
+## Polish pass and near-fit guard (2026-10-21)
+Two switches on top of v3L, both off by default; with them off the output is byte-identical (`tests/test_polish.py` checks a golden hash of `resize()` on the 3 samples x 14 targets with the v3L switches on, and the bisection golden tests still pass after the shared helpers moved). Nothing here is teacher-judged yet; CPU measurements only.
+
+**1. Polish (`CHAMELEON_POLISH=1`, `engine/pipeline/layout/polish.py`).** v2's detail fixes only ever applied inside bisection's own layouts. The polish pass runs them on every other gate-passing candidate before grading (templates, reflow, extra floor plans, other strategies; not the fallback, not bisection when v2 built it), so the grader picks among polished versions. It repairs only what is broken, in this order:
+- **Round pills:** a pill whose shape is a circle or ellipse keeps the source aspect (the condensed pill squashed it).
+- **Logo floor:** the logo's sqrt(area) reaches 6.5% of the long side (the v2 floor), if it can grow without hitting anything.
+- **Readable badges and CTAs:** the label reaches max(role floor, 1.1% of the long side). 1.1% is the validated "text too small" threshold. It is capped at 1.5x the source size and at the hierarchy lock's role cap of the headline (CTA 0.6, badge 0.5).
+- **Safe margin (the v2 margin):** units too close to the same edge move inward together, so a row stays a row. If a unit can't move, a single text re-wraps narrower at the same size. Failing that, anything but the headline shrinks a little (images to 0.8x; text to 0.85x and never under its floor). A unit that sat at the edge in the source counts as a deliberate bleed and is left alone.
+- **Decorations:** a decoration that is squashed, orphaned from the unit it framed, half-covered by copy it didn't touch in the source, or sitting on a unit the pass moved is re-placed the v2 way: round backdrop, a round "hug" round what it held, frame, park, or visible corner. The option with the fewest flaws wins. It is kept only if it beats the current placement, and a container must still hold what it held.
+
+Every growth or move must keep the unit's overlap with other content from growing (with a small gap), keep shared edges and centres, and keep ink at least as far from an edge as before. The headline is never shrunk, and each step is kept only if the candidate still passes every hard gate. A candidate that already fails a gate is left alone. A first version "repaired" such candidates back into the race, which shifted strip picks from bisection to row templates with smaller headlines, so that was removed. Shared code moved from `bisection.py` to `polish.py`: `straddles`, the V2Builder decoration logic, `logo_floor`, the v2 margin and frame constants. Cost: about 1-2 ms per candidate, so engine time is unchanged (0.66-0.70 s per cell).
+
+**Candidate level** (`python -m dev.distill.polish_eval`; every polishable gate-passing candidate before → after; the headline size is identical by construction):
+
+| Detector (share of candidates) | train, 60 cells, 1,064 candidates | crello_dev, 120 cells, 1,510 candidates |
+|---|---|---|
+| Squash | 8.1% → 2.6% | 0% → 0% |
+| Logo a speck | 12.2% → 3.9% | 13.2% → 5.6% |
+| Decoration orphaned | 18.0% → 8.3% | 28.2% → 6.6% |
+| Edge crowding | 43.9% → 32.0% | 48.1% → 41.9% |
+| Text too small | 37.3% → 36.7% | 28.7% → 27.9% |
+| Mixed alignment | 29.9% → 30.1% | 27.9% → 28.5% |
+| Container emptied | 0.3% → 0.5% | 35.4% → 35.4% |
+| Changed / failing a gate after | 83% / 0 | 65% / 0 |
+
+**On the winners** (v3L → v3L + polish → + guard; train is 420 cells, crello_dev is 743): bisection still wins about 60-67% of cells and is untouched, so the shifts are small:
+- Squash: 2% → 0% on train.
+- Logo a speck: train 1% → 0%; crello_dev 9% → 7%.
+- Decoration orphaned: train 4% → 3%; crello_dev 7% → 3%.
+- Edge crowding: train 13% → 13%; crello_dev 27% → 26% (25% with the guard).
+- Mixed alignment: train 22% → 23%; crello_dev 17% → 19%.
+- Text too small: train 17% → 18%; crello_dev 19% → 18%.
+- Picks changed by polish: 56 of 420 on train and 77 of 743 on crello_dev.
+- No winner fails a gate. crello_dev has the same 4 fallback G9 failures as v3L.
+
+**2. Near-fit guard (`CHAMELEON_NEAR_FIT_GUARD=1`, in `pick_best`; only with `CHAMELEON_NEAR_FIT`).** Near-fit gives near-aspect cells to the uniform fit unless a re-layout leads by more than 0.10. The guard keeps the best re-layout instead when both of these hold:
+- the fit's headline (and CTA, if there is one) is at most **0.8x** the re-layout's;
+- the fit's largest empty rectangle is at least **0.10** of the canvas larger than the re-layout's.
+
+Features come from `near_fit_features`; analysis is in `dev/distill/nearfit_guard.py`.
+- **Why these thresholds (train only):** 14 train judgments compare the fallback with a layout on near-aspect cells. The fallback won 12.
+  - The 2 layout wins are one cell judged twice. There the fit's headline is 0.38x the layout's, and its empty rectangle is +0.12 larger than the layout's.
+  - The 12 fit wins have empty gaps of +0.07 at most. 0.10 sits between the two groups.
+  - Any headline threshold from 0.38 to 0.99 separates train. 0.8 is a design choice ("clearly smaller"), not fitted.
+  - Result on train: 14/14 agree.
+  - The task brief asked for unused canvas measured against the source. Measured that way it separated nothing on train (+0.07 at most everywhere), because the uniform fit's extra bands are thin at these aspect changes. So the guard compares with the re-layout instead.
+- **Check against the teacher (holdout, `bisect2__vs__b2_nearfit`, 18 verdicts, not used for tuning):** the guard fires on 5 of them.
+  - 3 agree with the teacher: c27 tasting-note medium rectangles, where it preferred the re-layout.
+  - 2 go against it: c17 billboard and c19 medium rectangle, where it preferred the fit.
+  - Agreement is 14/18, against 13/18 for "always the fit".
+- **Flips (v3L picks):**
+  - train: 8 of the 42 cells where near-fit picks the fit (51 near-aspect cells);
+  - holdout: 3 of 17, including c17 and c19 above, which the teacher preferred as the fit;
+  - crello_dev: 8 cells changed;
+  - challenge2: fallback picks 193 → 185.
+
+**Runs** (CPU only, compared with `ab/v3L` and `ab/v3L_chl2` by design hash; no gate failures; about 0.71 s per cell):
+
+| Run | Changed picks | Notes |
+|---|---|---|
+| `v3L_pol` (holdout) | 25 / 192 | 13 are the same candidate, polished |
+| `v4p` (holdout, + guard) | 28 / 192 | the extra 3 are guard flips from fallback to bisection |
+| `v4p_chl2` (challenge2, + guard) | 55 / 623 | 30 same candidate polished; fallback 193 → 185 |
+
+**Official samples:**
+- **Level 2 (1600x400):** v3L's pick does not change. Polish fixes the row template: the badge goes from 9 to 17.6 px, and the circle behind it stays round or keeps its badge. But the grader still prefers bisection's three-zone layout, 0.921 to 0.917. The polished row does win the nearby LinkedIn banner (1584x396).
+- **Level 1 (1080x1350):** the guard replaces the uniform fit with a bisection layout. The headline goes from 60 to about 90 px, the CTA is larger, and the canvas is used top to bottom. The logo ends up a little smaller and with a large gap above the headline. This looks better to me, but the holdout check above warns that the teacher sometimes prefers the faithful fit.
+
+**Honest visual verdict** (source | v3L | v3L + polish + guard: 16 changed train and crello_dev cells, plus all changed sample cells, against `rubric.md`):
+- **Better on about 6.** Frames back behind the product (an orb behind the bottle on a story). Huge blurry decorations parked small again. A broken bisection layout replaced by the faithful reflow. Readable badges and pills.
+- **Same on about 7.** Mostly the logo floor and margin nudges, a few pixels each.
+- **Worse on about 3.**
+  - Strips where a polished row now narrowly beats bisection with a smaller headline (crello facebook cover, a linkedin banner).
+  - One guard flip on a real-ad story (crd_35): the uniform fit was faithful, and bisection blows up the logo and puts the quote on a busy part of the photo.
+
+**Verdict:**
+- Polish is a safe detail pass. It cuts squash, specks and orphans by half to two thirds per candidate, and costs nothing in time or gates. But it rarely changes which layout wins, so expect a small effect.
+- The guard rests on one train cell. The holdout check is only 14/18 against 13/18. It should be judged before it ships, and it should never ship without polish.
+- What to judge: `v3L` vs `v3L_pol` (25 cells) and `v3L_chl2` vs `v4p_chl2` (55 cells).
+
+Commands (from `distil-research/chameleon/`, `PYTHONPATH=$PWD`, CPU only):
+- `python -m dev.distill.polish_eval --split train|crello_dev --cells N`
+- `python -m dev.distill.nearfit_guard train | check | flips --split S`
+- `python -m dev.distill.layer_flaws rebuild|rates|sheet --name p_tr_v3L|p_tr_pol|p_tr_pg|p_dev_v3L|p_dev_pol|p_dev_pg`
+
+The caches and contact sheets are in `training-data/ab/_flaws.nosync/` (`sheets/samples/`, `sheets/polish_*.png`).
+
+## Anchored retargeting (constraint-style resize) (2026-10-21)
+On real ads the plain uniform fit (the safe fallback) scores 2.49 out of 5 with the teacher, against 2.04 for our re-layouts: the judge rewards keeping the original composition. But the uniform fit wastes the new canvas: it letterboxes, and the text stays small. `anchored` is the resize that design tools do (Figma constraints, Adobe XD responsive resize and patent US 11,320,975, Bannersnack smart resize): keep the composition, re-fit the background full-bleed, and re-place each group of content by where it was anchored. It is a new strategy, on with `CHAMELEON_STRATEGIES=bisection,anchored` (no registry edit was needed: strategies load by name). With `anchored` not named, the output is byte-identical (`tests/test_strategy_anchored.py` checks golden hashes of the v3L engine on the 3 samples x 13 targets, taken from git HEAD before the strategy existed).
+
+**Words used here.**
+- An **anchor** says which part of the canvas a piece is tied to, per axis. Example: a logo 60 px from the top of a 1080 px square is anchored *top*; on a 1080x1350 portrait it stays near the top, its gap scaled. A headline whose two side gaps are equal is anchored *centre*. A piece spanning most of a side *stretches*.
+- The **content scale** `s` is one zoom for all content. `s0` is the uniform fit's scale (`min(W/Ws, H/Hs)`); larger `s` makes the content bigger and uses the canvas.
+
+**What it does** (`engine/pipeline/layout/strategies/anchored.py`):
+1. **Pieces** are the plan's content units. With `CHAMELEON_LAYERS=1`, a container and everything on it is one piece. The background layer is re-fitted full-bleed as everywhere else.
+2. **Anchors** come from each piece's edge gaps in the source: centred if its gaps are within 10% of the side of each other, pinned to the nearer edge if that gap is under 20% of the side, otherwise centred with its offset kept. A piece that touched an edge stays on it.
+3. **Blocks:** pieces stacked across the axis that has spare room, close together and sharing an edge or centre line (a text column of headline, subhead and CTA), move as one block. A photo never joins one. A block too long to fit splits at its widest gap.
+4. **Scale:** each candidate uses one `s` from `s0` up to the fill scale (`max(W/Ws, H/Hs)`, at most 3 x `s0`). Text keeps its role floor; a lone text re-wraps inside its scaled width instead of shrinking; logos keep bisection v2's floor and cap; a photo may give up to 30% so the rest fits; a CTA pill too wide at its floor is rebuilt round its label. On a much longer side, anchors are taken inside a frame at most 1.6 x the scaled source side, so a tight cluster stays together instead of flying to the far edges. On a strip (short side at most 0.2 of the long side) everything sits on the middle line.
+5. **Collisions:** two pieces that would overlap (and didn't in the source) are pushed apart, keeping their source order. A pair stacked one above the other is first kept apart vertically. If that doesn't fit, they move along the long axis, so "above" becomes "left of" on a wide canvas. Example: square to 1600x400 turns logo / product / text column into a left-to-right row. If no order-keeping placement fits, that `s` is dropped. Pieces that share no alignment line then snap onto a neighbour's line within 2% of the long side.
+6. **Hierarchy:** text scales with everything, so the source's text ratios hold. An `s` where a floor makes another text outgrow the headline is dropped.
+7. **Candidates** (`anchored/mode=.../r=...`, `r = s / s0`): the largest feasible `s`, the fit `s`, one in between, and a *spread* variant whose centred pieces map proportionally across the whole canvas. That is at most 4 distinct designs per cell, each checked against the hard gates. They compete in `pick_best` like any other candidate (the near-fit rule still treats them as re-layouts).
+
+**Train and crello_dev** (60 cells each, v3L stack; `dev/distill/eval_anchored.py`; caches `anc_tr_base`/`anc2_tr`, `anc_dev_base`/`anc2_dev` in `training-data/ab/_flaws.nosync/`):
+
+| | train: v3L → +anchored | crello_dev: v3L → +anchored |
+|---|---|---|
+| Anchored wins the pick | 20% (12) | 30% (18) |
+| Cells with an anchored candidate | 75% | 92% |
+| Anchored candidates passing the gates | 100% | 95% (G8 label/pill on nested pills, G9) |
+| Fallback picked | 16.7% → 10.0% | 21.7% → 15.0% |
+| Edge crowding (detector) | 13% → 12% | 30% → 35% |
+| Mixed alignment | 15% → 27% | 13% → 8% |
+| Text too small | 17% → 12% | 10% → 7% |
+| Text newly below 3:1 contrast | 0% → 0% | 7% → 3% |
+| Container emptied / split | unchanged | unchanged |
+| Seconds per cell | 0.67 → 0.72 | 0.85 → 1.06 |
+
+The edge-crowding row is after raising the safe margin to 6% of the short side. With 4%, edge crowding rose to 30% (train) and 52% (crello_dev).
+
+**Holdout and challenge2** (CPU only, compared with `ab/v3L` and `ab/v3L_chl2` by design hash; no gate failures):
+
+| Run | Changed picks | Anchored winners | What they replaced | Fallback picked |
+|---|---|---|---|---|
+| `v3L_anch` (holdout) | 63 / 192 | 63 | bisection 45, fallback 4, templates/reflow 14 | 24 → 20 |
+| `v3L_anch_chl2` (challenge2) | 168 / 623 | 172 | bisection 75, fallback 61, templates/reflow 32 | 193 → 128 |
+
+Every changed pick is an anchored winner. On holdout they come mostly from story (15), billboard (9) and facebook cover (7). On challenge2 they are spread over all 13 targets (7 to 19 each). 143 of the 172 are anchored mode and 29 spread. Engine time is about the same: 0.70 → 0.70 s per cell on holdout, 0.76 → 0.79 s on challenge2.
+
+**Official samples** (`python -m dev.run_matrix`, all 13 targets, plus 1600x400): anchored changes 1 of 42 picks, level 3 → story. Its faithful stack replaces a stack template that put the headline above the product.
+- **Level 2 → 1600x400:** the best anchored candidate (r = 2.5) loses to bisection by 0.006. It is a clean, faithful row: circle with badge, logo, product, text column. But its headline is about half the size of bisection's, so call it a toss-up.
+- **Level 1 → 1080x1350:** anchored at r = 1.25 is the source at 1.25x, filling the width. To my eye it is better than the uniform fit that wins, but it trails bisection by 0.037 and the near-fit rule keeps the fallback.
+- **Level 2 → 1080x1350:** the same story (r = 1.25, −0.015).
+
+**Honest visual verdict** (source | v3L | v3L + anchored | best anchored candidate, against `rubric.md`; 12 crello_dev cells, 10 train winners, and the 3 samples × 14 targets; sheets in `training-data/ab/_flaws.nosync/sheets/anc*` and `chameleon/output/anchored_sheets/`):
+- **Better on about half of the anchored winners.**
+  - Square ↔ portrait and portrait → story: the composition is kept and the canvas is filled.
+  - Skyscraper → portrait and leaderboard → square: big, faithful text instead of a letterboxed shrink.
+  - Two youtube thumbnails where bisection had blown up a decoration.
+  - A card or quote that keeps its shape at a readable size.
+- **About the same on most of the rest.** These are near-identical to the fallback or bisection.
+- **Worse on a few.**
+  - A leaderboard source → portrait or story spreads a thin strip's pieces over a tall canvas, leaving empty bands.
+  - A linkedin banner where the title ends up cramped against its frame.
+  - Columns whose CTA keeps its own edge anchor, so alignment is mixed (train mixed alignment 15% → 27%).
+  - One candidate that did not win (Easter billboard, spread) put text over an illustration.
+- **Where it loses on the grader but looks better:** near-aspect and portrait cells (the samples above, a photo card on youtube). The grader's legibility term prefers text blown up to 1.6x its floor, and the near-fit rule keeps the fallback unless a re-layout leads by 0.10.
+
+**Risks:**
+- The biggest change is on real ads: 61 challenge2 cells move from the uniform fit, the teacher's favourite there, to an anchored layout. Anchored is the same composition at a larger scale, but whether the teacher prefers it is exactly what has to be judged.
+- Mixed alignment rises on train.
+- Nothing here is judged yet. What to judge: `v3L` vs `v3L_anch` (63 cells) and `v3L_chl2` vs `v3L_anch_chl2` (168 cells; the 61 fallback → anchored cells are the key slice).
+
+Commands (from `distil-research/chameleon/`, `PYTHONPATH=$PWD`, CPU only, ≤ 3 processes):
+- `python -m dev.distill.eval_anchored rebuild --name X --split train|crello_dev|samples --cells 60 --env CHAMELEON_STRATEGIES=bisection,anchored --env ...`
+- `python -m dev.distill.eval_anchored stats --name A --name B`
+- `python -m dev.distill.eval_anchored shapes --name X`
+- `python -m dev.distill.eval_anchored sheet --base A --name B --out F.png [--pick won]`
+- `python -m dev.distill.eval_anchored changed --run ../training-data/ab/v3L_anch --ref ../training-data/ab/v3L`
+- Detector rates: `python -m dev.distill.layer_flaws rates --name anc_tr_base --name anc2_tr`

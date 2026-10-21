@@ -459,4 +459,7 @@ def generate_candidates(source: dict, target: dict, plan: PriorityPlan, measurer
         except Exception:
             pass  # retrieval never sinks the task
     candidates += strategy_registry.extra_candidates(source, target, plan, measurer)  # CHAMELEON_STRATEGIES
+    from engine.pipeline.layout import polish
+    if polish.enabled():  # CHAMELEON_POLISH=1: v2's detail fixes on every candidate (never raises)
+        candidates = polish.polish_all(source, target, plan, measurer, candidates)
     return candidates

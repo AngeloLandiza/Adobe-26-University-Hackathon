@@ -13,6 +13,13 @@ Research switches (off by default; with them off the pick is unchanged):
   the source's, the safe fallback (the whole original scaled uniformly and
   centred, the background filling the canvas) wins unless the best re-layout
   beats its total by more than NEAR_FIT_MARGIN.
+- CHAMELEON_NEAR_FIT_GUARD=1 (only with CHAMELEON_NEAR_FIT=1): the near-fit
+  rule does not hand the pick to the fallback when the shrink costs too much:
+  its headline (and CTA, if any) is at most GUARD_SIZE x the size the best
+  re-layout gives them, and its largest empty rectangle is at least
+  GUARD_EMPTY of the canvas larger than the re-layout's (the shrink leaves
+  room unused that the re-layout fills). Thresholds set on train judgments
+  (dev/distill/nearfit_guard.py; `near_fit_features`).
 """
 
 import os
@@ -29,6 +36,10 @@ TOP_K = 6
 NEAR_FIT_ENV = "CHAMELEON_NEAR_FIT"
 NEAR_FIT_RATIO = 1.35   # target and source aspects within this factor: the original, shrunk, is a strong answer
 NEAR_FIT_MARGIN = 0.10  # ... and keeps the pick unless a re-layout leads by more (set on train judgments)
+GUARD_ENV = "CHAMELEON_NEAR_FIT_GUARD"
+GUARD_SIZE = 0.8        # fallback headline (and CTA) at most this x the best re-layout's: clearly smaller ...
+GUARD_EMPTY = 0.10      # ... and its largest empty rectangle this share of the canvas above the re-layout's
+_LAYER_ROLES = ("background", "decoration")
 
 
 def near_fit(source: dict, target: dict) -> bool:
@@ -38,6 +49,64 @@ def near_fit(source: dict, target: dict) -> bool:
     a = source["canvas"]["width"] / source["canvas"]["height"]
     b = target["width"] / target["height"]
     return max(a / b, b / a) <= NEAR_FIT_RATIO
+
+
+def guard_enabled() -> bool:
+    return os.environ.get(GUARD_ENV) == "1"
+
+
+def _role_font(design: dict, plan: PriorityPlan, role: str) -> float | None:
+    els = {e["id"]: e for e in design["elements"]}
+    sizes = [els[i]["font_size"] for u in plan.units if u.role == role for i in u.element_ids
+             if i in els and els[i]["type"] == "text"]
+    return max(sizes) if sizes else None
+
+
+def _empty_share(design: dict, plan: PriorityPlan, measurer: TextMeasurer) -> float:
+    """Largest axis-aligned rectangle touching no content unit's ink, as a share of the canvas."""
+    from engine.pipeline.geometry import rotated_aabb, union_box
+    from engine.pipeline.layout.strategies.bisection import largest_empty_share
+    els = {e["id"]: e for e in design["elements"]}
+
+    def ink(el: dict):
+        if el["type"] != "text" or el.get("rotation"):
+            return rotated_aabb(el)
+        widths = measurer.line_widths(el, el["font_size"], el["width"]) or [0.0]
+        w = min(max(widths), el["width"])
+        align = el.get("text_align") or "left"
+        x = el["x"] + (el["width"] - w) / 2 if align == "center" else \
+            el["x"] + el["width"] - w if align == "right" else el["x"]
+        return (x, el["y"], w, min(el["height"], measurer.block_height(el, el["font_size"], el["width"])))
+
+    boxes = [union_box([ink(els[i]) for i in u.element_ids]) for u in plan.units
+             if u.role not in _LAYER_ROLES and u.element_ids and all(i in els for i in u.element_ids)]
+    canvas = design["canvas"]
+    return largest_empty_share(boxes, canvas["width"], canvas["height"])
+
+
+def near_fit_features(source: dict, plan: PriorityPlan, measurer: TextMeasurer, fallback: dict, best: dict) -> dict:
+    """What the uniform fit costs against a re-layout: headline and CTA size
+    ratios (fallback / re-layout; None without that text) and the largest
+    empty rectangle's share of the canvas in the source, the fallback and
+    the re-layout."""
+    ratio = {}
+    for role in ("headline", "cta"):
+        a, b = _role_font(fallback, plan, role), _role_font(best, plan, role)
+        ratio[role] = a / b if a and b else None
+    return {"head_ratio": ratio["headline"], "cta_ratio": ratio["cta"],
+            "empty_src": _empty_share(source, plan, measurer), "empty_fb": _empty_share(fallback, plan, measurer),
+            "empty_best": _empty_share(best, plan, measurer)}
+
+
+def guard_blocks(f: dict) -> bool:
+    """CHAMELEON_NEAR_FIT_GUARD: keep the re-layout when the fit shrinks the
+    headline and CTA clearly and leaves much more of the canvas empty than
+    the re-layout does."""
+    if f["head_ratio"] is None or f["head_ratio"] > GUARD_SIZE:
+        return False
+    if f["cta_ratio"] is not None and f["cta_ratio"] > GUARD_SIZE:
+        return False
+    return f["empty_fb"] - f["empty_best"] >= GUARD_EMPTY
 
 
 def _pixels(cand: Candidate, plan: PriorityPlan, weights: GraderWeights) -> tuple[dict, float]:
@@ -120,5 +189,7 @@ def pick_best(source: dict, target: dict, plan: PriorityPlan, candidates: list[C
                 fb_total = grade(*fb)
             best_total = max(t for t, c in scored if not c.is_fallback)
             if best_total - fb_total <= NEAR_FIT_MARGIN:
-                winner = fb[1]
+                if not (guard_enabled() and guard_blocks(near_fit_features(
+                        source, plan, measurer, fb[1].design, winner.design))):
+                    winner = fb[1]
     return winner, reports

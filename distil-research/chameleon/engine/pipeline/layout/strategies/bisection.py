@@ -81,6 +81,9 @@ from dataclasses import dataclass, field
 
 from engine.pipeline.geometry import Box, align_in, rotated_aabb, union_box
 from engine.pipeline.layout.place import HARD_FLOOR, MAX_TEXT_GROWTH, floor_px, place_unit, resize_text
+from engine.pipeline.layout.polish import (FRAME_SCALES, FRAME_SHARE, LOGO_MIN_CAP, LOGO_MIN_LONG,  # noqa: F401
+                                         ROUND_SHAPES, V2_MARGINS, V2_SIDE_MARGIN, logo_floor, straddles)
+from engine.pipeline.layout.polish import v2_builder as _v2_builder
 from engine.pipeline.types import Candidate, PriorityPlan, Unit
 
 NAME = "bisection"
@@ -112,17 +115,12 @@ _SEARCH_STEPS = 14
 
 # -- v2 (CHAMELEON_BISECT_V2=1) --------------------------------------------------
 V2_ENV = "CHAMELEON_BISECT_V2"
-V2_MARGINS = (0.06, 0.09)  # share of the short side ...
-V2_SIDE_MARGIN = 0.03      # ... and at least this share of the width (height) at the sides (top/bottom)
-LOGO_MIN_LONG = 0.065      # logo sqrt(area) at least this share of the long side ...
-LOGO_MIN_CAP = 0.5         # ... capped at this share of the short side (logo height)
+# V2_MARGINS, V2_SIDE_MARGIN, LOGO_MIN_LONG, LOGO_MIN_CAP: shared with the polish pass (layout/polish.py)
 LEGAL_MAX_LINES = 3        # legal wants a cell it fits on this many lines
 WIDOW_SHARE = 0.4          # a last line of one word narrower than this x the longest line is a widow
 WIDOW_SHRINK = 0.88        # a widow may cost at most this much of the font size
-FRAME_SCALES = (1.0, 0.9, 0.8, 0.7, 0.6, 1.05, 1.1, 1.2, 1.3, 1.4, 1.5)  # frame sizes tried, x its mapped size
-FRAME_SHARE = 0.3          # a decoration covering this share of a content unit (or vice versa) frames it
+# FRAME_SCALES, FRAME_SHARE, ROUND_SHAPES: layout/polish.py
 ALIGN_EPS = 0.5            # px: anchors this close already share an axis
-ROUND_SHAPES = ("ellipse", "circle")
 
 # -- hierarchy lock (CHAMELEON_HIER_LOCK=1) ----------------------------------------
 LOCK_ENV = "CHAMELEON_HIER_LOCK"
@@ -265,8 +263,7 @@ class _Model:
         base = logo_min_height(self.W, self.H)
         if not self.v2 or uw <= 0 or uh <= 0:
             return base
-        want = LOGO_MIN_LONG * max(self.W, self.H) / math.sqrt(uw / uh)
-        return max(base, min(want, LOGO_MIN_CAP * min(self.W, self.H), 0.9 * self.W * uh / uw))
+        return logo_floor(self.W, self.H, uw, uh, base)
 
     def logo_growth(self, uw: float, uh: float) -> float:
         """Largest growth over the source size: 1.5x, or (v2) what the floor needs."""
@@ -1046,172 +1043,7 @@ def _align_stacks(model: _Model, placed: list) -> list:
 
 # -- v2: decorations kept whole ------------------------------------------------------
 
-_V2_BUILDER = None
-
-
-def straddles(shape: dict, box: Box, other: Box) -> bool:
-    """Is `other` partly on and partly off `shape` drawn at `box`? A round
-    shape is judged by its ellipse, anything else by its box."""
-    x, y, w, h = box
-    if w <= 0 or h <= 0:
-        return False
-    if shape.get("shape_type") in ROUND_SHAPES:
-        cx, cy, a, b = x + w / 2, y + h / 2, w / 2, h / 2
-        corners = [(other[0] + i * other[2], other[1] + j * other[3]) for i in (0, 1) for j in (0, 1)]
-        inside = all(((px - cx) / a) ** 2 + ((py - cy) / b) ** 2 <= 1 for px, py in corners)
-        nx = (min(max(cx, other[0]), other[0] + other[2]) - cx) / a
-        ny = (min(max(cy, other[1]), other[1] + other[3]) - cy) / b
-        return not inside and nx * nx + ny * ny < 1
-    ox = min(x + w, other[0] + other[2]) - max(x, other[0])
-    oy = min(y + h, other[1] + other[3]) - max(y, other[1])
-    if ox <= 0 or oy <= 0:
-        return False
-    return ox * oy < other[2] * other[3] - 1e-6
-
-
-def _v2_builder():
-    """The engine's _Builder with layers placed the v2 way (made on first use:
-    generate.py is imported lazily, as in _build)."""
-    global _V2_BUILDER
-    if _V2_BUILDER is not None:
-        return _V2_BUILDER
-    from engine.pipeline.geometry import overlap_area
-    from engine.pipeline.layout.generate import BACKDROP_TOL, _Builder
-    from engine.pipeline.layout.layers import fit_inside, place_background, place_decoration, scale_about
-    from engine.pipeline.occlusion import contains, is_covered, paint_order
-
-    class V2Builder(_Builder):
-        def place_layers(self) -> None:
-            for unit in self.plan.units:
-                if unit.role == "background":
-                    self.placed.update((m["id"], place_background(m, self.width, self.height))
-                                       for m in self._members(unit))
-                elif unit.role == "decoration":
-                    for m in self._members(unit):
-                        self.placed[m["id"]] = (self._round_backdrop(m) or self._frame(m) or self._park(m)
-                                                or self._visible_decoration(m))
-
-        def _is_content(self, eid: str) -> bool:
-            return self.plan.unit_for_element(eid).role not in ("background", "decoration")
-
-        def _covers_under(self, shape: dict, box: Box, skip: set) -> bool:
-            """Would `shape` at `box` paint over content drawn before it?"""
-            order = paint_order(self.source["elements"])
-            return any(overlap_area(box, rotated_aabb(g)) > 0 for eid, g in self.placed.items()
-                       if eid not in skip and self._is_content(eid) and order[id(self.els[eid])] < order[id(shape)])
-
-        def _round_backdrop(self, shape: dict) -> dict | None:
-            """The v1 backdrop, but a round shape keeps its proportions: its box
-            grows on the short side round the same centre (None if that leaves
-            the canvas or covers content painted before it)."""
-            out = self._backdrop(shape)
-            if out is None or shape.get("shape_type") not in ROUND_SHAPES or not shape["height"] or not out["height"]:
-                return out
-            a0 = shape["width"] / shape["height"]
-            x, y, w, h = out["x"], out["y"], out["width"], out["height"]
-            if abs((w / h) / a0 - 1) <= 0.02:
-                return out
-            w2, h2 = (w, w / a0) if w / h > a0 else (h * a0, h)
-            if w2 > self.width or h2 > self.height:
-                return None
-            nx = min(max(x + (w - w2) / 2, 0.0), self.width - w2)
-            ny = min(max(y + (h - h2) / 2, 0.0), self.height - h2)
-            order = paint_order(self.source["elements"])
-            held = {t["id"] for t in self.source["elements"] if t["type"] == "text"
-                    and order[id(t)] > order[id(shape)] and contains(rotated_aabb(shape), rotated_aabb(t), BACKDROP_TOL)}
-            if self._covers_under(shape, (nx, ny, w2, h2), held):
-                return None
-            return dict(out, x=nx, y=ny, width=w2, height=h2)
-
-        def _untouched(self, deco: dict, skip=None) -> list[Box]:
-            """Placed boxes of the content units `deco` didn't touch in the
-            source: they must not end up half on it."""
-            d0 = rotated_aabb(deco)
-            out = []
-            for unit in self.plan.units:
-                if unit is skip or unit.role in ("background", "decoration") or not unit.element_ids:
-                    continue
-                if not all(i in self.placed for i in unit.element_ids):
-                    continue
-                if overlap_area(d0, union_box([rotated_aabb(self.els[i]) for i in unit.element_ids])) <= 0:
-                    out.append(union_box([rotated_aabb(self.placed[i]) for i in unit.element_ids]))
-            return out
-
-        def _park(self, deco: dict) -> dict | None:
-            """The v1 corner parking (each corner, then smaller), but only where
-            no copy it didn't touch in the source ends up half on it, nothing
-            painted before it is covered, and it isn't hidden. None if nowhere."""
-            others = self._untouched(deco)
-            content = [self.placed[e["id"]] for e in self.source["elements"]
-                       if e["id"] in self.placed and self._is_content(e["id"])]
-            for k in (1.0, 0.75, 0.5):
-                for corner in (None, "tl", "tr", "bl", "br"):
-                    cand = place_decoration(deco, self.source["canvas"], self.width, self.height, corner)
-                    if k != 1.0:
-                        cx = 0.0 if cand["x"] + cand["width"] / 2 < self.width / 2 else self.width
-                        cy = 0.0 if cand["y"] + cand["height"] / 2 < self.height / 2 else self.height
-                        cand = fit_inside([scale_about(cand, k, cx, cy)], self.width, self.height)[0]
-                    box = rotated_aabb(cand)
-                    if any(straddles(deco, box, o) for o in others) or self._covers_under(deco, box, set()):
-                        continue
-                    ordered = sorted(content + [cand], key=lambda e: self._source_index[e["id"]])
-                    if not is_covered(cand, content, paint_order(ordered)):
-                        return cand
-            return None
-
-        def _frame(self, deco: dict) -> dict | None:
-            """A decoration that framed a content unit in the source (covering
-            FRAME_SHARE of the smaller of the two) follows it: same offset from
-            the unit's centre and the unit's scale. None if there is no such
-            unit, or the frame would leave it, cover content painted before it,
-            or be hidden."""
-            d0 = rotated_aabb(deco)
-            best, best_share = None, 0.0
-            for unit in self.plan.units:
-                if unit.role in ("background", "decoration") or not unit.element_ids:
-                    continue
-                if not all(i in self.placed for i in unit.element_ids):
-                    continue
-                c0 = union_box([rotated_aabb(self.els[i]) for i in unit.element_ids])
-                small = min(d0[2] * d0[3], c0[2] * c0[3])
-                share = overlap_area(d0, c0) / small if small > 0 else 0.0
-                if share >= FRAME_SHARE and share > best_share:
-                    best, best_share = unit, share
-            if best is None:
-                return None
-            c0 = union_box([rotated_aabb(self.els[i]) for i in best.element_ids])
-            c1 = union_box([rotated_aabb(self.placed[i]) for i in best.element_ids])
-            if c0[2] * c0[3] <= 0:
-                return None
-            k = math.sqrt(c1[2] * c1[3] / (c0[2] * c0[3]))
-            cx = c1[0] + c1[2] / 2 + (d0[0] + d0[2] / 2 - c0[0] - c0[2] / 2) * k
-            cy = c1[1] + c1[3] / 2 + (d0[1] + d0[3] / 2 - c0[1] - c0[3] / 2) * k
-            w, h = deco["width"] * k, deco["height"] * k
-            new = dict(deco, x=cx - w / 2, y=cy - h / 2, width=w, height=h)
-            for key in ("corner_radius", "stroke_width"):
-                if deco.get(key):
-                    new[key] = deco[key] * k
-            content = [self.placed[e["id"]] for e in self.source["elements"]
-                       if e["id"] in self.placed and self._is_content(e["id"])]
-            others = self._untouched(deco, skip=best)
-            # Its own size first; smaller (to 0.6x) if that runs into
-            # other copy; larger (to 1.5x) if a frame wholly inside the
-            # unit it sits behind would count as hidden (G9).
-            for grow in FRAME_SCALES:
-                cand = scale_about(new, grow, new["x"] + new["width"] / 2, new["y"] + new["height"] / 2)
-                cand = fit_inside([cand], self.width, self.height)[0]
-                box = rotated_aabb(cand)
-                if overlap_area(box, c1) <= 0 or self._covers_under(deco, box, set(best.element_ids)):
-                    continue
-                if any(straddles(deco, box, o) for o in others):
-                    continue
-                ordered = sorted(content + [cand], key=lambda e: self._source_index[e["id"]])
-                if not is_covered(cand, content, paint_order(ordered)):
-                    return cand
-            return None
-
-    _V2_BUILDER = V2Builder
-    return _V2_BUILDER
+# straddles() and the V2Builder (_v2_builder) live in layout/polish.py, shared with the polish pass.
 
 
 def _build(source: dict, target: dict, plan: PriorityPlan, measurer, model: _Model, items: list[_Item],
