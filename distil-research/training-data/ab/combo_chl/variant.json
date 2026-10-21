@@ -1,0 +1,7 @@
+{
+  "name": "combo_chl",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection",
+    "CHAMELEON_RETRIEVAL": "1"
+  }
+}

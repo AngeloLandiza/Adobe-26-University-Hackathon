@@ -43,20 +43,30 @@ Every candidate shares them, so a better *picker* can't help. Better *candidates
 
 Results and reports appear on the local dashboard (`python -m dev.distill.serve_dashboard`, http://127.0.0.1:8765) under "Experiments & reports"; each A/B report lives in `training-data/ab/<A>__vs__<B>/REPORT.md`.
 
-## Tournament leaderboard (2026-10-20, paused)
+## Tournament leaderboard (final, 2026-10-21)
 
-Each variant vs the baseline research engine. Teacher-judged on sampled changed cells (holdout ≤ 60, challenge ≤ 100; confidence ≥ 2). The challenge set holds 40 new ads, never used for tuning. "Worst slice" is the variant's lowest win share over any brand or shape slice with ≥ 5 decided cells; 0.50 is a coin flip.
+Each variant vs the baseline research engine. Teacher-judged on sampled changed cells (holdout ≤ 60, challenge ≤ 100; confidence ≥ 2). The challenge set holds 40 new ads (499 cells), never used for tuning or selection. "Worst slice" is the lowest win share over any brand or shape slice with ≥ 5 decided cells.
 
-| Variant | Kind | Holdout (B–A) | Challenge (B–A) | Worst slice (hold / chl) | Verdict |
-|---|---|---|---|---|---|
-| **retr: per-ad floor-plan retrieval** | AI-designed plans + nearest neighbour | **30–18** (p = 0.11) | **34–14 (p = 0.006)** | **0.53 / 0.69** | 🏆 **best so far; generalises across every slice** (judging ~half done) |
-| grid: responsive design grid (S4) | algorithm | 27–24 | 51–33 (p = 0.063) | 0.20 / 0.36 | wins tall / very tall / wide, **loses strips** |
-| flex: content-aware slot sizing | algorithm | 24–29 | 32–47 | 0.20 / 0.31 | ❌ rejected (proxy gains didn't convince the judge) |
-| repair: mined rules + local repair (S3) | AI-mined rules + search | 15–15 | 11–17 | 0.33 / 0.27 | ❌ no gain so far (judging ~half done) |
-| bisect: priority bisection (S2) | algorithm | engine runs done (192 / 473 of 499) | — | — | ⏳ not judged yet |
-| structure_reflow (S1) | algorithm | — | — | — | ⏸ agent stopped mid-build; partial files uncommitted in `engine/pipeline/layout/strategies/` |
+| Variant | Kind | Holdout (B–A) | Challenge (B–A) | Challenge win share | Worst slice (hold / chl) | Verdict |
+|---|---|---|---|---|---|---|
+| **bisect: priority bisection (S2)** | algorithm | **38–17 (p = 0.006)** | **57–37 (p = 0.049)** | 61% | 0.57 / 0.33 | 🏆 **ship**: significant on both sets, best on holdout, works for any shape without data |
+| **retr: per-ad floor-plan retrieval** | AI-designed plans + nearest neighbour | 31–20 (p = 0.16) | **56–31 (p = 0.010)** | **64%** | 0.50 / 0.40 | 🥈 strongest on challenge; depends on library coverage |
+| grid: responsive design grid (S4) | algorithm | 27–24 | 51–33 (p = 0.063) | 61% | 0.20 / 0.36 | loses strips |
+| combo: bisect + retr | both | 19–11 vs bisect | 52–38 (p = 0.17) | 58% | 0.44 / 0.48 | ❌ no better than either alone: the grader picks badly among more diverse candidates |
+| flex: content-aware slot sizing | algorithm | 24–29 | 32–47 | 41% | — | ❌ rejected |
+| repair: mined rules + local repair (S3) | AI-mined rules + search | 16–19 | 18–34 (p = 0.036) | 35% | — | ❌ rejected |
+| Learned grader weights (D) / relation features (E1) | ML | picks 48% (D2) | — | — | — | ❌ rejected earlier |
+| structure_reflow (S1) | algorithm | — | — | — | — | ⏸ unfinished |
 
-**Lesson so far:** what generalises best is *per-ad design reuse* (retrieval), not a fixed algorithm or a learned scorer. Proxies (dead space, text size) don't predict the judge; only teacher-judged A/Bs count.
+**Conclusions:**
+1. **What generalises:** layouts that don't depend on fixed templates. Either an algorithm that sizes regions by content and importance for any aspect (bisection), or reuse of designer-quality per-ad plans (retrieval). Both beat the engine significantly on ads nothing was tuned on.
+2. **Proxies lie:** content-aware sizing cut dead space by 38% and still lost. Only judged A/Bs decide.
+3. **Picking matters again once candidates are diverse.** Combining strategies didn't add up, because the engine's grader chooses poorly among more diverse candidates. The S3 rulebook penalty predicted the teacher's choice 76% of the time vs the grader's 65%, which makes it the natural next picker (an ML-free one).
+
+## Next (if continued)
+1. **Ship bisection** into the research engine by default (`CHAMELEON_STRATEGIES=bisection`). Propose porting it to `chameleon/` through a reviewed PR.
+2. **Better picker:** blend the rulebook penalty (`strategies/rules.py`) into `pick_best`. Then re-run combo (bisect + retr) on holdout, and confirm once on a *fresh* challenge set; the current one has now been used for the final comparison.
+3. **S1 structure_reflow:** finish and judge (`.superpowers/sdd/2026-10-20-distillation/task-S1-brief.md`; partial code is in the working tree).
 
 ## Resume here (in order, all from `distil-research/chameleon/` with `PYTHONPATH=$PWD`)
 1. **Finish round 2 judging** (resumes where it stopped). Each judge command takes `--shard K/4`; run shards 0–3 in parallel, then `--merge`, then `report`:
