@@ -666,3 +666,7 @@ The big wins are not one judge's taste.
 | Sonnet, JSON only | Opus | 13-1 | 2.22 -> 3.28 | 4/20 |
 
 An LLM designer is worth about +1 point of 5, more than every algorithmic step combined; it isn't self-preference (the second judge agrees), Sonnet matches Opus at half the cost, and vision isn't needed. Next: distil into a small open text model (LoRA, trained on Colab) that runs offline in the engine. The brief allows a locally hosted model but the approved-model list and size limit are not published yet.
+
+### Student v1 (Qwen3-4B-Instruct-2507 + LoRA, 370 Sonnet layouts) (2026-10-21)
+Trained on Colab L4 in 18 min (132 steps, 3 epochs; eval loss 0.36 -> 0.267, no overfitting). On the 30 held-out prompts: 30/30 valid JSON, 23/30 pass the gates (7 fall back to v5).
+**Judged vs v5 (both orders): v5 wins 18-3 (2 unsure), p = 0.001; ship-readiness 2.91 (v5) vs 2.04 (student).** The student learned the format and a sensible structure but not the geometry: content crammed into part of the canvas with dead bands, buttons floating away from their copy, pieces clipped or overlapping. Outputs start with a stray `</tool_call>` (chat-template artefact; parsed around, fix in the next run).

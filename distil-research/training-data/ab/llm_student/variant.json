@@ -1,0 +1,7 @@
+{
+  "name": "llm_student",
+  "env": {
+    "LLM_LAYOUT": "../training-data/llm-distill/eval_outputs.jsonl",
+    "fallback": "v5"
+  }
+}
