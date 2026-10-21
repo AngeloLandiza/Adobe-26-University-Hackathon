@@ -270,9 +270,31 @@ def pair_dir(a: str, b: str, root: Path = AB_ROOT) -> Path:
     return Path(root) / f"{a}__vs__{b}"
 
 
+def sample_pairs(pairs: list, max_cells: int | None, seed: int = 0) -> list:
+    """At most `max_cells` pairs, split proportionally across brands (at least one
+    per brand), seeded: caps teacher usage without dropping a slice."""
+    if not max_cells or len(pairs) <= max_cells:
+        return pairs
+    import random
+    by: dict[str, list] = defaultdict(list)
+    for p in pairs:
+        by[p[0].get("brand") or "unknown"].append(p)
+    rng = random.Random(seed)
+    keys = sorted(by)
+    quota = {k: max(1, round(max_cells * len(by[k]) / len(pairs))) for k in keys}
+    while sum(quota.values()) > max_cells:
+        quota[max(keys, key=lambda k: quota[k])] -= 1
+    picked = []
+    for k in keys:
+        picked += rng.sample(by[k], min(quota[k], len(by[k])))
+    keep = {id(p) for p in picked}
+    return [p for p in pairs if id(p) in keep]
+
+
 def judge_variants(a: str, b: str, teacher, root: Path = AB_ROOT, pool_dir: Path = POOL_DIR, shard=None,
-                   limit_calls=None, seed: int = 0) -> list[dict]:
+                   limit_calls=None, seed: int = 0, max_cells: int | None = None) -> list[dict]:
     pairs, _, _ = changed_pairs(a, b, root)
+    pairs = sample_pairs(pairs, max_cells, seed)
     main = pair_dir(a, b, root) / "judgments.jsonl"
     out = judge_mod.shard_file(main, *shard) if shard else main
     challenge = {p[0]["task_id"] for p in pairs if p[0]["split"] == "challenge"}
@@ -435,6 +457,7 @@ def main(argv=None) -> int:
     j.add_argument("--merge", action="store_true")
     j.add_argument("--limit-calls", type=int, default=None)
     j.add_argument("--seed", type=int, default=0)
+    j.add_argument("--max-cells", type=int, default=None, help="judge at most this many changed cells (stratified by brand)")
     p = sub.add_parser("report")
     p.add_argument("--a", required=True)
     p.add_argument("--b", required=True)
@@ -464,7 +487,7 @@ def main(argv=None) -> int:
             return 0
         from dev.distill.teacher import ClaudeCodeTeacher
         rows = judge_variants(args.a, args.b, ClaudeCodeTeacher(args.model), shard=parse_shard(args.shard),
-                              limit_calls=args.limit_calls, seed=args.seed)
+                              limit_calls=args.limit_calls, seed=args.seed, max_cells=args.max_cells)
         print(f"judged {len(rows)} new pairs")
     else:
         print(write_report(args.a, args.b))

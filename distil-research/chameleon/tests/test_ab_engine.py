@@ -190,3 +190,16 @@ def test_parse_env():
     assert ab.parse_env(["A=1", "B=x=y"]) == {"A": "1", "B": "x=y"}
     with pytest.raises(ValueError):
         ab.parse_env(["bad"])
+
+
+def test_sample_pairs_caps_and_keeps_every_brand():
+    from dev.distill.ab_engine import sample_pairs
+    def pair(i, brand):
+        side = {"cell": f"c{i}", "brand": brand}
+        return (side, side)
+    pairs = [pair(i, "solstice") for i in range(80)] + [pair(100 + i, "offbrand") for i in range(20)]
+    got = sample_pairs(pairs, 10, seed=0)
+    assert len(got) == 10
+    assert {p[0]["brand"] for p in got} == {"solstice", "offbrand"}
+    assert got == sample_pairs(pairs, 10, seed=0)
+    assert sample_pairs(pairs, None, seed=0) == pairs and sample_pairs(pairs, 500, seed=0) == pairs
