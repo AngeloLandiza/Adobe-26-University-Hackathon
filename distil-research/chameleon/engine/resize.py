@@ -23,7 +23,7 @@ from typing import Any
 
 from engine.pipeline.grading.score import pick_best
 from engine.pipeline.layout.fallback import safe_fallback
-from engine.pipeline.layout import strategy_registry
+from engine.pipeline.layout import strategy_registry, text_slack
 from engine.pipeline.layout.generate import generate_candidates
 from engine.pipeline.priority import heuristic_plan
 from engine.pipeline.priority import plan as priority_plan
@@ -59,11 +59,16 @@ def resize_with_report(source: dict, target_canvas: dict) -> tuple[dict, Priorit
         candidates += generate_candidates(source, target_canvas, plan, measurer)
     except Exception:
         pass  # a node 2 bug never sinks the task
+    slack = text_slack.mode()  # CHAMELEON_TEXT_SLACK: room before any text box re-wraps (None = off)
+    if slack == "all":
+        candidates = text_slack.apply_all(source, target_canvas, plan, measurer, candidates)  # never raises
     try:
         best, reports = pick_best(source, target_canvas, plan, candidates, measurer)
         best = strategy_registry.refine(source, target_canvas, plan, measurer, best)  # CHAMELEON_STRATEGIES refiners
     except Exception:
         best, reports = candidates[0], []
+    if slack:
+        best = text_slack.apply(source, target_canvas, plan, measurer, best)
 
     if os.environ.get("CHAMELEON_DEBUG") == "1":
         try:
