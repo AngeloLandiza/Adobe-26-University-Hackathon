@@ -1,0 +1,6 @@
+{
+  "name": "grid_chl",
+  "env": {
+    "CHAMELEON_STRATEGIES": "design_grid"
+  }
+}

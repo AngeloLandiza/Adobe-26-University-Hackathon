@@ -1,0 +1,6 @@
+{
+  "name": "base_chl",
+  "env": {
+    "CHAMELEON_FLEX": "0"
+  }
+}

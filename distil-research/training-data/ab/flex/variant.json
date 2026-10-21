@@ -1,0 +1,6 @@
+{
+  "name": "flex",
+  "env": {
+    "CHAMELEON_FLEX": "1"
+  }
+}
