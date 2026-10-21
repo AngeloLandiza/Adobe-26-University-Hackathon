@@ -1,0 +1,8 @@
+{
+  "name": "gen_lean_hold",
+  "env": {
+    "LLM_GEN": "claude-sonnet-5-5",
+    "effort": "low",
+    "fallback": "v5"
+  }
+}

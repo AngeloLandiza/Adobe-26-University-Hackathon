@@ -236,6 +236,132 @@ def ingest(outputs: Path, name: str, baseline: str, repair: bool = False) -> Non
     print(json.dumps({"cells": len(rows), **stats}))
 
 
+# ---------------------------------------------------------------- compact, all-sizes-per-call generation
+
+COMPACT_OUT = ('Answer format (integers only, no spaces needed): {"e": [[id, x, y, width, height, font_size], ...]} '
+               "with font_size only for text elements, e.g. [\"headline\",90,40,900,150,64] or [\"logo\",40,40,200,60].")
+
+
+def student_prompt_v2(source: dict, target: dict) -> str:
+    """Single-target prompt with the compact answer format (what the student is trained and run on)."""
+    return student_prompt(source, target).replace("- You may change z_index only if needed.\n", "") + "\n" + COMPACT_OUT
+
+
+def _compact_to_elements(rows: list) -> dict:
+    out = []
+    for r in rows:
+        e = {"id": str(r[0]), "x": r[1], "y": r[2], "width": r[3], "height": r[4]}
+        if len(r) > 5 and r[5] is not None:
+            e["font_size"] = r[5]
+        out.append(e)
+    return {"elements": out}
+
+
+GEN_SCHEMA = {"type": "object", "properties": {"layouts": {"type": "array", "items": {
+    "type": "object", "properties": {"t": {"type": "string"}, "e": {"type": "array", "items": {"type": "array"}}},
+    "required": ["t", "e"]}}}, "required": ["layouts"]}
+
+
+def _gen_prompt(source: dict, tl: list[dict]) -> str:
+    base = student_prompt(source, tl[0]).replace("- You may change z_index only if needed.\n", "")
+    sizes = "; ".join(f'{t["name"]}={t["width"]}x{t["height"]}' for t in tl)
+    base = base.replace(f'Target canvas: {tl[0]["width"]} x {tl[0]["height"]}.',
+                        f"Target canvases (name=width x height): {sizes}. Design EACH one for its own shape.")
+    return base + ('\nReturn {"layouts": [{"t": <target name>, "e": [[id, x, y, width, height, font_size], ...]}, ...]}, '
+                   "one entry per target, integers only, font_size only for text.")
+
+
+def gen(split: str, out: Path, model: str, effort: str, workers: int, ads: int | None, budget: float,
+        baseline: str | None, name: str | None) -> None:
+    """All 13 target sizes per call, compact answers, lean low-effort teacher, a hard budget cap.
+    Writes student examples (gate-passing only) to out/gen_<split>.jsonl; with --baseline, also an A/B
+    variant (gate failures fall back to the baseline) for the cells the baseline has."""
+    import threading
+    from concurrent.futures import ThreadPoolExecutor
+    os.environ["CHAMELEON_LLM"] = "heuristic"
+    os.environ["CHAMELEON_ASSETS_DIR"] = str(ab._assets())
+    from dev.distill.corpus import load_corpus
+    from dev.distill.teacher import ClaudeCodeTeacher
+    from engine.pipeline.grading.gates import check_gates
+    from engine.pipeline.priority import plan as priority_plan
+    from engine.pipeline.render import render_to_image
+    from engine.resize import _get_measurer
+
+    designs = sorted(load_corpus(split), key=lambda d: d["task_id"])[:ads] if ads else sorted(load_corpus(split), key=lambda d: d["task_id"])
+    targets = json.loads(ab.TARGETS_PATH.read_text())
+    out.mkdir(parents=True, exist_ok=True)
+    keep_f = out / f"gen_{split}.jsonl"
+    done = {json.loads(l)["task_id"] for l in keep_f.open()} if keep_f.exists() else set()
+    teacher = ClaudeCodeTeacher(model, effort=effort)
+    measurer = _get_measurer()
+    lock = threading.Lock()
+    spent = [0.0]
+    base = ab.load_winners(baseline) if baseline else {}
+    vrows = []
+
+    def one(d):
+        tid = d["task_id"]
+        with lock:
+            if spent[0] >= budget or tid in done:
+                return []
+        source = d["source"]
+        before = len(teacher.calls)
+        try:
+            ans = teacher.ask(_gen_prompt(source, targets), GEN_SCHEMA)
+        except Exception as exc:
+            return [{"task_id": tid, "ok": False, "why": f"error:{type(exc).__name__}"}]
+        with lock:
+            spent[0] += sum(c["cost_usd"] for c in teacher.calls[before:])
+        got = {l.get("t"): l for l in ans.get("layouts", [])}
+        plan = priority_plan(source)
+        rows = []
+        for t in targets:
+            lay = got.get(t["name"])
+            tgt = {"width": t["width"], "height": t["height"]}
+            cell = f"{tid}@{t['name']}"
+            if lay is None:
+                rows.append({"cell": cell, "task_id": tid, "ok": False, "why": "missing"}); continue
+            try:
+                design = execute(source, tgt, plan, measurer, _compact_to_elements(lay["e"]))
+                failed = check_gates(source, design, tgt, plan, measurer)
+            except Exception as exc:
+                design, failed = None, [f"error:{type(exc).__name__}"]
+            rows.append({"cell": cell, "task_id": tid, "target": t["name"], "ok": not failed, "why": ",".join(failed),
+                         "prompt": student_prompt_v2(source, tgt),
+                         "answer": json.dumps({"e": lay["e"]}, separators=(",", ":")), "_design": design})
+        return rows
+
+    stats = defaultdict(int)
+    with keep_f.open("a") as kf, (out / f"gen_{split}_rejected.jsonl").open("a") as rf, ThreadPoolExecutor(workers) as ex:
+        for rows in ex.map(one, designs):
+            for r in rows:
+                design = r.pop("_design", None)
+                stats["ok" if r["ok"] else "rejected"] += 1
+                (kf if r["ok"] else rf).write(json.dumps(r) + "\n")
+                if baseline and r.get("cell") in base:
+                    vrows.append((r, design))
+            kf.flush(); rf.flush()
+            print(f"[gen] {dict(stats)} spent ${spent[0]:.2f}", flush=True)
+    if baseline:
+        out_dir = ab.AB_ROOT / name
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "variant.json").write_text(json.dumps({"name": name, "env": {"LLM_GEN": model, "effort": effort, "fallback": baseline}}, indent=2))
+        rows = []
+        for r, design in vrows:
+            b = base[r["cell"]]; png = Path(b["png"])
+            (out_dir / png).parent.mkdir(parents=True, exist_ok=True)
+            if r["ok"]:
+                render_to_image(design, assets_dir=ab._assets(), max_size=ab.RENDER_SIZE).save(out_dir / png)
+                rows.append({**b, "variant": name, "candidate_id": "llm", "is_fallback": False, "design_hash": ab.design_hash(design)})
+            else:
+                (out_dir / png).write_bytes((ab.AB_ROOT / baseline / b["png"]).read_bytes())
+                rows.append({**b, "variant": name, "candidate_id": "fallback-" + baseline})
+        (out_dir / "winners.jsonl").write_text("".join(json.dumps(x) + "\n" for x in rows))
+        print(f"variant {name}: {len(rows)} cells")
+    print(json.dumps({"ads": len(designs), **stats, "spent_usd": round(spent[0], 2),
+                      "usd_per_layout": round(spent[0] / max(1, stats["ok"] + stats["rejected"]), 4)}))
+
+
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -261,8 +387,20 @@ def main() -> None:
     g.add_argument("--name", default="llm_student")
     g.add_argument("--baseline", default="v5")
     g.add_argument("--repair", action="store_true", help="run the engine's balance + text-slack passes on each plan")
+    q = sub.add_parser("gen", help="all sizes per call, compact, lean low-effort teacher, budget cap")
+    q.add_argument("--split", default="train")
+    q.add_argument("--out", default=str(ab.DATA_ROOT / "llm-distill"))
+    q.add_argument("--model", default="claude-sonnet-5-5")
+    q.add_argument("--effort", default="low")
+    q.add_argument("--workers", type=int, default=6)
+    q.add_argument("--ads", type=int, default=None)
+    q.add_argument("--budget", type=float, default=5.0, help="stop starting new calls after this many USD-equivalent")
+    q.add_argument("--baseline", default=None, help="also write an A/B variant vs this baseline (for a quality check)")
+    q.add_argument("--name", default=None)
     a = p.parse_args()
-    if a.cmd == "ingest":
+    if a.cmd == "gen":
+        gen(a.split, Path(a.out), a.model, a.effort, a.workers, a.ads, a.budget, a.baseline, a.name)
+    elif a.cmd == "ingest":
         ingest(Path(a.outputs), a.name, a.baseline, repair=a.repair)
     elif a.cmd == "run":
         run(a.name, a.baseline, a.cells, a.model, image=not a.no_image)

@@ -22,10 +22,30 @@ class TeacherUnavailable(TeacherError):
     """The `claude` program is missing; retrying cannot help."""
 
 
+LEAN_SYSTEM_PROMPT = ("You are a careful expert assistant. Read any image files you are given with the Read tool, "
+                      "then answer only with the requested structured output.")
+
+
+def _empty_mcp_config() -> str:
+    """Path of an MCP config with no servers (for --strict-mcp-config)."""
+    path = Path(TEACHER_CACHE).parent / "empty_mcp.json"
+    if not path.exists():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text('{"mcpServers": {}}')
+    return str(path)
+
+
 class ClaudeCodeTeacher:
     def __init__(self, model: str = "claude-opus-5-5", timeout_s: float = 600,
-                 cache_dir: Path = TEACHER_CACHE, run=subprocess.run, sleep=time.sleep):
+                 cache_dir: Path = TEACHER_CACHE, run=subprocess.run, sleep=time.sleep,
+                 lean: bool = True, effort: str | None = None):
+        """`lean` drops Claude Code's own context from every call: no MCP servers
+        (an empty strict config), no skills, a one-line system prompt, and only
+        the Read tool when images are attached. Without it each call carries
+        ~200K tokens of connector tool definitions. `effort` maps to --effort."""
         self.model = model
+        self.lean = lean
+        self.effort = effort
         self.name = f"claude-code:{model}"
         self.timeout_s = timeout_s
         self.cache_dir = Path(cache_dir)
@@ -49,6 +69,11 @@ class ClaudeCodeTeacher:
         cmd = ["claude", "-p", full_prompt, "--model", self.model,
                "--allowedTools", "Read", "--json-schema", json.dumps(schema),
                "--output-format", "json", "--max-turns", "20"]
+        if self.lean:
+            cmd += ["--tools", "Read" if paths else "", "--strict-mcp-config", "--mcp-config", _empty_mcp_config(),
+                    "--disable-slash-commands", "--system-prompt", LEAN_SYSTEM_PROMPT]
+        if self.effort:
+            cmd += ["--effort", self.effort]
 
         for attempt in range(len(RETRY_DELAYS_S) + 1):
             try:
