@@ -38,7 +38,7 @@ distil-research/
 
 The judging criteria are the challenge's official rubric (the brief, Section 2.5), quoted in `chameleon/dev/distill/rubric.md`.
 
-**Live dashboard:** https://chameleon-distill-dashboard.vercel.app (progress of data collection, judging and training; see [`dashboard/README.md`](dashboard/README.md)).
+**Progress dashboard (local):** `python -m dev.distill.serve_dashboard`, then open http://127.0.0.1:8765. It shows data collection, judging and training; see [`dashboard/README.md`](dashboard/README.md).
 
 **Attention research** (does a model that sees how the pieces relate to each other judge and plan layouts better?) has its own folder: [`docs/attention/`](docs/attention/README.md), tracking GitHub issue #1.
 

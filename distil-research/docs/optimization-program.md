@@ -41,7 +41,7 @@ Every candidate shares them, so a better *picker* can't help. Better *candidates
 7. **Only if picking becomes the bottleneck again:** retrain the grader or the attention scorer on judgements of the *new*, better candidates.
 8. **Stretch (finale):** a small local model distilled from the teacher's per-ad floor plans, if the rules' model-size limit allows it.
 
-Results and reports appear on the dashboard (https://chameleon-distill-dashboard.vercel.app) under "Experiments & reports"; each A/B report lives in `training-data/ab/<A>__vs__<B>/REPORT.md`.
+Results and reports appear on the local dashboard (`python -m dev.distill.serve_dashboard`, http://127.0.0.1:8765) under "Experiments & reports"; each A/B report lives in `training-data/ab/<A>__vs__<B>/REPORT.md`.
 
 ## Tournament leaderboard (2026-10-20, paused)
 
@@ -66,5 +66,5 @@ Each variant vs the baseline research engine. Teacher-judged on sampled changed 
    - `python -m dev.distill.ab_engine run --name bisect_chl --env CHAMELEON_STRATEGIES=bisection --split challenge --workers 4`, which resumes the last 26 cells.
    - Judge `base bisect` (60) and `base_chl bisect_chl` (100) as above.
 3. **Combine.** Choose per-shape routing on **holdout only**: retrieval everywhere, plus the grid for tall / very tall / wide if it adds on top of retrieval. Run the combined variant, then confirm **once** on the challenge set.
-4. **Keep the dashboard live** during runs: `python -m dev.distill.publish_status --every 15`.
+4. **Keep the dashboard live** during runs: `python -m dev.distill.serve_dashboard` (local, http://127.0.0.1:8765).
 5. **S1 (optional):** re-dispatch with `.superpowers/sdd/2026-10-20-distillation/task-S1-brief.md`; partial code exists.

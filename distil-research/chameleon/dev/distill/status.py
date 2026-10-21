@@ -140,7 +140,7 @@ def _active() -> list[dict]:
             continue  # only real Python workers, not shells whose script text mentions the module
         i = args.index("-m")
         module = args[i + 1].rsplit(".", 1)[-1] if i + 1 < len(args) else "?"
-        if module in ("publish_status", "status"):
+        if module in ("serve_dashboard", "status"):
             continue
         rest = args[i + 2:]
         step = rest[0] if rest and not rest[0].startswith("-") else ""
