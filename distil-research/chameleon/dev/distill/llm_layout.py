@@ -185,7 +185,7 @@ def _parse_json(text: str) -> dict:
     raise ValueError("no complete JSON object")
 
 
-def ingest(outputs: Path, name: str, baseline: str) -> None:
+def ingest(outputs: Path, name: str, baseline: str, repair: bool = False) -> None:
     """Student layouts from Colab (eval_outputs.jsonl) -> an A/B variant, like `run` but without a teacher."""
     os.environ["CHAMELEON_LLM"] = "heuristic"
     os.environ["CHAMELEON_ASSETS_DIR"] = str(ab._assets())
@@ -213,6 +213,12 @@ def ingest(outputs: Path, name: str, baseline: str) -> None:
         (out_dir / png).parent.mkdir(parents=True, exist_ok=True)
         try:
             design = execute(source, target, plan, measurer, _parse_json(o["output"]))
+            if repair:  # the engine's geometry passes on the LLM's plan: balance (fill, groups, margins) + text slack
+                from engine.pipeline.layout import balance, text_slack
+                from engine.pipeline.types import Candidate
+                cand = Candidate("student", design, "student", {})
+                cand = balance.balance_all(source, target, plan, measurer, [cand])[0]
+                design = text_slack.apply(source, target, plan, measurer, cand).design
             failed = check_gates(source, design, target, plan, measurer)
         except Exception as exc:
             failed = [f"error:{type(exc).__name__}"]
@@ -254,9 +260,10 @@ def main() -> None:
     g.add_argument("--outputs", required=True)
     g.add_argument("--name", default="llm_student")
     g.add_argument("--baseline", default="v5")
+    g.add_argument("--repair", action="store_true", help="run the engine's balance + text-slack passes on each plan")
     a = p.parse_args()
     if a.cmd == "ingest":
-        ingest(Path(a.outputs), a.name, a.baseline)
+        ingest(Path(a.outputs), a.name, a.baseline, repair=a.repair)
     elif a.cmd == "run":
         run(a.name, a.baseline, a.cells, a.model, image=not a.no_image)
     elif a.cmd == "datagen":
