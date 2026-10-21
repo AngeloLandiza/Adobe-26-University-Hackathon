@@ -305,4 +305,4 @@ Weak spots left: strips on real ads (layers lose 6-8 there) and wide formats on 
 
 - **v3L wins 73-17 (10 unsure), p < 0.001**, on 100 judged changed cells; 91 of 100 cells got the same verdict in both orders.
 - Every aspect slice favours v3L: strip 23-1, wide 19-6, square 10-3, very tall 9-3, tall 8-2, landscape 4-2 (worst-slice share 0.67).
-- Mean ship-readiness on changed cells 1.62 -> 2.13; engine time 0.39 -> 0.7x s per cell.
+- Mean ship-readiness on changed cells 1.62 -> 2.13; engine time 0.39 -> 0.76 s per cell.
