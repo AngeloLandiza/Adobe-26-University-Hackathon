@@ -189,16 +189,18 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
 
     <div class="panel big">
       <div style="display:grid;gap:10px;min-width:0">
-        <h3>Today vs the final pipeline, on real ads</h3>
-        <div class="score">73<span>–17</span></div>
-        <p class="note">100 resize tasks from 50 real ad templates (Crello) that nothing was developed on. Every pair was judged in both image orders; a disagreement counted as unsure (10 were). The two orders agreed 91 times in 100. p &lt; 0.001.</p>
+        <h3>Today vs the final pipeline, on 50 unseen real ads</h3>
+        <div class="score">70<span>–17</span></div>
+        <p class="note">100 resize tasks from 50 real ad templates (Crello) kept aside and never used for building, tuning or choosing anything. Every pair was judged in both image orders; a disagreement counted as unsure (13 were). The two orders agreed 93 times in 100. p &lt; 0.001. Today's engine also broke a hard structural rule 13 times on these ads; the final pipeline never did.</p>
         <div class="shapes" id="shapes"></div>
         <p class="note">Share of decided tasks the final pipeline won, by target shape; the tick marks 50%.</p>
       </div>
       <div style="display:grid;gap:10px;min-width:0">
         <h3>Ship-readiness, out of 5</h3>
-        <div class="bars" data-bars='[["Today",1.62,"old","1.62"],["Final",2.13,"new","2.13"]]' data-max="5"></div>
+        <div class="bars" data-bars='[["Today",1.49,"old","1.49"],["Final",2.13,"new","2.13"]]' data-max="5"></div>
         <p class="note">Claude's 1–5 score on the tasks where the two differ. 2 means "clearly broken in at least one important way", 3 means "acceptable, needs a designer's fix". Better, still far from 5.</p>
+        <h3 style="margin-top:8px">A second judge agrees</h3>
+        <p class="note">Claude Sonnet re-judged two of the key comparisons blind to the first verdicts: anchored vs layers 43–12 (first judge 46–11), today vs layers 68–21 (73–17). Where both judges picked a side, they agreed 84% and 96% of the time.</p>
       </div>
     </div>
   </section>
@@ -233,7 +235,7 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
       <li>On the default ad, the final pipeline is not better at every size. At LinkedIn size it builds the cleaner row layout and then picks a weaker one, by 0.921 to 0.917 on the engine's grader. Picking between good layouts is the next target.</li>
       <li>Anchored layouts win often on other ads (try Summer Flavours, Sunset Sessions or Cucumber Mint) but never on the three official Solstice samples, where the grader still prefers bisection. A learned picker trained on Claude's rankings did not fix this: its gain turned out to be judging noise.</li>
       <li>Near-fit keeps a plain shrink when the shape barely changes (Portrait from a square ad). Claude preferred that, but the brief asks to "rearrange the design, not simply shrink or stretch it", so the official judge may disagree.</li>
-      <li>The judge is Claude applying the official criteria, not the official evaluator. The real-ad tests use Crello templates set in the two Solstice fonts.</li>
+      <li>The judges are Claude models applying the official criteria, not the official evaluator. The real-ad tests use Crello templates set in the two Solstice fonts.</li>
       <li>Everything lives in the research copy of the engine, behind switches that are off by default.</li>
     </ul>
   </section>
@@ -409,7 +411,7 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
       box.appendChild(row);
     });
   });
-  const SHAPES = [["Strip", 23, 1], ["Wide", 19, 6], ["Square", 10, 3], ["Very tall", 9, 3], ["Tall", 8, 2], ["Landscape", 4, 2]];
+  const SHAPES = [["Strip", 16, 4], ["Wide", 14, 3], ["Square", 14, 4], ["Very tall", 11, 1], ["Tall", 9, 4], ["Landscape", 6, 1]];
   $("#shapes").innerHTML = SHAPES.map(([n, w, l]) => `<div class="shape"><span>${n}</span><span class="meter"><i data-w="${(w / (w + l)) * 100}"></i></span><span class="k"><span>${w}–${l}</span><span>${Math.round((w / (w + l)) * 100)}%</span></span></div>`).join("");
   const grow = () => {
     document.querySelectorAll(".fill[data-w], .shape .meter i").forEach((f) => { f.style.width = f.dataset.w + "%"; });

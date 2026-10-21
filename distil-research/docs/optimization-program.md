@@ -640,3 +640,17 @@ Commands (from `distil-research/chameleon/`, `PYTHONPATH=$PWD`, CPU only, ≤ 3 
 
 ### Learned picker judged (2026-10-21): a coin flip, dropped
 `v5` vs `v5p` (holdout): 27-26 for v5 (7 unsure). `v5_chl2` vs `v5p_chl2` (real ads): 36-34 for the picker (10 unsure). It changes about half of all picks and gains nothing. Lesson: the study's "headroom" (teacher's best of 4 minus the grader's pick) is inflated by judging noise (the max of four noisy scores), so a model fitted to it chases noise. Only judged head-to-head A/Bs decide. Stays off (`CHAMELEON_PICKER=learned`).
+
+## Final confirmation (2026-10-21): today's engine vs v5 on the unseen real ads (challenge3)
+v5 = `CHAMELEON_STRATEGIES=bisection,anchored CHAMELEON_BISECT_V2=1 CHAMELEON_HIER_LOCK=1 CHAMELEON_NEAR_FIT=1 CHAMELEON_LAYERS=1 CHAMELEON_TEXT_SLACK=1`.
+challenge3 (50 Crello ads, families disjoint from challenge2 and crello_dev) was never used for building, tuning or choosing anything before this run.
+
+- **v5 wins 70-17 (13 unsure), p < 0.001**, 100 of 554 changed cells, every pair judged in both image orders (93 of 100 order-consistent).
+- Every aspect slice: very tall 11-1, landscape 6-1, wide 14-3, strip 16-4, square 14-4, tall 9-4 (worst-slice share 0.69).
+- Ship-readiness on changed cells 1.49 -> 2.13. Hard-gate failures among winners: today 13, v5 0. Engine time 0.67 -> 1.23 s per cell.
+
+## Second judge (2026-10-21)
+Claude Sonnet 5.5 re-judged two key comparisons on the same cells (`*_s` symlinked variants):
+- v3L vs anchored (holdout): Sonnet 43-12, Opus 46-11; where both decided, agreement 43/51 (84%), opposite verdicts 8.
+- today vs v3L (real ads): Sonnet 68-21, Opus 73-17; agreement 80/83 (96%), opposite 3.
+The big wins are not one judge's taste.
