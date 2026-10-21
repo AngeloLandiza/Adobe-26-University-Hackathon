@@ -174,6 +174,62 @@ def run(name: str, baseline: str, n: int, model: str, image: bool = True) -> Non
     print(json.dumps({"cells": len(rows), **stats, "teacher_cost_usd": round(cost, 2)}))
 
 
+def _parse_json(text: str) -> dict:
+    """The model's answer: the first top-level JSON object in its output."""
+    start = text.find("{")
+    depth = 0
+    for i in range(start, len(text)):
+        depth += {"{": 1, "}": -1}.get(text[i], 0)
+        if depth == 0:
+            return json.loads(text[start:i + 1])
+    raise ValueError("no complete JSON object")
+
+
+def ingest(outputs: Path, name: str, baseline: str) -> None:
+    """Student layouts from Colab (eval_outputs.jsonl) -> an A/B variant, like `run` but without a teacher."""
+    os.environ["CHAMELEON_LLM"] = "heuristic"
+    os.environ["CHAMELEON_ASSETS_DIR"] = str(ab._assets())
+    from dev.distill.corpus import load_corpus
+    from engine.pipeline.grading.gates import check_gates
+    from engine.pipeline.priority import plan as priority_plan
+    from engine.pipeline.render import render_to_image
+    from engine.resize import _get_measurer
+
+    designs = {d["task_id"]: d for d in load_corpus(None)}
+    targets = {t["name"]: t for t in json.loads(ab.TARGETS_PATH.read_text())}
+    base = ab.load_winners(baseline)
+    out_dir = ab.AB_ROOT / name
+    out_dir.mkdir(parents=True, exist_ok=True)
+    (out_dir / "variant.json").write_text(json.dumps({"name": name, "env": {"LLM_LAYOUT": str(outputs), "fallback": baseline}}, indent=2))
+    measurer = _get_measurer()
+    rows, stats = [], defaultdict(int)
+    for o in map(json.loads, outputs.open()):
+        r = base[o["cell"]]
+        source = designs[r["task_id"]]["source"]
+        t = targets[r["target"]]
+        target = {"width": t["width"], "height": t["height"]}
+        plan = priority_plan(source)
+        png = Path(r["png"])
+        (out_dir / png).parent.mkdir(parents=True, exist_ok=True)
+        try:
+            design = execute(source, target, plan, measurer, _parse_json(o["output"]))
+            failed = check_gates(source, design, target, plan, measurer)
+        except Exception as exc:
+            failed = [f"error:{type(exc).__name__}"]
+        if failed:
+            stats["fallback"] += 1
+            stats.update({f: stats[f] + 1 for f in failed})
+            (out_dir / png).write_bytes((ab.AB_ROOT / baseline / r["png"]).read_bytes())
+            rows.append({**r, "variant": name, "candidate_id": "fallback-" + baseline, "failed_llm_gates": failed})
+        else:
+            stats["student"] += 1
+            render_to_image(design, assets_dir=ab._assets(), max_size=ab.RENDER_SIZE).save(out_dir / png)
+            rows.append({**r, "variant": name, "candidate_id": "student", "is_fallback": False, "design_hash": ab.design_hash(design)})
+        print(f"[ingest] {o['cell']}: {'fallback ' + ','.join(failed) if failed else 'ok'}", flush=True)
+    (out_dir / "winners.jsonl").write_text("".join(json.dumps(x) + "\n" for x in rows))
+    print(json.dumps({"cells": len(rows), **stats}))
+
+
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -183,8 +239,140 @@ def main() -> None:
     r.add_argument("--cells", type=int, default=20)
     r.add_argument("--model", default="claude-opus-5-5")
     r.add_argument("--no-image", action="store_true", help="JSON only: do not show the source render")
+    d = sub.add_parser("datagen")
+    d.add_argument("--split", default="train")
+    d.add_argument("--out", default=str(ab.DATA_ROOT / "llm-distill"))
+    d.add_argument("--model", default="claude-sonnet-5-5")
+    d.add_argument("--per-call", type=int, default=3)
+    d.add_argument("--workers", type=int, default=6)
+    d.add_argument("--limit", type=int, default=None)
+    e = sub.add_parser("eval-prompts")
+    e.add_argument("--baseline", default="v5")
+    e.add_argument("--cells", type=int, default=30)
+    e.add_argument("--out", default=str(ab.DATA_ROOT / "llm-distill" / "eval_prompts.jsonl"))
+    g = sub.add_parser("ingest")
+    g.add_argument("--outputs", required=True)
+    g.add_argument("--name", default="llm_student")
+    g.add_argument("--baseline", default="v5")
     a = p.parse_args()
-    run(a.name, a.baseline, a.cells, a.model, image=not a.no_image)
+    if a.cmd == "ingest":
+        ingest(Path(a.outputs), a.name, a.baseline)
+    elif a.cmd == "run":
+        run(a.name, a.baseline, a.cells, a.model, image=not a.no_image)
+    elif a.cmd == "datagen":
+        datagen(a.split, Path(a.out), a.model, a.per_call, a.workers, a.limit)
+    else:
+        eval_prompts(a.baseline, a.cells, Path(a.out))
+
+
+
+# ---------------------------------------------------------------- distillation data
+
+BATCH_SCHEMA = {
+    "type": "object",
+    "properties": {"layouts": {"type": "array", "items": {
+        "type": "object",
+        "properties": {"target": {"type": "string"}, "elements": SCHEMA["properties"]["elements"]},
+        "required": ["target", "elements"]}}},
+    "required": ["layouts"],
+}
+
+STUDENT_SYSTEM = "You are an ad layout engine. Given a source ad as JSON and a target canvas, return the resized layout as JSON."
+
+
+def student_prompt(source: dict, target: dict) -> str:
+    """The single-target, JSON-only prompt the small model is trained and run on."""
+    els = [{k: e[k] for k in KEEP if k in e} for e in source["elements"]]
+    return PROMPT.replace("\nThe source ad image is attached (read it first).", "").format(
+        sw=source["canvas"]["width"], sh=source["canvas"]["height"], tw=target["width"], th=target["height"],
+        elements=json.dumps(els, separators=(",", ":")))
+
+
+def _batch_prompt(source: dict, targets: list[dict]) -> str:
+    base = student_prompt(source, targets[0])
+    sizes = "; ".join(f'"{t["name"]}": {t["width"]} x {t["height"]}' for t in targets)
+    return base.replace(f'Target canvas: {targets[0]["width"]} x {targets[0]["height"]}.',
+                        f"Produce one layout for EACH of these target canvases (name: width x height): {sizes}. "
+                        "Design each one for its own shape.") + '\nReturn {"layouts": [{"target": <name>, "elements": [...]}, ...]}.'
+
+
+def datagen(split: str, out: Path, model: str, per_call: int, workers: int, limit: int | None) -> None:
+    """Teacher layouts for every pool cell of `split`, a few targets per call; keep only plans that pass the gates."""
+    from concurrent.futures import ThreadPoolExecutor
+    os.environ["CHAMELEON_LLM"] = "heuristic"
+    os.environ["CHAMELEON_ASSETS_DIR"] = str(ab._assets())
+    from dev.distill.corpus import load_corpus
+    from dev.distill.teacher import ClaudeCodeTeacher
+    from engine.pipeline.grading.gates import check_gates
+    from engine.pipeline.priority import plan as priority_plan
+    from engine.resize import _get_measurer
+
+    designs = {d["task_id"]: d for d in load_corpus(split)}
+    targets = {t["name"]: t for t in json.loads(ab.TARGETS_PATH.read_text())}
+    by_task = defaultdict(list)
+    for c in ab.pool_cells(POOL_DIR, split):
+        by_task[c["task_id"]].append(c["target"])
+    jobs = [(tid, tl[i:i + per_call]) for tid, tl in sorted(by_task.items()) if tid in designs
+            for i in range(0, len(tl), per_call)]
+    jobs = jobs[:limit] if limit else jobs
+    out.mkdir(parents=True, exist_ok=True)
+    done = {json.loads(l)["cell"] for f in out.glob("*.jsonl") for l in f.open()}
+    teacher = ClaudeCodeTeacher(model)
+    measurer = _get_measurer()
+
+    def one(job):
+        tid, names = job
+        if all(f"{tid}@{n}" in done for n in names):
+            return []
+        source = designs[tid]["source"]
+        tl = [{"name": n, **targets[n]} for n in names]
+        try:
+            ans = teacher.ask(_batch_prompt(source, tl), BATCH_SCHEMA)
+        except Exception as exc:
+            return [{"cell": f"{tid}@{n}", "ok": False, "why": f"error:{type(exc).__name__}"} for n in names]
+        got = {l.get("target"): l for l in ans.get("layouts", [])}
+        plan = priority_plan(source)
+        rows = []
+        for t in tl:
+            lay = got.get(t["name"])
+            cell = f"{tid}@{t['name']}"
+            if lay is None:
+                rows.append({"cell": cell, "ok": False, "why": "missing"}); continue
+            tgt = {"width": t["width"], "height": t["height"]}
+            try:
+                failed = check_gates(source, execute(source, tgt, plan, measurer, lay), tgt, plan, measurer)
+            except Exception as exc:
+                failed = [f"error:{type(exc).__name__}"]
+            rows.append({"cell": cell, "ok": not failed, "why": ",".join(failed), "task_id": tid, "target": t["name"],
+                         "prompt": student_prompt(source, tgt),
+                         "answer": json.dumps({"elements": lay["elements"]}, separators=(",", ":"))})
+        return rows
+
+    keep = (out / "train.jsonl").open("a"); rej = (out / "rejected.jsonl").open("a")
+    stats = defaultdict(int)
+    with ThreadPoolExecutor(workers) as ex:
+        for rows in ex.map(one, jobs):
+            for r in rows:
+                stats["ok" if r["ok"] else "rejected"] += 1
+                (keep if r["ok"] else rej).write(json.dumps(r) + "\n")
+            keep.flush(); rej.flush()
+            print(f"[datagen] {dict(stats)}", flush=True)
+    cost = sum(c["cost_usd"] for c in teacher.calls)
+    print(json.dumps({"jobs": len(jobs), **stats, "teacher_cost_usd": round(cost, 2)}))
+
+
+def eval_prompts(baseline: str, n: int, out: Path) -> None:
+    """Student prompts for n holdout cells (the same picker as the ceiling test), for Colab inference."""
+    from dev.distill.corpus import load_corpus
+    designs = {d["task_id"]: d for d in load_corpus(None)}
+    targets = {t["name"]: t for t in json.loads(ab.TARGETS_PATH.read_text())}
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with out.open("w") as f:
+        for r in pick_cells(baseline, n):
+            t = targets[r["target"]]
+            f.write(json.dumps({"cell": r["cell"], "prompt": student_prompt(designs[r["task_id"]]["source"],
+                                                                            {"width": t["width"], "height": t["height"]})}) + "\n")
+    print(f"wrote {n} prompts to {out}")
 
 
 if __name__ == "__main__":
