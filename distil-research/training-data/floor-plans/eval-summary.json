@@ -21,17 +21,17 @@
   "cells": 30,
   "built": 30,
   "judged": 30,
-  "wins": 16,
-  "win_rate": 0.5333333333333333,
+  "wins": 15,
+  "win_rate": 0.5,
   "engine_picks_new": 6,
-  "engine_picks_new_and_wins": 5
+  "engine_picks_new_and_wins": 4
  },
  "b2_tall_4": {
   "cells": 30,
   "built": 30,
   "judged": 30,
-  "wins": 13,
-  "win_rate": 0.43333333333333335,
+  "wins": 11,
+  "win_rate": 0.36666666666666664,
   "engine_picks_new": 6,
   "engine_picks_new_and_wins": 5
  },
@@ -75,10 +75,10 @@
   "cells": 29,
   "built": 29,
   "judged": 29,
-  "wins": 6,
-  "win_rate": 0.20689655172413793,
+  "wins": 4,
+  "win_rate": 0.13793103448275862,
   "engine_picks_new": 7,
-  "engine_picks_new_and_wins": 4
+  "engine_picks_new_and_wins": 3
  },
  "b2_square_5": {
   "cells": 29,
@@ -124,5 +124,113 @@
   "win_rate": 0.2692307692307692,
   "engine_picks_new": 11,
   "engine_picks_new_and_wins": 4
+ },
+ "b2_wide_1": {
+  "cells": 49,
+  "built": 49,
+  "judged": 49,
+  "wins": 10,
+  "win_rate": 0.20408163265306123,
+  "engine_picks_new": 10,
+  "engine_picks_new_and_wins": 6
+ },
+ "b2_wide_2": {
+  "cells": 49,
+  "built": 48,
+  "judged": 48,
+  "wins": 11,
+  "win_rate": 0.22916666666666666,
+  "engine_picks_new": 15,
+  "engine_picks_new_and_wins": 6
+ },
+ "b2_wide_3": {
+  "cells": 49,
+  "built": 49,
+  "judged": 49,
+  "wins": 2,
+  "win_rate": 0.04081632653061224,
+  "engine_picks_new": 8,
+  "engine_picks_new_and_wins": 1
+ },
+ "b2_strip_1": {
+  "cells": 43,
+  "built": 41,
+  "judged": 41,
+  "wins": 18,
+  "win_rate": 0.43902439024390244,
+  "engine_picks_new": 15,
+  "engine_picks_new_and_wins": 8
+ },
+ "b2_strip_2": {
+  "cells": 43,
+  "built": 39,
+  "judged": 39,
+  "wins": 5,
+  "win_rate": 0.1282051282051282,
+  "engine_picks_new": 9,
+  "engine_picks_new_and_wins": 4
+ },
+ "b2_strip_3": {
+  "cells": 43,
+  "built": 40,
+  "judged": 40,
+  "wins": 10,
+  "win_rate": 0.25,
+  "engine_picks_new": 16,
+  "engine_picks_new_and_wins": 8
+ },
+ "b2_strip_4": {
+  "cells": 43,
+  "built": 42,
+  "judged": 42,
+  "wins": 6,
+  "win_rate": 0.14285714285714285,
+  "engine_picks_new": 10,
+  "engine_picks_new_and_wins": 4
+ },
+ "b2_strip_5": {
+  "cells": 43,
+  "built": 38,
+  "judged": 38,
+  "wins": 4,
+  "win_rate": 0.10526315789473684,
+  "engine_picks_new": 11,
+  "engine_picks_new_and_wins": 2
+ },
+ "b2_landscape_1": {
+  "cells": 15,
+  "built": 15,
+  "judged": 15,
+  "wins": 3,
+  "win_rate": 0.2,
+  "engine_picks_new": 3,
+  "engine_picks_new_and_wins": 1
+ },
+ "b2_landscape_2": {
+  "cells": 15,
+  "built": 15,
+  "judged": 15,
+  "wins": 3,
+  "win_rate": 0.2,
+  "engine_picks_new": 0,
+  "engine_picks_new_and_wins": 0
+ },
+ "b2_landscape_3": {
+  "cells": 15,
+  "built": 15,
+  "judged": 15,
+  "wins": 2,
+  "win_rate": 0.13333333333333333,
+  "engine_picks_new": 0,
+  "engine_picks_new_and_wins": 0
+ },
+ "b2_landscape_4": {
+  "cells": 15,
+  "built": 15,
+  "judged": 15,
+  "wins": 0,
+  "win_rate": 0.0,
+  "engine_picks_new": 2,
+  "engine_picks_new_and_wins": 0
  }
 }

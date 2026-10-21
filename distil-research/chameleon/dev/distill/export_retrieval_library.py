@@ -94,7 +94,7 @@ def verify(path: Path = OUT_PATH, designs: dict | None = None, assets=None) -> d
     dev_lib = dev_rt.library(vector_of=lambda t: dev_rt.ad_vector(designs[t]["source"], prio(t)))
     holdout = holdout_tasks()
     rows = fp.read_jsonl(HOLDOUT_BUILDS)
-    mismatches, runtime_differs = [], []
+    mismatches, runtime_differs, drift = [], [], []
     from engine.pipeline.priority import heuristic_plan
 
     for row in sorted(rows, key=lambda r: r["cell"]):
@@ -105,8 +105,10 @@ def verify(path: Path = OUT_PATH, designs: dict | None = None, assets=None) -> d
         theirs = [p["name"] for p in dev_rt.recommend(source, cls, dev_rt.DEFAULT_K, lib=dev_lib, plan=prio(task),
                                                       exclude_task=task)]
         recorded = [p["name"] for p in row.get("plans", [])]
-        if not ours == theirs == recorded:
+        if ours != theirs:  # the engine port must agree with dev retrieval on the same library
             mismatches.append({"cell": row["cell"], "engine": ours, "dev": theirs, "recorded": recorded})
+        elif ours != recorded:  # the library grew or a plan's win status changed since that evaluation run
+            drift.append(row["cell"])
         # The engine at run time plans with its default assets folder (brand_kit/assets only);
         # count the cells where that changes the choice (a property of the harness, not a failure).
         runtime = [p["name"] for p in engine_rt.recommend(source, cls, heuristic_plan(source), engine_rt.DEFAULT_K,
@@ -115,6 +117,7 @@ def verify(path: Path = OUT_PATH, designs: dict | None = None, assets=None) -> d
             runtime_differs.append(row["cell"])
     return {"cells": len(rows), "entries": len(engine_lib), "ads": len({e["task_id"] for e in engine_lib}),
             "mismatches": mismatches,
+            "drift_vs_recorded": drift,
             "holdout_tasks_in_library": sorted({e["task_id"] for e in engine_lib} & holdout),
             "runtime_assets_change_choice": runtime_differs}
 

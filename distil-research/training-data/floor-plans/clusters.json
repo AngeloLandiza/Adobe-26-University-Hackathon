@@ -6,14 +6,14 @@
    "n_proposals": 123,
    "n_built": 122,
    "n_judged": 122,
-   "n_wins": 66,
-   "win_rate": 0.5409836065573771,
+   "n_wins": 65,
+   "win_rate": 0.5327868852459017,
    "k": 4,
    "silhouette": {
-    "2": 0.2799704159984122,
-    "3": 0.37123581607152456,
-    "4": 0.37613043711874944,
-    "5": 0.34932502405195853
+    "2": 0.2792718033083272,
+    "3": 0.37066414190523356,
+    "4": 0.377598910307843,
+    "5": 0.35068487582751834
    },
    "medoids": [
     {
@@ -118,9 +118,9 @@
     {
      "proposal_id": "p7b6f3ea7",
      "cell": "c28_square_panel_v2@half_page",
-     "members": 17,
+     "members": 16,
      "judged": 50,
-     "win_rate": 0.34,
+     "win_rate": 0.32,
      "member_ids": [
       "p0a58a428",
       "p0e2a1ab4",
@@ -129,7 +129,6 @@
       "p4032282a",
       "p4ad6dcf5",
       "p56c5e123",
-      "p5caacabc",
       "p64a42212",
       "p7b6f3ea7",
       "p86cd8690",
@@ -1124,6 +1123,966 @@
          0.9,
          0.3,
          0.1
+        ]
+       }
+      ]
+     }
+    }
+   ]
+  },
+  "landscape": {
+   "n_proposals": 50,
+   "n_built": 50,
+   "n_judged": 50,
+   "n_wins": 20,
+   "win_rate": 0.4,
+   "k": 4,
+   "silhouette": {
+    "2": 0.19992299036885353,
+    "3": 0.254980629823493,
+    "4": 0.2678574937509114,
+    "5": 0.26253754845088173
+   },
+   "medoids": [
+    {
+     "proposal_id": "p33cd0ca6",
+     "cell": "c23_billboard_weekend_lineup_v1@youtube_thumbnail",
+     "members": 7,
+     "judged": 15,
+     "win_rate": 0.4666666666666667,
+     "member_ids": [
+      "p26d2d9b3",
+      "p33cd0ca6",
+      "p3ae7b750",
+      "pa67582c7",
+      "pbea31cd8",
+      "pc291e438",
+      "pfb9f85e6"
+     ],
+     "name": "b2_landscape_1",
+     "plan": {
+      "name": "b2_landscape_1",
+      "classes": [
+       "landscape"
+      ],
+      "margins": [
+       0.05,
+       0.07
+      ],
+      "slots": [
+       {
+        "name": "hero",
+        "box": [
+         0.0,
+         0.04,
+         0.4,
+         0.92
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.45,
+         0.06,
+         0.55,
+         0.38
+        ]
+       },
+       {
+        "name": "badge",
+        "box": [
+         0.45,
+         0.48,
+         0.4,
+         0.1
+        ]
+       },
+       {
+        "name": "cta",
+        "box": [
+         0.45,
+         0.63,
+         0.3,
+         0.15
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.45,
+         0.88,
+         0.55,
+         0.08
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "pb4977889",
+     "cell": "c06_portrait_lineup_v1@youtube_thumbnail",
+     "members": 5,
+     "judged": 7,
+     "win_rate": 0.7142857142857143,
+     "member_ids": [
+      "p5319603a",
+      "p8fcec058",
+      "p94b45e9c",
+      "pb4977889",
+      "pc63c0b86"
+     ],
+     "name": "b2_landscape_2",
+     "plan": {
+      "name": "b2_landscape_2",
+      "classes": [
+       "landscape"
+      ],
+      "margins": [
+       0.05,
+       0.07
+      ],
+      "slots": [
+       {
+        "name": "hero",
+        "box": [
+         0.0,
+         0.1,
+         0.26,
+         0.84
+        ]
+       },
+       {
+        "name": "logo",
+        "box": [
+         0.33,
+         0.0,
+         0.34,
+         0.11
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.3,
+         0.14,
+         0.4,
+         0.64
+        ]
+       },
+       {
+        "name": "badge",
+        "box": [
+         0.36,
+         0.82,
+         0.28,
+         0.15
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.74,
+         0.52,
+         0.26,
+         0.36
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "pbb0a2f1d",
+     "cell": "c12_landscape_split_v3@youtube_thumbnail",
+     "members": 5,
+     "judged": 16,
+     "win_rate": 0.3125,
+     "member_ids": [
+      "p8036e663",
+      "pbb0a2f1d",
+      "pd50df219",
+      "pe63f3ae0",
+      "pfafa0937"
+     ],
+     "name": "b2_landscape_3",
+     "plan": {
+      "name": "b2_landscape_3",
+      "classes": [
+       "landscape"
+      ],
+      "margins": [
+       0.06,
+       0.04
+      ],
+      "slots": [
+       {
+        "name": "logo",
+        "box": [
+         0.0,
+         0.0,
+         0.18,
+         0.1
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.0,
+         0.18,
+         0.4,
+         0.48
+        ]
+       },
+       {
+        "name": "cta",
+        "box": [
+         0.0,
+         0.72,
+         0.22,
+         0.13
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.43,
+         0.1,
+         0.12,
+         0.8
+        ]
+       },
+       {
+        "name": "hero",
+        "box": [
+         0.57,
+         0.0,
+         0.43,
+         1.0
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "p313e6e5f",
+     "cell": "c03_square_text_only@youtube_thumbnail",
+     "members": 3,
+     "judged": 12,
+     "win_rate": 0.25,
+     "member_ids": [
+      "p2313cf24",
+      "p313e6e5f",
+      "p5c481d2b"
+     ],
+     "name": "b2_landscape_4",
+     "plan": {
+      "name": "b2_landscape_4",
+      "classes": [
+       "landscape"
+      ],
+      "margins": [
+       0.07,
+       0.04
+      ],
+      "slots": [
+       {
+        "name": "text",
+        "box": [
+         0.1,
+         0.18,
+         0.8,
+         0.62
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.38,
+         0.9,
+         0.24,
+         0.08
+        ]
+       }
+      ]
+     }
+    }
+   ]
+  },
+  "wide": {
+   "n_proposals": 150,
+   "n_built": 150,
+   "n_judged": 150,
+   "n_wins": 82,
+   "win_rate": 0.5466666666666666,
+   "k": 3,
+   "silhouette": {
+    "2": 0.2602514086719515,
+    "3": 0.29374645556206586,
+    "4": 0.23317335931740515,
+    "5": 0.17617129994895134
+   },
+   "medoids": [
+    {
+     "proposal_id": "p148f373b",
+     "cell": "c28_square_panel_v3@billboard",
+     "members": 38,
+     "judged": 77,
+     "win_rate": 0.4935064935064935,
+     "member_ids": [
+      "p08aba3e0",
+      "p08e19e87",
+      "p118d3865",
+      "p148f373b",
+      "p20876492",
+      "p36294d7d",
+      "p3d45d1e6",
+      "p3d539ac8",
+      "p3f7e07fd",
+      "p4cb970a1",
+      "p5479418f",
+      "p5e10f8d4",
+      "p749272bc",
+      "p82abdcc4",
+      "p8d665c00",
+      "p92ae9e67",
+      "pa14664b3",
+      "pa256614e",
+      "pa2ae7fb5",
+      "pa7b64804",
+      "pafc6b008",
+      "pb0350e94",
+      "pb5639112",
+      "pbd6d2ad8",
+      "pbf19b141",
+      "pc252e34d",
+      "pd0b10776",
+      "pd2541c6e",
+      "pda23929d",
+      "pe23bc8e5",
+      "pe4515d60",
+      "pe56d99e4",
+      "pe69eca8b",
+      "pec1838e0",
+      "pee2a72aa",
+      "pf46f69d2",
+      "pf4bc86b5",
+      "pfec57212"
+     ],
+     "name": "b2_wide_1",
+     "plan": {
+      "name": "b2_wide_1",
+      "classes": [
+       "wide"
+      ],
+      "margins": [
+       0.07,
+       0.05
+      ],
+      "slots": [
+       {
+        "name": "hero",
+        "box": [
+         0.0,
+         0.0,
+         0.22,
+         1.0
+        ]
+       },
+       {
+        "name": "logo",
+        "box": [
+         0.26,
+         0.04,
+         0.16,
+         0.2
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.26,
+         0.3,
+         0.46,
+         0.64
+        ]
+       },
+       {
+        "name": "cta",
+        "box": [
+         0.76,
+         0.33,
+         0.24,
+         0.34
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.76,
+         0.82,
+         0.24,
+         0.14
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "p61cacc9d",
+     "cell": "c01_square_golden_hour_v3@billboard",
+     "members": 31,
+     "judged": 42,
+     "win_rate": 0.7380952380952381,
+     "member_ids": [
+      "p0cc9c434",
+      "p13c7b5b6",
+      "p178023b9",
+      "p26e7c485",
+      "p2d7c0906",
+      "p47e7cf28",
+      "p4ec68a1d",
+      "p4f72fadd",
+      "p5336283d",
+      "p56e89b07",
+      "p61cacc9d",
+      "p6502ecc4",
+      "p68218803",
+      "p69a3850c",
+      "p716e7256",
+      "p78ede837",
+      "p7afa2a29",
+      "p7e8ce720",
+      "p7f03e586",
+      "p839b1b33",
+      "p880a0de8",
+      "p8a447cab",
+      "p8e598e10",
+      "p8f93dbd0",
+      "p98a34ad2",
+      "p98bb338a",
+      "pa362bede",
+      "pa6bbea54",
+      "pb595bd11",
+      "pb77a6c15",
+      "pf3b2d790"
+     ],
+     "name": "b2_wide_2",
+     "plan": {
+      "name": "b2_wide_2",
+      "classes": [
+       "wide"
+      ],
+      "margins": [
+       0.06,
+       0.08
+      ],
+      "slots": [
+       {
+        "name": "hero",
+        "box": [
+         0.0,
+         0.0,
+         0.22,
+         1.0
+        ]
+       },
+       {
+        "name": "logo",
+        "box": [
+         0.25,
+         0.0,
+         0.2,
+         0.18
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.25,
+         0.22,
+         0.5,
+         0.78
+        ]
+       },
+       {
+        "name": "badge",
+        "box": [
+         0.79,
+         0.32,
+         0.21,
+         0.3
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.79,
+         0.8,
+         0.21,
+         0.18
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "pf29f54d2",
+     "cell": "o14_v_mobile_banner@billboard",
+     "members": 13,
+     "judged": 31,
+     "win_rate": 0.41935483870967744,
+     "member_ids": [
+      "p22e85358",
+      "p298c8199",
+      "p35219508",
+      "p62118506",
+      "p623f054f",
+      "p6431e162",
+      "p716b90a0",
+      "paa4b982f",
+      "pafa38224",
+      "pda40593c",
+      "pdfec2c19",
+      "peae8a0a2",
+      "pf29f54d2"
+     ],
+     "name": "b2_wide_3",
+     "plan": {
+      "name": "b2_wide_3",
+      "classes": [
+       "wide"
+      ],
+      "margins": [
+       0.07,
+       0.04
+      ],
+      "slots": [
+       {
+        "name": "text",
+        "box": [
+         0.02,
+         0.18,
+         0.62,
+         0.64
+        ]
+       },
+       {
+        "name": "cta",
+        "box": [
+         0.76,
+         0.35,
+         0.2,
+         0.3
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.76,
+         0.88,
+         0.2,
+         0.1
+        ]
+       }
+      ]
+     }
+    }
+   ]
+  },
+  "strip": {
+   "n_proposals": 159,
+   "n_built": 157,
+   "n_judged": 157,
+   "n_wins": 97,
+   "win_rate": 0.6178343949044586,
+   "k": 5,
+   "silhouette": {
+    "2": 0.21649833899349052,
+    "3": 0.25586701674132795,
+    "4": 0.27049213487279916,
+    "5": 0.27758704797975653
+   },
+   "medoids": [
+    {
+     "proposal_id": "p9b73b90a",
+     "cell": "c18_mrec_chase_light@mobile_banner",
+     "members": 32,
+     "judged": 63,
+     "win_rate": 0.5079365079365079,
+     "member_ids": [
+      "p0aa9438e",
+      "p11794169",
+      "p146487b0",
+      "p21acbb45",
+      "p234c0069",
+      "p33875ec1",
+      "p380cf3c2",
+      "p4c645451",
+      "p53c23ac7",
+      "p57cb433a",
+      "p5ba362b0",
+      "p6319970e",
+      "p734d6932",
+      "p75ca087d",
+      "p8249d205",
+      "p8638f549",
+      "p93956fd4",
+      "p944ec071",
+      "p9b73b90a",
+      "p9d2d2c3a",
+      "pa43c557d",
+      "pa62c673f",
+      "pb4cdfc8e",
+      "pb757cd8a",
+      "pb9421a93",
+      "pc0ac64f2",
+      "pd9f2471b",
+      "pe718fe64",
+      "pe86d32c6",
+      "pec64e597",
+      "pf585aae6",
+      "pf98d4451"
+     ],
+     "name": "b2_strip_1",
+     "plan": {
+      "name": "b2_strip_1",
+      "classes": [
+       "strip"
+      ],
+      "margins": [
+       0.07,
+       0.04
+      ],
+      "slots": [
+       {
+        "name": "logo",
+        "box": [
+         0.0,
+         0.25,
+         0.16,
+         0.5
+        ]
+       },
+       {
+        "name": "hero",
+        "box": [
+         0.18,
+         0.0,
+         0.13,
+         1.0
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.33,
+         0.0,
+         0.44,
+         1.0
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.775,
+         0.85,
+         0.02,
+         0.15
+        ]
+       },
+       {
+        "name": "cta",
+        "box": [
+         0.8,
+         0.15,
+         0.2,
+         0.7
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "p888538ac",
+     "cell": "o14_v_mobile_banner@large_leaderboard",
+     "members": 19,
+     "judged": 25,
+     "win_rate": 0.76,
+     "member_ids": [
+      "p139fb386",
+      "p238a75fe",
+      "p35510599",
+      "p38350101",
+      "p3aa66530",
+      "p54934dcf",
+      "p57cdf5c4",
+      "p618ad43f",
+      "p6c176171",
+      "p7ae82d4f",
+      "p7bda37a2",
+      "p888538ac",
+      "p88ec9214",
+      "p971ef7cd",
+      "p9b7b742a",
+      "pba4a29b7",
+      "pc0f7d0be",
+      "pc237a365",
+      "pc64c6cbd"
+     ],
+     "name": "b2_strip_2",
+     "plan": {
+      "name": "b2_strip_2",
+      "classes": [
+       "strip"
+      ],
+      "margins": [
+       0.04
+      ],
+      "slots": [
+       {
+        "name": "text",
+        "box": [
+         0.025,
+         0.08,
+         0.62,
+         0.84
+        ]
+       },
+       {
+        "name": "cta",
+        "box": [
+         0.73,
+         0.18,
+         0.19,
+         0.64
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.67,
+         0.86,
+         0.03,
+         0.12
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "pb7495434",
+     "cell": "c18_mrec_chase_light_v1@leaderboard",
+     "members": 17,
+     "judged": 23,
+     "win_rate": 0.7391304347826086,
+     "member_ids": [
+      "p01e684cb",
+      "p13568e8b",
+      "p29e8b547",
+      "p332fd861",
+      "p39057b62",
+      "p41cde271",
+      "p633aac00",
+      "p79a9affa",
+      "p85e89bf8",
+      "p936ab59e",
+      "pa1841d65",
+      "pa37a470b",
+      "pb1fa2d9f",
+      "pb4ab6eb8",
+      "pb7495434",
+      "pf264bceb",
+      "pfdcecdd8"
+     ],
+     "name": "b2_strip_3",
+     "plan": {
+      "name": "b2_strip_3",
+      "classes": [
+       "strip"
+      ],
+      "margins": [
+       0.04,
+       0.07
+      ],
+      "slots": [
+       {
+        "name": "minor",
+        "box": [
+         0.0,
+         0.2,
+         0.07,
+         0.6
+        ]
+       },
+       {
+        "name": "hero",
+        "box": [
+         0.1,
+         0.0,
+         0.12,
+         1.0
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.25,
+         0.05,
+         0.48,
+         0.9
+        ]
+       },
+       {
+        "name": "cta",
+        "box": [
+         0.78,
+         0.2,
+         0.2,
+         0.6
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "pc6a81065",
+     "cell": "o20_i_landscape_two_for_one@leaderboard",
+     "members": 17,
+     "judged": 29,
+     "win_rate": 0.5862068965517241,
+     "member_ids": [
+      "p31020870",
+      "p330443a4",
+      "p61c89d86",
+      "p628f5fe4",
+      "p663b3d1c",
+      "p6710d10b",
+      "p70bd645e",
+      "p82ad2f07",
+      "p9afc4f3a",
+      "p9f593cae",
+      "pa06b4551",
+      "paa508fcd",
+      "pab116cca",
+      "pbabac9f4",
+      "pc6a81065",
+      "pcd615126",
+      "pfd5d2bf7"
+     ],
+     "name": "b2_strip_4",
+     "plan": {
+      "name": "b2_strip_4",
+      "classes": [
+       "strip"
+      ],
+      "margins": [
+       0.04,
+       0.07
+      ],
+      "slots": [
+       {
+        "name": "text",
+        "box": [
+         0.0,
+         0.0,
+         0.56,
+         1.0
+        ]
+       },
+       {
+        "name": "hero",
+        "box": [
+         0.6,
+         0.0,
+         0.115,
+         1.0
+        ]
+       },
+       {
+        "name": "badge",
+        "box": [
+         0.755,
+         0.24,
+         0.245,
+         0.52
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.755,
+         0.82,
+         0.245,
+         0.18
+        ]
+       }
+      ]
+     }
+    },
+    {
+     "proposal_id": "pccc4c08e",
+     "cell": "c24_cover_all_summer@leaderboard",
+     "members": 12,
+     "judged": 17,
+     "win_rate": 0.7058823529411765,
+     "member_ids": [
+      "p1ff3bd4f",
+      "p34d9b955",
+      "p582fbb74",
+      "p77f0a41e",
+      "p90fde3bf",
+      "pa2bbabc1",
+      "paa84b8e2",
+      "pccc4c08e",
+      "pe7999b6d",
+      "pec331ac0",
+      "pf495ce52",
+      "pf9a3e220"
+     ],
+     "name": "b2_strip_5",
+     "plan": {
+      "name": "b2_strip_5",
+      "classes": [
+       "strip"
+      ],
+      "margins": [
+       0.07,
+       0.04
+      ],
+      "slots": [
+       {
+        "name": "logo",
+        "box": [
+         0.0,
+         0.15,
+         0.15,
+         0.7
+        ]
+       },
+       {
+        "name": "text",
+        "box": [
+         0.18,
+         0.0,
+         0.63,
+         1.0
+        ]
+       },
+       {
+        "name": "minor",
+        "box": [
+         0.82,
+         0.82,
+         0.015,
+         0.18
+        ]
+       },
+       {
+        "name": "hero",
+        "box": [
+         0.86,
+         0.0,
+         0.14,
+         1.0
         ]
        }
       ]
