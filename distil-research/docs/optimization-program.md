@@ -299,3 +299,10 @@ All teacher-judged pairwise on changed cells (confidence >= 2). "Real ads" is ch
 **Best engine: v3L** = `CHAMELEON_STRATEGIES=bisection CHAMELEON_BISECT_V2=1 CHAMELEON_HIER_LOCK=1 CHAMELEON_NEAR_FIT=1 CHAMELEON_LAYERS=1`.
 
 Weak spots left: strips on real ads (layers lose 6-8 there) and wide formats on holdout (6-7); the plain uniform fit now wins 31% of real-ad cells (12.5% holdout), so the re-layout still often loses to doing nothing clever. Absolute quality is still low (about 2-2.5 of 5).
+
+### End-to-end check (2026-10-21): today's engine vs v3L on real ads, both orders
+`ab_engine judge --a base_chl2 --b v3L_chl2 --max-cells 100 --swap-share 1.0`: every pair asked in both image orders (a disagreement counts as unsure).
+
+- **v3L wins 73-17 (10 unsure), p < 0.001**, on 100 judged changed cells; 91 of 100 cells got the same verdict in both orders.
+- Every aspect slice favours v3L: strip 23-1, wide 19-6, square 10-3, very tall 9-3, tall 8-2, landscape 4-2 (worst-slice share 0.67).
+- Mean ship-readiness on changed cells 1.62 -> 2.13; engine time 0.39 -> 0.7x s per cell.
