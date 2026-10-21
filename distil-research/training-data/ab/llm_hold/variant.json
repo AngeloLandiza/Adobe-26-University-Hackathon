@@ -1,0 +1,7 @@
+{
+  "name": "llm_hold",
+  "env": {
+    "LLM_LAYOUT": "claude-opus-5-5",
+    "fallback": "v5"
+  }
+}
