@@ -38,12 +38,18 @@ def feats():
     return json.loads(pq.ParquetFile(SHARD).schema_arrow.metadata[b"huggingface"])["info"]["features"]
 
 
+def shards():
+    """every complete test-*.parquet shard present (partial downloads end in .part and are ignored)."""
+    return sorted(SHARD.parent.glob("test-*-of-*.parquet"))
+
+
 def iter_rows(extra=()):
-    f = pq.ParquetFile(SHARD)
-    for g in range(f.num_row_groups):
-        t = f.read_row_group(g, columns=COLS + list(extra))
-        for r in t.to_pylist():
-            yield r
+    for sh in shards():
+        f = pq.ParquetFile(sh)
+        for g in range(f.num_row_groups):
+            t = f.read_row_group(g, columns=COLS + list(extra))
+            for r in t.to_pylist():
+                yield r
 
 
 def pools(meta):
@@ -84,7 +90,7 @@ def load_ad_layouts():
 def main_stats():
     layouts, meta, n_all = load_ad_layouts()
     P = pools(meta)
-    out = {"source": "cyberagent/crello revision 5.1.0, data/test-00000-of-00004.parquet",
+    out = {"source": f"cyberagent/crello revision 5.1.0, {len(shards())} of 4 test shards (data/test-0000N-of-00004.parquet)",
            "n_designs_in_shard": n_all, "n_ad_format_designs": len(layouts),
            "role_labelling": "heuristic, see dev/references/crello_roles.py; accuracy in docs/real-ad-layouts.md",
            "aspect_tolerance": TOL, "min_pool": MIN_POOL, "targets": {}}

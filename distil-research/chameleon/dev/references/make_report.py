@@ -83,12 +83,12 @@ def deviations(var):
 
 L = []
 L.append("# Real designer ad layouts vs our engine\n")
-L.append("What real designers do at each of our 13 target sizes, measured on one shard of the public Crello dataset, "
-         "and where today's engine (`base`) and bisection (`bisect`) differ. Only aggregates are committed; the raw shard "
-         "stays in `training-data/references/crello.nosync/` (gitignored). Numbers: `training-data/references/crello_layout_stats.json`, "
+L.append("What real designers do at each of our 13 target sizes, measured on the public Crello dataset (test split, all 4 shards), "
+         "and where today's engine (`base`) and bisection (`bisect`) differ. Only aggregates are committed; the raw shards "
+         "stay in `training-data/references/crello.nosync/` (gitignored). Numbers: `training-data/references/crello_layout_stats.json`, "
          "`engine_layout_stats_base.json`, `engine_layout_stats_bisect.json`. Scripts: `chameleon/dev/references/`.\n")
 L.append("## Method\n")
-L.append(f"- Data: `cyberagent/crello` revision 5.1.0, `data/test-00000-of-00004.parquet` ({real['n_designs_in_shard']} templates; "
+L.append(f"- Data: `cyberagent/crello` revision 5.1.0, test split, 4 shards `data/test-0000N-of-00004.parquet` ({real['n_designs_in_shard']} templates; "
          f"{real['n_ad_format_designs']} in ad/social/promo formats after excluding resumes, invitations, cards, certificates, menus, logos, presentations, calendars and similar).")
 L.append("- Pool per target: ad-format templates whose canvas aspect is within 5% of the target. If fewer than 20 match, the pool is the 20 ad-format templates "
          "nearest in aspect, marked `nearest-aspect` below. **For the very wide targets (leaderboard, mobile_banner, large_leaderboard, billboard, linkedin_banner) the real pool is NOT the same shape as the target**; treat those rows as a rough guide only.")
