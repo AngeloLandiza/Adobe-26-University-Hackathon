@@ -1,0 +1,7 @@
+{
+  "name": "bisect_arch",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection",
+    "CHAMELEON_EXTRA_TEMPLATES": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/chameleon/../training-data/references/arch_selected_templates.json"
+  }
+}

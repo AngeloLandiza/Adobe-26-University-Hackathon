@@ -85,3 +85,60 @@ Each variant vs the baseline research engine. Teacher-judged on sampled changed 
 - **Why:** the rulebook punishes empty space and small text, so it favours layouts where everything got big (badges as large as the CTA, scattered pieces). That breaks hierarchy, which is the main thing the judge punishes.
 
 **Decision:** the picker stays off. Bisection alone with the existing grader remains the shipped candidate. Sample: 8 cells, a critique rather than the 100-cell judged A/B.
+
+## Bisection v2 (critique-driven) (2026-10-21)
+Bisection wins most picks but its layouts still score about 2.3 out of 5 with the teacher. The teacher's written critiques of bisection layouts (158 judged holdout and challenge cells) name the same flaws again and again. v2 fixes the ones we could measure, inside the layout itself, behind a switch: `CHAMELEON_BISECT_V2=1`. With the switch off, the output is byte-identical to before; `tests/test_bisection_v2.py` checks this on the 3 samples.
+
+**Step 1: measure before fixing.** `dev/distill/bisect_flaws.py` has a geometry detector for each flaw family, such as "the logo's size is under 6% of the canvas's long side". To test the detectors, the engine re-ran all 158 critiqued cells, and every rebuilt design matched the judged one (same `design_hash`). Keyword rules then split the cells by whether the teacher's paragraph about the bisection layout names the flaw. A detector is useful only if it fires much more often where the teacher complained.
+
+| Flaw family | Critiques naming it | Detector fires there | Other critiques | Detector fires there | Kept? |
+|---|---|---|---|---|---|
+| Widow (headline's last line is one short word) | 16 | 50% | 142 | 2% | yes |
+| Text too small (smallest text under 1.1% of the long side) | 75 | 56% | 83 | 17% | yes (measured, not fixed) |
+| Squashed round shape or image (aspect off by >10%) | 5 | 60% | 153 | 0% | yes (few cases) |
+| Legal blown up (wraps to 4+ lines, or as big as body text) | 15 | 33% | 143 | 6% | yes |
+| Logo a speck (sqrt(area) < 6% of the long side) | 45 | 31% | 113 | 6% | yes |
+| Mixed alignment in a stacked column | 20 | 55% | 138 | 33% | yes (weak) |
+| Decoration orphaned from what it framed | 28 | 43% | 130 | 21% | yes |
+| Content too close to the edge (< 5% of the short side) | 73 | 34% | 85 | 13% | yes |
+| CTA competing with the headline (size ratio) | 19 | 16% | 139 | 12% | **no**: no separation |
+| Logo too big | 24 | 17% | 134 | 16% | **no** |
+| Floating, disconnected piece (gap to nearest neighbour) | 74 | 7% | 84 | 2% | **no** |
+
+Most CTA complaints are about where the CTA sits (jammed, floating) or that it is too small, not oversized: 59 and 41 of 117, against 19. No CTA size measure separated them, so v2 adds no CTA cap. One plain margin finding: cells built with margin 0.04 drew edge complaints in 25 of 36 cases (69%), against 48 of 122 (39%) at margin 0.07.
+
+**Step 2: the fixes** (all in `engine/pipeline/layout/strategies/bisection.py`, active only with the switch on):
+- **Safe margin:** margins are 0.06 or 0.09 of the short side (was 0.04 or 0.07), and at least 3% of the width at the left and right ends.
+- **Logo floor:** the logo's sqrt(area) is at least 6.5% of the long side. It may grow past 1.5x its source size to reach that.
+- **Legal:** legal text asks for a cell wide enough to fit on 3 lines, or on as few lines as it needs across the canvas. A tall, narrow column counts as cramped for it.
+- **Widow:** a multi-line text whose last line is one short word gets a balanced, narrower measure at the same size and line count. If that fails, it drops at most 12% in size.
+- **Shared alignment:** units stacked in one column are shifted sideways, only inside their own cells, onto one axis (left, centre or right, following their text alignment).
+- **Decorations kept whole:** a circle behind text keeps its proportions, so it is never squashed into an oval. A decoration that framed a product or text in the source follows it, at the same offset and scale. If it can't, it is parked only where no copy ends up half on it.
+
+**Step 3: before and after** (detector fire rates on the final winning layout; train was used for development, and holdout and the critiqued cells only for measurement):
+
+| Flaw | 60 train cells: v1 → v2 | 192 holdout cells: v1 → v2 | 158 critiqued cells: v1 → v2 |
+|---|---|---|---|
+| Edge crowding | 32% → 8% | 23% → 5% | 23% → 3% |
+| Logo a speck | 13% → 0% | 9% → 1% | 13% → 1% |
+| Decoration orphaned | 17% → 7% | 48% → 30% | 25% → 15% |
+| Mixed alignment | 28% → 10% | 30% → 22% | 35% → 20% |
+| Widow (headline) | 3% → 2% | 13% → 4% | 7% → 2% |
+| Legal blown up | 8% → 8% | 12% → 7% | 9% → 8% |
+| Squash | 7% → 2% | 0% → 0% | 2% → 0% |
+| Text too small | 13% → 15% | 31% → 32% | 35% → 39% |
+
+- **Gates:** 480 of 480 bisection variants pass the hard gates, both before and after (60 train cells x 8 variants).
+- **Speed:** bisection takes 0.28 s per cell instead of 0.17 s. Engine time per cell is about the same (0.60 → 0.66 s on train).
+- **Bisection's share of picks:** about the same (holdout 80% → 79%, challenge 74% → 75%).
+- **Changed picks:** 165 of 192 on holdout differ from `ab/bisect`, and 394 of 499 on challenge differ from `ab/bisect_chl` (runs `ab/bisect2`, `ab/bisect2_chl`). Nothing has been judged yet.
+
+**Honest visual verdict** (contact sheets of original | bisection | v2, harsh rubric, 16 train cells plus 8 holdout cells viewed only):
+- **Better on roughly a third of the changed cells,** where a targeted flaw was visible: circles now sit behind the product instead of floating as fragments or behind the headline; logos are readable on strips; no squashed sticker; widows are gone; quotes wrap better; there is more breathing room at the edges.
+- **About the same on most,** because the flaw wasn't there or the change is a few pixels.
+- **Worse on a few (2 of 24 viewed):** the larger margins plus the grader's near-tie picks sometimes choose a variant with the product squeezed into a thin side column.
+- **It doesn't fix bisection's biggest weaknesses:** headlines that end up small next to a big hero on tall formats, text too small on strips (slightly worse with the larger margins), and badges as big as the CTA.
+
+v2 is a polish pass, not a step change. A teacher-judged A/B (`bisect` vs `bisect2`) is the only way to know whether it wins.
+
+Commands: `python -m dev.distill.bisect_flaws validate | rates --name X --name Y | sheet --name X --name Y --out F.png | rebuild --name X --env ... --split judged|train|holdout|challenge`. Caches are in `training-data/ab/_flaws.nosync/` (git-ignored).

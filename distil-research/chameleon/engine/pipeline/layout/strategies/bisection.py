@@ -27,6 +27,28 @@ logo and CTA last) leave the cuts for a "minor zone" cell where they are
 shelf-packed at their floor size, or smaller (6 px, then 4 px) if even that
 doesn't leave the main items their floors.
 
+Bisection v2 (CHAMELEON_BISECT_V2=1; off by default, and with it off the
+output is unchanged) fixes the flaws the teacher's critiques name most, all
+inside the layout rather than as a penalty afterwards (detectors and their
+validation: dev/distill/bisect_flaws.py):
+- a safe margin: at least V2_MARGINS of the short side, and at least
+  V2_SIDE_MARGIN of the canvas width (height) on the left/right (top/bottom),
+  so a wide banner's copy doesn't run into its ends;
+- a logo floor tied to how the canvas is seen: the logo's sqrt(area) is at
+  least LOGO_MIN_LONG of the long side (it may grow past 1.5x its source
+  size to get there), so it's never a speck on a wide strip;
+- legal stays fine print: it needs a cell wide enough to sit on at most
+  LEGAL_MAX_LINES lines, and a narrow column counts as cramped for it;
+- no widow: a multi-line text whose last line is one short word gets a
+  balanced (narrower) measure, or failing that a slightly smaller size;
+- shared alignment: units stacked in one column are shifted inside their own
+  cells onto one axis (their texts' alignment: left, centre or right);
+- decorations kept whole: a round shape behind text keeps its proportions
+  (never squashed into an oval); a decoration that framed a content unit in
+  the source follows that unit (same offset and scale) instead of being
+  parked as a fragment; one that can't is parked only where no copy ends up
+  half on it (each corner, then smaller), else the v1 way.
+
 Variants: cut order (`rank`: cut next to the most important item so it gets
 its own cell early; `balanced`: cut where the value halves), margin 0.04 /
 0.07, direction (`long`: as above; `flow`: the first cut follows the canvas's
@@ -40,6 +62,7 @@ from __future__ import annotations
 
 import json
 import math
+import os
 from dataclasses import dataclass, field
 
 from engine.pipeline.geometry import Box, align_in, rotated_aabb, union_box
@@ -72,6 +95,32 @@ CROWD_SLACK = 1.8        # content needs this much more room than its floor-size
 SAME_ASPECT_TOL = 0.02    # same as generate.py: the proportional reflow is the answer there
 _NO_CLUSTER = {"headline", "subheadline", "other_text", "legal", None}
 _SEARCH_STEPS = 14
+
+# -- v2 (CHAMELEON_BISECT_V2=1) --------------------------------------------------
+V2_ENV = "CHAMELEON_BISECT_V2"
+V2_MARGINS = (0.06, 0.09)  # share of the short side ...
+V2_SIDE_MARGIN = 0.03      # ... and at least this share of the width (height) at the sides (top/bottom)
+LOGO_MIN_LONG = 0.065      # logo sqrt(area) at least this share of the long side ...
+LOGO_MIN_CAP = 0.5         # ... capped at this share of the short side (logo height)
+LEGAL_MAX_LINES = 3        # legal wants a cell it fits on this many lines
+WIDOW_SHARE = 0.4          # a last line of one word narrower than this x the longest line is a widow
+WIDOW_SHRINK = 0.88        # a widow may cost at most this much of the font size
+FRAME_SCALES = (1.0, 0.9, 0.8, 0.7, 0.6, 1.05, 1.1, 1.2, 1.3, 1.4, 1.5)  # frame sizes tried, x its mapped size
+FRAME_SHARE = 0.3          # a decoration covering this share of a content unit (or vice versa) frames it
+ALIGN_EPS = 0.5            # px: anchors this close already share an axis
+ROUND_SHAPES = ("ellipse", "circle")
+
+
+def v2_enabled() -> bool:
+    return os.environ.get(V2_ENV) == "1"
+
+
+def margins(params: dict, width: float, height: float, v2: bool) -> tuple[float, float]:
+    """(left/right, top/bottom) margin in px."""
+    m = params["margin"] * min(width, height)
+    if not v2:
+        return m, m
+    return max(m, V2_SIDE_MARGIN * width), max(m, V2_SIDE_MARGIN * height)
 
 
 @dataclass
@@ -151,6 +200,23 @@ class _Model:
         self.head_src = max(sizes) if sizes else None
         self.head_font: float | None = None  # the headline's placed size, once a round has placed it
         self.last_head: float | None = None
+        self.v2 = v2_enabled()
+
+    # -- logo size -----------------------------------------------------------
+    def logo_min(self, uw: float, uh: float) -> float:
+        """Least logo height: the v1 floor, and in v2 also a sqrt(area) of
+        LOGO_MIN_LONG x the long side (how big it looks), capped."""
+        base = logo_min_height(self.W, self.H)
+        if not self.v2 or uw <= 0 or uh <= 0:
+            return base
+        want = LOGO_MIN_LONG * max(self.W, self.H) / math.sqrt(uw / uh)
+        return max(base, min(want, LOGO_MIN_CAP * min(self.W, self.H), 0.9 * self.W * uh / uw))
+
+    def logo_growth(self, uw: float, uh: float) -> float:
+        """Largest growth over the source size: 1.5x, or (v2) what the floor needs."""
+        if not self.v2 or uh <= 0:
+            return MAX_TEXT_GROWTH
+        return max(MAX_TEXT_GROWTH, self.logo_min(uw, uh) / uh)
 
     # -- text helpers ------------------------------------------------------
     def floor(self, unit: Unit) -> float:
@@ -213,6 +279,32 @@ class _Model:
                 lo = mid
         return hi
 
+    def legal_lines(self, el: dict, f: float) -> int:
+        """(v2) Lines legal text may take: LEGAL_MAX_LINES, or as many as it
+        needs across 90% of the canvas width if that is more."""
+        key = ("legal_lines", el["id"], f)
+        if key not in self._cache:
+            n = self.m.line_count(resize_text(el, f), f, 0.9 * self.W)
+            self._cache[key] = max(LEGAL_MAX_LINES, n)
+        return self._cache[key]
+
+    def _legal_width(self, el: dict, f: float, cross: float, lo: float) -> float:
+        """(v2) Least width at which legal text sits on at most `legal_lines`
+        lines at size f, within `cross` height; `lo` if it can't."""
+        t = resize_text(el, f)
+        hi = self._line(el, f)[0] + 1
+        n = self.legal_lines(el, f)
+        if hi <= lo or self.m.line_count(t, f, lo) <= n:
+            return lo
+        a, b = lo, hi
+        for _ in range(_SEARCH_STEPS):
+            mid = (a + b) / 2
+            if self.m.line_count(t, f, mid) <= n:
+                b = mid
+            else:
+                a = mid
+        return b if self._fits(el, f, b, cross) else lo
+
     def _largest_font(self, el: dict, f_lo: float, f_hi: float, axis: str, cross: float) -> float:
         """Roughly the largest size in [f_lo, f_hi] whose least extent is finite."""
         if math.isfinite(self._text_ext(el, f_hi, axis, cross)):
@@ -250,6 +342,8 @@ class _Model:
             lo = self._text_ext(el, f0, axis, cross)
             if not math.isfinite(lo):
                 return lo, lo
+            if self.v2 and unit.role == "legal" and axis == "x":
+                lo = self._legal_width(el, f0, cross, lo)
             f_hi = max(f0, self.max_font(unit, el))
             f = self._largest_font(el, f0, f_hi, axis, cross)
             if axis == "x":
@@ -267,8 +361,8 @@ class _Model:
         if len(members) == 1:  # an image or shape: keeps its aspect
             k_max = cross / other
             if unit.role == "logo":
-                k_max = min(k_max, MAX_TEXT_GROWTH, self.logo_cap(uw, uh))
-                k_min = min(logo_min_height(self.W, self.H) / uh, k_max)
+                k_max = min(k_max, self.logo_growth(uw, uh), self.logo_cap(uw, uh))
+                k_min = min(self.logo_min(uw, uh) / uh, k_max)
             else:
                 k_min = k_max * HERO_MIN
                 if unit.role == "hero_image":  # the product stays a real presence, not a speck
@@ -348,14 +442,17 @@ class _Model:
         if unit.role == "hero_image":
             h *= 2.5
         if unit.role == "logo":
-            h = max(h, logo_min_height(self.W, self.H))
+            h = max(h, self.logo_min(uw, uh))
         return h * uw / uh if uh else h, h
 
     def logo_cap(self, uw: float, uh: float) -> float:
         """Largest scale for a logo: a modest mark, not a hero."""
         short = min(self.W, self.H)
-        h_max = max(logo_min_height(self.W, self.H), LOGO_MAX_SHORT * short)
-        return min(h_max / uh, LOGO_MAX_WIDTH * self.W / uw)
+        h_max = max(self.logo_min(uw, uh), LOGO_MAX_SHORT * short)
+        k = min(h_max / uh, LOGO_MAX_WIDTH * self.W / uw)
+        if self.v2:  # the floor wins over the width cap
+            k = max(k, self.logo_min(uw, uh) / uh)
+        return k
 
     def zone_floor(self, unit: Unit, font: float | None) -> float:
         floor = self.floor(unit)
@@ -459,7 +556,7 @@ class _Model:
             k = f0 / max(t["font_size"] for t in texts)
             return uw * uh * k * k
         if unit.role == "logo":
-            h = logo_min_height(self.W, self.H)
+            h = self.logo_min(uw, uh)
             return h * h * (uw / uh if uh else 1.0)
         return (0.08 if unit.role == "hero_image" else 0.02) * content
 
@@ -557,7 +654,11 @@ def _room(model: _Model, items: list[_Item], span: Span, extent: float, box: Box
             el, floor = members[0], model.floor(unit)
             cap = model.text_cap(unit)
             size = model.m.fit_font_size(el, box[2], box[3], 1.0, max(cap, 1.0)) if min(box[2:]) >= 1 else None
-            return (size or 0.0) / floor
+            room = (size or 0.0) / floor
+            if model.v2 and unit.role == "legal" and size:  # a tall narrow column is cramped for fine print
+                lines = model.m.line_count(resize_text(el, size), size, box[2])
+                room *= min(1.0, model.legal_lines(el, size) / max(lines, 1))
+            return room
     if span.lo <= 0:
         return ROOM_CAP
     return min(ROOM_CAP, math.sqrt(max(extent, 0.0) / span.lo))
@@ -649,8 +750,12 @@ def _place_unit(b, model: _Model, unit: Unit, box: Box, caps: dict) -> tuple[Uni
     if box[2] < 1 or box[3] < 1:  # a cut that left this unit no room: the free-space pass takes it
         return unit, None, True
     if unit.role == "logo":
-        box = b._cap_logo(unit, box)
         uw, uh = union_box([rotated_aabb(m) for m in members])[2:]
+        if model.v2:  # the source-size cap gives way to the v2 floor
+            g = model.logo_growth(uw, uh)
+            box = (*align_in(box, min(box[2], uw * g), min(box[3], uh * g)), min(box[2], uw * g), min(box[3], uh * g))
+        else:
+            box = b._cap_logo(unit, box)
         k = model.logo_cap(uw, uh)
         w, h = min(box[2], uw * k), min(box[3], uh * k)
         box = (*align_in(box, w, h), w, h)
@@ -662,9 +767,354 @@ def _place_unit(b, model: _Model, unit: Unit, box: Box, caps: dict) -> tuple[Uni
         degraded = True
     if geo is not None and unit.role == "logo":
         el = geo[unit.element_ids[0]]
-        if el["height"] < logo_min_height(model.W, model.H) - 0.05:
+        uw, uh = union_box([rotated_aabb(m) for m in members])[2:]
+        if el["height"] < model.logo_min(uw, uh) - 0.05:
             degraded = True
+    if model.v2 and geo is not None and len(members) == 1 and texts and unit.role != "legal":
+        geo = {texts[0]["id"]: _no_widow(model, geo[texts[0]["id"]], box, HARD_FLOOR if degraded else floor)}
     return unit, geo, degraded
+
+
+# -- v2: widows ----------------------------------------------------------------
+
+def _has_widow(m, el: dict, f: float, w: float) -> bool:
+    lines = m.wrap(el, f, w).split("\n")
+    if len(lines) < 2 or len(lines[-1].split()) != 1:
+        return False
+    widths = m.line_widths(el, f, w)
+    return bool(widths) and widths[-1] < WIDOW_SHARE * max(widths)
+
+
+def _balanced_width(m, el: dict, f: float, w: float) -> float:
+    """Narrowest width that keeps the line count at w (lines evened out)."""
+    n = m.line_count(el, f, w)
+    lo, hi = m.longest_word_width(el, f), w
+    if lo >= hi:
+        return w
+    for _ in range(_SEARCH_STEPS):
+        mid = (lo + hi) / 2
+        if m.line_count(el, f, mid) == n and max(m.line_widths(el, f, mid), default=0.0) <= mid + 0.5:
+            hi = mid
+        else:
+            lo = mid
+    return hi
+
+
+def _no_widow(model: _Model, el: dict, box: Box, floor: float) -> dict:
+    """`el` as placed, unless its last line is one short word: then a
+    balanced measure (same size and line count, narrower box aligned the way
+    the text is), else the largest slightly smaller size that has no widow."""
+    m = model.m
+    f, w = el["font_size"], el["width"]
+    if el.get("rotation") or not _has_widow(m, el, f, w):
+        return el
+
+    def placed(text: dict, size: float, width: float) -> dict:
+        block = m.block_height(text, size, width)
+        align = text.get("text_align") or "left"
+        x = el["x"] + ((w - width) / 2 if align == "center" else (w - width) if align == "right" else 0.0)
+        return dict(text, x=x, width=width, y=box[1] + (box[3] - block) / 2, height=block)
+
+    size = f
+    while size >= max(floor, f * WIDOW_SHRINK):
+        text = resize_text(el, size)
+        bw = _balanced_width(m, text, size, w)
+        if not _has_widow(m, text, size, bw) and m.fits(text, size, bw, box[3]):
+            return placed(text, size, bw)
+        if not _has_widow(m, text, size, w) and m.fits(text, size, w, box[3]):
+            return placed(text, size, w)
+        size -= 0.5
+    return el
+
+
+# -- v2: one axis per stack -------------------------------------------------------
+
+def _tighten(m, g: dict) -> dict:
+    """A placed text's box shrunk to its widest line (same wrap, same ink position)."""
+    if g.get("type") != "text" or g.get("rotation"):
+        return g
+    f, w = g["font_size"], g["width"]
+    nw = max(m.line_widths(g, f, w), default=0.0) + 1.0
+    if nw >= w - 0.5 or m.wrap(g, f, nw) != m.wrap(g, f, w) or not m.fits(g, f, nw, g["height"]):
+        return g
+    align = g.get("text_align") or "left"
+    x = g["x"] + ((w - nw) / 2 if align == "center" else (w - nw) if align == "right" else 0.0)
+    return dict(g, x=x, width=nw)
+
+
+def _stacks(boxes: list[Box]) -> list[list[int]]:
+    """Groups of boxes one above the other whose x-ranges overlap by at least
+    half the narrower (the same rule as dev/distill/bisect_flaws.py)."""
+    n = len(boxes)
+    adj: dict[int, set] = {i: set() for i in range(n)}
+    for i in range(n):
+        for j in range(i + 1, n):
+            a, b = boxes[i], boxes[j]
+            ov = min(a[0] + a[2], b[0] + b[2]) - max(a[0], b[0])
+            vert = max(a[1], b[1]) - min(a[1] + a[3], b[1] + b[3])
+            if ov >= 0.5 * min(a[2], b[2]) and vert > -0.25 * min(a[3], b[3]):
+                adj[i].add(j)
+                adj[j].add(i)
+    seen, out = set(), []
+    for i in range(n):
+        if i in seen:
+            continue
+        comp, todo = [], [i]
+        while todo:
+            k = todo.pop()
+            if k in seen:
+                continue
+            seen.add(k)
+            comp.append(k)
+            todo += sorted(adj[k] - seen)
+        out.append(sorted(comp))
+    return out
+
+
+def columns(boxes: list[Box], comp: list[int], cap: int = 64) -> list[list[int]]:
+    """The ways to read a stack as one column: members side by side (their
+    vertical ranges overlap) form a row, and a column takes one member per
+    row (a headline over a copy-and-button row gives two columns)."""
+    rows: list[list[int]] = []
+    for i in sorted(comp, key=lambda k: (boxes[k][1], boxes[k][0])):
+        b = boxes[i]
+        for row in rows:
+            if any(min(b[1] + b[3], boxes[j][1] + boxes[j][3]) - max(b[1], boxes[j][1])
+                   > 0.25 * min(b[3], boxes[j][3]) for j in row):
+                row.append(i)
+                break
+        else:
+            rows.append([i])
+    out: list[list[int]] = [[]]
+    for row in rows:
+        out = [c + [i] for c in out for i in sorted(row, key=lambda k: boxes[k][0])][:cap]
+    return out
+
+
+def _align_stacks(model: _Model, placed: list) -> list:
+    """Units stacked in one column share one axis: their texts' alignment
+    (left, centre or right; centre when no text votes), else the next axis
+    that every unit can reach. Each unit moves sideways only inside its own
+    cell, so nothing new overlaps; runs and the minor zone stay put."""
+    out = []
+    for item, unit, geo, degraded in placed:
+        if not item.minor and len(item.units) == 1 and len(geo) == 1:
+            geo = {eid: _tighten(model.m, g) for eid, g in geo.items()}
+        out.append([item, unit, geo, degraded])
+    rows = [r for r in out if not r[0].minor]
+    boxes = [union_box([rotated_aabb(g) for g in r[2].values()]) for r in rows]
+    rng = {}
+    for i, (item, bx) in enumerate(zip([r[0] for r in rows], boxes)):
+        if len(item.units) == 1 and item.cells:
+            cx, _, cw, _ = item.cells[0]
+            lo, hi = cx - bx[0], cx + cw - bx[0] - bx[2]
+            rng[i] = (min(0.0, lo) if lo <= 0 else 0.0, max(0.0, hi) if hi >= 0 else 0.0)
+        else:
+            rng[i] = (0.0, 0.0)
+    for comp in _stacks(boxes):
+        if len(comp) < 2:
+            continue
+        votes = {"left": 0, "center": 0, "right": 0}
+        for i in comp:
+            for g in rows[i][2].values():
+                if g.get("type") == "text":
+                    votes[g.get("text_align") if g.get("text_align") in votes else "left"] += 1
+        pref = max(votes, key=lambda k: (votes[k], k == "center")) if any(votes.values()) else "center"
+        best = None  # (axis rank, total shift, column, target, anchors)
+        for rank, axis in enumerate([pref] + [a for a in ("center", "left", "right") if a != pref]):
+            at = {"left": 0.0, "center": 0.5, "right": 1.0}[axis]
+            for col in columns(boxes, comp):
+                if len(col) < 2:
+                    continue
+                anchors = [boxes[i][0] + at * boxes[i][2] for i in col]
+                lo = max(a + rng[i][0] for a, i in zip(anchors, col))
+                hi = min(a + rng[i][1] for a, i in zip(anchors, col))
+                if lo > hi + 1e-6:
+                    continue
+                target = min(max(sorted(anchors)[len(anchors) // 2], lo), hi)
+                key = (rank, -len(col), sum(abs(target - a) for a in anchors))
+                if best is None or key < best[0]:
+                    best = (key, col, target, anchors)
+            if best is not None:
+                break
+        if best is None:
+            continue
+        _, col, target, anchors = best
+        for i, a in zip(col, anchors):
+            dx = target - a
+            if abs(dx) > ALIGN_EPS / 10:
+                rows[i][2] = {eid: dict(g, x=g["x"] + dx) for eid, g in rows[i][2].items()}
+    return [tuple(r) for r in out]
+
+
+# -- v2: decorations kept whole ------------------------------------------------------
+
+_V2_BUILDER = None
+
+
+def straddles(shape: dict, box: Box, other: Box) -> bool:
+    """Is `other` partly on and partly off `shape` drawn at `box`? A round
+    shape is judged by its ellipse, anything else by its box."""
+    x, y, w, h = box
+    if w <= 0 or h <= 0:
+        return False
+    if shape.get("shape_type") in ROUND_SHAPES:
+        cx, cy, a, b = x + w / 2, y + h / 2, w / 2, h / 2
+        corners = [(other[0] + i * other[2], other[1] + j * other[3]) for i in (0, 1) for j in (0, 1)]
+        inside = all(((px - cx) / a) ** 2 + ((py - cy) / b) ** 2 <= 1 for px, py in corners)
+        nx = (min(max(cx, other[0]), other[0] + other[2]) - cx) / a
+        ny = (min(max(cy, other[1]), other[1] + other[3]) - cy) / b
+        return not inside and nx * nx + ny * ny < 1
+    ox = min(x + w, other[0] + other[2]) - max(x, other[0])
+    oy = min(y + h, other[1] + other[3]) - max(y, other[1])
+    if ox <= 0 or oy <= 0:
+        return False
+    return ox * oy < other[2] * other[3] - 1e-6
+
+
+def _v2_builder():
+    """The engine's _Builder with layers placed the v2 way (made on first use:
+    generate.py is imported lazily, as in _build)."""
+    global _V2_BUILDER
+    if _V2_BUILDER is not None:
+        return _V2_BUILDER
+    from engine.pipeline.geometry import overlap_area
+    from engine.pipeline.layout.generate import BACKDROP_TOL, _Builder
+    from engine.pipeline.layout.layers import fit_inside, place_background, place_decoration, scale_about
+    from engine.pipeline.occlusion import contains, is_covered, paint_order
+
+    class V2Builder(_Builder):
+        def place_layers(self) -> None:
+            for unit in self.plan.units:
+                if unit.role == "background":
+                    self.placed.update((m["id"], place_background(m, self.width, self.height))
+                                       for m in self._members(unit))
+                elif unit.role == "decoration":
+                    for m in self._members(unit):
+                        self.placed[m["id"]] = (self._round_backdrop(m) or self._frame(m) or self._park(m)
+                                                or self._visible_decoration(m))
+
+        def _is_content(self, eid: str) -> bool:
+            return self.plan.unit_for_element(eid).role not in ("background", "decoration")
+
+        def _covers_under(self, shape: dict, box: Box, skip: set) -> bool:
+            """Would `shape` at `box` paint over content drawn before it?"""
+            order = paint_order(self.source["elements"])
+            return any(overlap_area(box, rotated_aabb(g)) > 0 for eid, g in self.placed.items()
+                       if eid not in skip and self._is_content(eid) and order[id(self.els[eid])] < order[id(shape)])
+
+        def _round_backdrop(self, shape: dict) -> dict | None:
+            """The v1 backdrop, but a round shape keeps its proportions: its box
+            grows on the short side round the same centre (None if that leaves
+            the canvas or covers content painted before it)."""
+            out = self._backdrop(shape)
+            if out is None or shape.get("shape_type") not in ROUND_SHAPES or not shape["height"] or not out["height"]:
+                return out
+            a0 = shape["width"] / shape["height"]
+            x, y, w, h = out["x"], out["y"], out["width"], out["height"]
+            if abs((w / h) / a0 - 1) <= 0.02:
+                return out
+            w2, h2 = (w, w / a0) if w / h > a0 else (h * a0, h)
+            if w2 > self.width or h2 > self.height:
+                return None
+            nx = min(max(x + (w - w2) / 2, 0.0), self.width - w2)
+            ny = min(max(y + (h - h2) / 2, 0.0), self.height - h2)
+            order = paint_order(self.source["elements"])
+            held = {t["id"] for t in self.source["elements"] if t["type"] == "text"
+                    and order[id(t)] > order[id(shape)] and contains(rotated_aabb(shape), rotated_aabb(t), BACKDROP_TOL)}
+            if self._covers_under(shape, (nx, ny, w2, h2), held):
+                return None
+            return dict(out, x=nx, y=ny, width=w2, height=h2)
+
+        def _untouched(self, deco: dict, skip=None) -> list[Box]:
+            """Placed boxes of the content units `deco` didn't touch in the
+            source: they must not end up half on it."""
+            d0 = rotated_aabb(deco)
+            out = []
+            for unit in self.plan.units:
+                if unit is skip or unit.role in ("background", "decoration") or not unit.element_ids:
+                    continue
+                if not all(i in self.placed for i in unit.element_ids):
+                    continue
+                if overlap_area(d0, union_box([rotated_aabb(self.els[i]) for i in unit.element_ids])) <= 0:
+                    out.append(union_box([rotated_aabb(self.placed[i]) for i in unit.element_ids]))
+            return out
+
+        def _park(self, deco: dict) -> dict | None:
+            """The v1 corner parking (each corner, then smaller), but only where
+            no copy it didn't touch in the source ends up half on it, nothing
+            painted before it is covered, and it isn't hidden. None if nowhere."""
+            others = self._untouched(deco)
+            content = [self.placed[e["id"]] for e in self.source["elements"]
+                       if e["id"] in self.placed and self._is_content(e["id"])]
+            for k in (1.0, 0.75, 0.5):
+                for corner in (None, "tl", "tr", "bl", "br"):
+                    cand = place_decoration(deco, self.source["canvas"], self.width, self.height, corner)
+                    if k != 1.0:
+                        cx = 0.0 if cand["x"] + cand["width"] / 2 < self.width / 2 else self.width
+                        cy = 0.0 if cand["y"] + cand["height"] / 2 < self.height / 2 else self.height
+                        cand = fit_inside([scale_about(cand, k, cx, cy)], self.width, self.height)[0]
+                    box = rotated_aabb(cand)
+                    if any(straddles(deco, box, o) for o in others) or self._covers_under(deco, box, set()):
+                        continue
+                    ordered = sorted(content + [cand], key=lambda e: self._source_index[e["id"]])
+                    if not is_covered(cand, content, paint_order(ordered)):
+                        return cand
+            return None
+
+        def _frame(self, deco: dict) -> dict | None:
+            """A decoration that framed a content unit in the source (covering
+            FRAME_SHARE of the smaller of the two) follows it: same offset from
+            the unit's centre and the unit's scale. None if there is no such
+            unit, or the frame would leave it, cover content painted before it,
+            or be hidden."""
+            d0 = rotated_aabb(deco)
+            best, best_share = None, 0.0
+            for unit in self.plan.units:
+                if unit.role in ("background", "decoration") or not unit.element_ids:
+                    continue
+                if not all(i in self.placed for i in unit.element_ids):
+                    continue
+                c0 = union_box([rotated_aabb(self.els[i]) for i in unit.element_ids])
+                small = min(d0[2] * d0[3], c0[2] * c0[3])
+                share = overlap_area(d0, c0) / small if small > 0 else 0.0
+                if share >= FRAME_SHARE and share > best_share:
+                    best, best_share = unit, share
+            if best is None:
+                return None
+            c0 = union_box([rotated_aabb(self.els[i]) for i in best.element_ids])
+            c1 = union_box([rotated_aabb(self.placed[i]) for i in best.element_ids])
+            if c0[2] * c0[3] <= 0:
+                return None
+            k = math.sqrt(c1[2] * c1[3] / (c0[2] * c0[3]))
+            cx = c1[0] + c1[2] / 2 + (d0[0] + d0[2] / 2 - c0[0] - c0[2] / 2) * k
+            cy = c1[1] + c1[3] / 2 + (d0[1] + d0[3] / 2 - c0[1] - c0[3] / 2) * k
+            w, h = deco["width"] * k, deco["height"] * k
+            new = dict(deco, x=cx - w / 2, y=cy - h / 2, width=w, height=h)
+            for key in ("corner_radius", "stroke_width"):
+                if deco.get(key):
+                    new[key] = deco[key] * k
+            content = [self.placed[e["id"]] for e in self.source["elements"]
+                       if e["id"] in self.placed and self._is_content(e["id"])]
+            others = self._untouched(deco, skip=best)
+            # Its own size first; smaller (to 0.6x) if that runs into
+            # other copy; larger (to 1.5x) if a frame wholly inside the
+            # unit it sits behind would count as hidden (G9).
+            for grow in FRAME_SCALES:
+                cand = scale_about(new, grow, new["x"] + new["width"] / 2, new["y"] + new["height"] / 2)
+                cand = fit_inside([cand], self.width, self.height)[0]
+                box = rotated_aabb(cand)
+                if overlap_area(box, c1) <= 0 or self._covers_under(deco, box, set(best.element_ids)):
+                    continue
+                if any(straddles(deco, box, o) for o in others):
+                    continue
+                ordered = sorted(content + [cand], key=lambda e: self._source_index[e["id"]])
+                if not is_covered(cand, content, paint_order(ordered)):
+                    return cand
+            return None
+
+    _V2_BUILDER = V2Builder
+    return _V2_BUILDER
 
 
 def _build(source: dict, target: dict, plan: PriorityPlan, measurer, model: _Model, items: list[_Item],
@@ -676,22 +1126,26 @@ def _build(source: dict, target: dict, plan: PriorityPlan, measurer, model: _Mod
 
     W, H = model.W, model.H
     short = min(W, H)
-    m = params["margin"] * short
-    content = (m, m, W - 2 * m, H - 2 * m)
+    mx, my = margins(params, W, H, model.v2)
+    m = min(mx, my)
+    content = (mx, my, W - 2 * mx, H - 2 * my)
     main = "x" if W > H else "y"
     _layout(model, items, content, params["order"], params["dir"], main, GUTTER * short)
 
-    b = _Builder(source, target, plan, measurer)
+    b = (_v2_builder() if model.v2 else _Builder)(source, target, plan, measurer)
     caps: dict = {}
     missed: set[int] = set()
     by_rank = sorted(items, key=lambda i: (i.rank, i.key))
+    placed = []
     for item in by_rank:
         for unit, geo, degraded in _place_item(b, model, item, caps):
             if geo is None:
                 b.leftover.append(unit)
                 missed.add(item.key)
                 continue
-            b._record(unit, geo, degraded)
+            placed.append((item, unit, geo, degraded))
+            if not model.v2:
+                b._record(unit, geo, degraded)
             if degraded:
                 missed.add(item.key)
             if unit.role == "headline" and not degraded and "headline" not in caps:
@@ -699,6 +1153,9 @@ def _build(source: dict, target: dict, plan: PriorityPlan, measurer, model: _Mod
                 if sizes:
                     caps["headline"] = max(sizes)
                     model.last_head = caps["headline"]
+    if model.v2:
+        for _, unit, geo, degraded in _align_stacks(model, placed):
+            b._record(unit, geo, degraded)
     b.leftover.extend(minor)
     if b.leftover and not b.place_leftovers(m):
         return None, missed, -math.inf
@@ -763,8 +1220,8 @@ def _variant(source, target, plan, measurer, model: _Model, params: dict) -> Can
     all_items = _items(model, plan)
     if not all_items:
         return None
-    m = params["margin"] * min(model.W, model.H)
-    content_area = (model.W - 2 * m) * (model.H - 2 * m)
+    mx, my = margins(params, model.W, model.H, model.v2)
+    content_area = (model.W - 2 * mx) * (model.H - 2 * my)
     demote = _demotion_order(all_items)
     start = _crowd_count(model, all_items, demote, max(content_area, 1.0))
     best, best_score = None, -math.inf
@@ -852,7 +1309,7 @@ def _candidates(source, target, plan, measurer) -> list[Candidate]:
         return []
     model = _Model(source, target, plan, measurer)
     out, seen = [], set()
-    for margin in MARGINS:
+    for margin in (V2_MARGINS if model.v2 else MARGINS):
         for order in ORDERS:
             for direction in DIRECTIONS:
                 params = {"margin": margin, "order": order, "dir": direction}
