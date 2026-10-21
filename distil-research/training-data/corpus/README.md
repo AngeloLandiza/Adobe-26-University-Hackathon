@@ -32,7 +32,7 @@
 
 **Feeds:** `candidate-pool/`, and through it everything else.
 
-**Not in here: the challenge set.** `corpus/challenge/` holds 40 evaluation-only ads (new brands, images, structures and sizes) for measuring generalisation in the A/B harness. `load_corpus()` never returns them; see [`challenge/README.md`](challenge/README.md).
+**Not in here: the challenge set.** `corpus/challenge/` holds 40 evaluation-only ads (new brands, images, structures and sizes) for measuring generalisation in the A/B harness. `load_corpus()` never returns them; see [`challenge/README.md`](challenge/README.md). A second, real-ad challenge, `challenge2` (50 Crello ad templates converted into our format, split `challenge2`, brand family `crello`), lives in the gitignored `corpus/challenge2.nosync/` because its content is Crello's. `load_corpus("challenge2")` returns it, and only method and aggregate counts are committed: see [`CHALLENGE2.md`](CHALLENGE2.md).
 
 **Checked by:** `chameleon/tests/test_corpus.py`: ≥ 30 drafted, ≥ 80 augmented, ≥ 25 off-brand ads; ≥ 8 Solstice and ≥ 6 off-brand holdout; unique ids; every augmented ad's split equals its parent's; off-brand ads use only `syn_` images; every asset exists in one of the two folders and every font in the kit; generated ads pass the layout checks; every ad plans (with the right missing-asset flags) and renders through the merged assets folder; and the quality gate really rejects text on a busy area, a stretched image and overflowing text.
 

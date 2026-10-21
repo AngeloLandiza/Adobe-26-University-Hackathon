@@ -21,11 +21,22 @@ from dev.distill.paths import DATA_ROOT
 BRAND_ASSETS_DIR = Path(__file__).resolve().parents[2] / "brand_kit" / "assets"
 BRAND_FONTS_DIR = BRAND_ASSETS_DIR.parent / "fonts"
 SYNTH_ASSETS_DIR = DATA_ROOT / "corpus" / "assets"
+# Per-element rasters of the Crello ads (split "challenge2", all named `cr2_*`). Gitignored
+# (.nosync); merged in only when asked: merged_assets_dir(*CHALLENGE2_FOLDERS).
+CHALLENGE2_ASSETS_DIR = DATA_ROOT / "corpus" / "challenge2.nosync" / "assets"
+CHALLENGE2_FOLDERS = (BRAND_ASSETS_DIR, SYNTH_ASSETS_DIR, CHALLENGE2_ASSETS_DIR)
+LOOKUP_FOLDERS = CHALLENGE2_FOLDERS  # where asset_exists/asset_file look (cr2_ names never clash)
+
+
+def asset_file(asset_id: str) -> Path | None:
+    """The file `asset_id` names in the brand kit, the synthetic assets or the
+    Crello (challenge2) rasters, or None."""
+    return next((d / asset_id for d in LOOKUP_FOLDERS if (d / asset_id).is_file()), None)
 
 
 def asset_exists(asset_id: str) -> bool:
-    """True if `asset_id` is a file in either folder."""
-    return any((d / asset_id).is_file() for d in (BRAND_ASSETS_DIR, SYNTH_ASSETS_DIR))
+    """True if `asset_id` is a file in one of the asset folders."""
+    return asset_file(asset_id) is not None
 
 
 @contextlib.contextmanager

@@ -7,6 +7,9 @@ DATA_ROOT = Path(__file__).resolve().parents[3] / "training-data"
 CORPUS_DIR = DATA_ROOT / "corpus" / "designs"
 # Evaluation-only ads (dev/distill/make_challenge.py): never used for tuning or selection.
 CHALLENGE_DIR = DATA_ROOT / "corpus" / "challenge"
+# Real ads converted from the Crello dataset (dev/distill/make_real_challenge.py), split "challenge2".
+# Crello-derived content: the folder ends in ".nosync", so it is gitignored and never committed.
+CHALLENGE2_DIR = DATA_ROOT / "corpus" / "challenge2.nosync"
 POOL_DIR = DATA_ROOT / "candidate-pool"
 JUDGMENTS_FILE = DATA_ROOT / "judgments" / "judgments.jsonl"
 # Regenerable bulk output goes in folders ending ".nosync": iCloud Drive skips

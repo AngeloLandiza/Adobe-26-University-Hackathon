@@ -725,12 +725,12 @@ def _is_layer(el: dict) -> bool:
 
 
 def _image_aspect(asset_id: str) -> float | None:
-    from dev.distill.assets import BRAND_ASSETS_DIR, SYNTH_ASSETS_DIR
-    for folder in (BRAND_ASSETS_DIR, SYNTH_ASSETS_DIR):
-        if (folder / asset_id).is_file():
-            with Image.open(folder / asset_id) as im:
-                return im.width / im.height
-    return None
+    from dev.distill.assets import asset_file
+    path = asset_file(asset_id)
+    if path is None:
+        return None
+    with Image.open(path) as im:
+        return im.width / im.height
 
 
 def check(record: dict, strict: bool = False) -> list[str]:

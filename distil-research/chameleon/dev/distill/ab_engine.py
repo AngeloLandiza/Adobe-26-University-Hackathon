@@ -23,6 +23,11 @@ The report adds wins by target aspect class and by brand family (solstice /
 offbrand / challenge) and a generalisation score: the minimum, over slices with
 at least MIN_SLICE decided cells, of B's win share.
 
+`--split challenge2` does the same for the real ads converted from Crello
+(training-data/corpus/challenge2.nosync/, make_real_challenge.py), with their
+rasters merged into the assets folder (assets.CHALLENGE2_FOLDERS). Run it
+under its own --name too (e.g. base_chl2).
+
 Every step is resumable (a rerun skips cells already done) and shardable.
 """
 
@@ -47,7 +52,8 @@ MIN_CONFIDENCE = 2
 SOURCES_SUBDIR = "_sources.nosync"  # challenge ads' source renders, under the A/B root
 NEAR_SOURCE = 0.02                  # same rule as pool.py: a target this close to the source aspect is skipped
 MIN_SLICE = 5                       # a slice needs this many decided cells to count for the generalisation score
-FAMILIES = ("solstice", "offbrand", "challenge")
+FAMILIES = ("solstice", "offbrand", "challenge", "crello")
+EVAL_SPLITS = ("challenge", "challenge2")  # source ads not in the pool: cells built from targets.json
 
 
 # ---------------------------------------------------------------- helpers
@@ -115,16 +121,17 @@ def source_png(root: Path, task_id: str) -> Path:
     return Path(root) / SOURCES_SUBDIR / task_id / "source.png"
 
 
-def write_sources(designs: list[dict], root: Path = AB_ROOT) -> int:
+def write_sources(designs: list[dict], root: Path = AB_ROOT, folders: tuple = ()) -> int:
     """Render each design's source (the judge's "original") once; returns how
-    many were newly written."""
+    many were newly written. `folders`: the asset folders to merge (default:
+    brand kit + synthetic)."""
     from engine.pipeline.render import render_to_image
     from dev.distill.assets import merged_assets_dir
 
     todo = [d for d in designs if not source_png(root, d["task_id"]).exists()]
     if not todo:
         return 0
-    with merged_assets_dir() as assets:
+    with merged_assets_dir(*folders) as assets:
         for d in todo:
             path = source_png(root, d["task_id"])
             path.parent.mkdir(parents=True, exist_ok=True)
@@ -150,12 +157,14 @@ def load_winners(name: str, root: Path = AB_ROOT) -> dict[str, dict]:
 _ASSETS = None  # per-process merged assets dir
 
 
-def _assets():
+def _assets(folders: tuple = ()):
+    """The process's merged assets folder, built on first use from `folders`
+    (default: brand kit + synthetic; challenge2 adds the Crello rasters)."""
     global _ASSETS
     if _ASSETS is None:
         import atexit
         from dev.distill.assets import merged_assets_dir
-        cm = merged_assets_dir()
+        cm = merged_assets_dir(*folders)
         _ASSETS = cm.__enter__()
         atexit.register(cm.__exit__, None, None, None)
     return _ASSETS
@@ -166,12 +175,12 @@ def _resize(source: dict, canvas: dict):
     return resize_with_report(source, canvas)
 
 
-def _worker_init(env: dict):
+def _worker_init(env: dict, folders: tuple = ()):
     os.environ.update(env)
     os.environ["CHAMELEON_LLM"] = "heuristic"
     # Plan, score and render against the same images the pool used (brand kit + synthetic),
     # otherwise synthetic images count as missing and roles and pixel scores change.
-    os.environ["CHAMELEON_ASSETS_DIR"] = str(_assets())
+    os.environ["CHAMELEON_ASSETS_DIR"] = str(_assets(folders))
 
 
 def run_cell(job: dict) -> dict:
@@ -179,9 +188,16 @@ def run_cell(job: dict) -> dict:
     from engine.pipeline.render import render_to_image
     design, cell, target, name = job["design"], job["cell"], job["target_canvas"], job["name"]
     source = design["source"]
+    canvas = {"width": target["width"], "height": target["height"]}
     t0 = time.perf_counter()
-    best_design, _plan, best, _reports = _resize(source, {"width": target["width"], "height": target["height"]})
+    best_design, plan, best, _reports = _resize(source, canvas)
     seconds = time.perf_counter() - t0
+    try:  # the hard gates the returned design fails (normally none); bookkeeping only
+        from engine.pipeline.grading.gates import check_gates
+        from engine.resize import _get_measurer
+        failed_gates = check_gates(source, best_design, canvas, plan, _get_measurer())
+    except Exception as exc:
+        failed_gates = [f"check_error:{type(exc).__name__}"]
     png = Path(RENDERS_SUBDIR) / cell["task_id"] / f"{cell['target']}.png"
     path = Path(job["out_dir"]) / png
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -189,7 +205,7 @@ def run_cell(job: dict) -> dict:
     return {"cell": cell["cell"], "task_id": cell["task_id"], "split": cell["split"], "brand": cell["brand"],
             "target": cell["target"], "variant": name, "candidate_id": best.candidate_id,
             "is_fallback": bool(best.is_fallback), "design_hash": design_hash(best_design),
-            "png": png.as_posix(), "seconds": round(seconds, 3)}
+            "png": png.as_posix(), "seconds": round(seconds, 3), "failed_gates": failed_gates}
 
 
 def _safe_run_cell(job: dict):
@@ -200,7 +216,7 @@ def _safe_run_cell(job: dict):
 
 
 def run_variant(name: str, env: dict, cells: list[dict], designs: dict, targets: dict, root: Path = AB_ROOT,
-                shard=None, workers: int = 4, log=print) -> list[dict]:
+                shard=None, workers: int = 4, log=print, folders: tuple = ()) -> list[dict]:
     out_dir = Path(root) / name
     out_dir.mkdir(parents=True, exist_ok=True)
     main = out_dir / "winners.jsonl"
@@ -224,7 +240,7 @@ def run_variant(name: str, env: dict, cells: list[dict], designs: dict, targets:
         saved = {k: os.environ.get(k) for k in [*env, "CHAMELEON_LLM", "CHAMELEON_ASSETS_DIR"]}
         os.environ.update(env)
         os.environ["CHAMELEON_LLM"] = "heuristic"
-        os.environ["CHAMELEON_ASSETS_DIR"] = str(_assets())  # same images as the pool (see _worker_init)
+        os.environ["CHAMELEON_ASSETS_DIR"] = str(_assets(folders))  # same images as the pool (see _worker_init)
         try:
             for job in jobs:
                 record(_safe_run_cell(job))
@@ -235,7 +251,7 @@ def run_variant(name: str, env: dict, cells: list[dict], designs: dict, targets:
                 else:
                     os.environ[k] = v
     else:
-        with ProcessPoolExecutor(max_workers=min(workers, 4), initializer=_worker_init, initargs=(env,)) as ex:
+        with ProcessPoolExecutor(max_workers=min(workers, 4), initializer=_worker_init, initargs=(env, folders)) as ex:
             for row in ex.map(_safe_run_cell, jobs):
                 record(row)
     (out_dir / "variant.json").write_text(json.dumps({"name": name, "env": env}, indent=2))
@@ -297,7 +313,7 @@ def judge_variants(a: str, b: str, teacher, root: Path = AB_ROOT, pool_dir: Path
     pairs = sample_pairs(pairs, max_cells, seed)
     main = pair_dir(a, b, root) / "judgments.jsonl"
     out = judge_mod.shard_file(main, *shard) if shard else main
-    challenge = {p[0]["task_id"] for p in pairs if p[0]["split"] == "challenge"}
+    challenge = {p[0]["task_id"] for p in pairs if p[0]["split"] in EVAL_SPLITS}
 
     def original(task_id: str) -> Path:  # challenge ads aren't in the pool: their source renders live under root
         return source_png(root, task_id) if task_id in challenge else Path(pool_dir) / RENDERS_SUBDIR / task_id / "source.png"
@@ -443,7 +459,7 @@ def main(argv=None) -> int:
     r = sub.add_parser("run")
     r.add_argument("--name", required=True)
     r.add_argument("--env", action="append", default=[])
-    r.add_argument("--split", default="holdout", choices=["train", "holdout", "all", "challenge"])
+    r.add_argument("--split", default="holdout", choices=["train", "holdout", "all", "challenge", "challenge2"])
     r.add_argument("--cells", type=int, default=None)
     r.add_argument("--seed", type=int, default=0)
     r.add_argument("--shard", default=None)
@@ -469,17 +485,24 @@ def main(argv=None) -> int:
             return 0
         from dev.distill.corpus import load_corpus
         target_list = json.loads(TARGETS_PATH.read_text())
-        if args.split == "challenge":
-            chl = load_corpus("challenge")
+        folders = ()
+        if args.split in EVAL_SPLITS:
+            if args.split == "challenge2":
+                from dev.distill.assets import CHALLENGE2_FOLDERS
+                folders = CHALLENGE2_FOLDERS
+            chl = load_corpus(args.split)
+            if not chl:
+                print(f"no {args.split} ads found (challenge2: run python -m dev.distill.make_real_challenge)")
+                return 1
             cells = challenge_cells(chl, target_list, args.cells, args.seed)
-            print(f"wrote {write_sources(chl)} new challenge source renders to {AB_ROOT / SOURCES_SUBDIR}")
+            print(f"wrote {write_sources(chl, folders=folders)} new {args.split} source renders to {AB_ROOT / SOURCES_SUBDIR}")
             designs = {d["task_id"]: d for d in chl}
         else:
             cells = pool_cells(POOL_DIR, args.split, args.cells, args.seed)
             designs = {d["task_id"]: d for d in load_corpus(None if args.split == "all" else args.split)}
         targets = {t["name"]: t for t in target_list}
         rows = run_variant(args.name, parse_env(args.env), cells, designs, targets, shard=parse_shard(args.shard),
-                           workers=args.workers)
+                           workers=args.workers, folders=folders)
         print(f"ran {len(rows)} new cells of {len(cells)} for {args.name}")
     elif args.step == "judge":
         if args.merge:
