@@ -474,3 +474,148 @@ Commands (from `distil-research/chameleon/`, `PYTHONPATH=$PWD`, CPU only, ≤ 3 
 - **Real ads (challenge2): 58-21 (21 unsure), p < 0.001**, 100 of 168 changed cells; ship-readiness 1.80 -> 2.17. Square 11-1, strip 14-1, very tall 11-2; weakest slice wide 11-10.
 
 **Best engine now: v4 = v3L + anchored** (`CHAMELEON_STRATEGIES=bisection,anchored CHAMELEON_BISECT_V2=1 CHAMELEON_HIER_LOCK=1 CHAMELEON_NEAR_FIT=1 CHAMELEON_LAYERS=1`). Keeping the original composition while filling the new canvas is what the judge rewards most.
+
+## Text robustness pass (CHAMELEON_TEXT_SLACK) (2026-10-21)
+**The problem.** The official converter (`renderer/converter/wrap.py`) word-wraps each text greedily at its box width and only breaks at spaces. The engine measures with the same code and often sizes a box to exactly what its wrap needs. Such a box re-wraps if anything at scoring time differs by a pixel: rounding, another skia or cr-renderer build, or Linux font rasterisation on the reference machine. A **fragile** box is one whose official line count changes when the box is 1 px narrower. Example: "Shop the Summer Line" in a 137.41 px label box whose line is 137.40 px wide (core sample, 300x250). One pixel less and "Line" drops onto a second line, under the button.
+
+**The switch** (`engine/pipeline/layout/text_slack.py`, off by default, byte-identical when off). It is one pass on the final design, after the pick and the refiners. It changes no content or font family, and each change is kept only if every hard gate still passes. Slack is `max(1.5 px, 1.5% of the box width)`: the wrap at width - slack must equal the wrap at width.
+1. **Pill labels.** A pill label is a text in a container_label unit, or a text inside a small shape of its own group. It stays on its source line count (one, for every label in the samples) with slack. Fixes, in order:
+   - widen the label box inside its pill;
+   - else widen the pill symmetrically, if it stays inside the canvas safe area and gains no overlap;
+   - else shrink the label font in 0.5% steps, never below its role floor;
+   - else widen the pill as far as allowed, and report the label (`Result.notes`).
+2. **Every text box.** Widen the box the way `text_align` allows: left keeps x, right keeps the right edge, center grows both ways. This moves no ink. The box must stay in the canvas and inside every element that held it, with no new overlap. Fallbacks, in order:
+   - widen up to 15% to a different wrap with the same line count;
+   - shrink the font, at most 6% and never below the role floor (a headline that was the largest text stays the largest);
+   - last resort: grow on the free side, the ink shifting at most 3 px.
+3. **Vertical.** A box shorter than its drawn block grows to it.
+
+**Where it runs.** `CHAMELEON_TEXT_SLACK=all` also runs the pass on every candidate before grading. Not chosen: almost every change is a wider box with the ink in place, which the grader's box metrics read as a different layout. On 99 cells, `all` changed 10 picks for no visual reason; both modes leave no 1 px-fragile text.
+
+**Robustness** (`python -m dev.distill.text_robustness run|report|sheet`). The two sets are the 3 samples x 13 targets (182 texts, 91 pill labels) and 60 holdout cells (320 texts, 129 pill labels).
+
+| Engine | Fragile at 1 px: samples / holdout | Short of full slack | Pill labels fragile at 1 px | Pill labels on >1 line or outside the pill |
+|---|---|---|---|---|
+| today's engine | 34.1% / 16.2% | 45.1% / 24.7% | 54 / 38 | 0 / 0 |
+| today + TEXT_SLACK | 0.5% / 0% | 1.1% / 0% | 0 / 0 | 0 / 0 |
+| v4 | 31.9% / 13.1% | 49.5% / 29.1% | 52 / 29 | 0 / 0 |
+| **v4 + TEXT_SLACK** | **0% / 0%** | **1.1% / 0%** | **0 / 0** | **0 / 0** |
+
+- **Left short of full slack:** 2 sample texts (advanced_01 leaderboard) are boxed in by the CTA, and their fonts are at the floor. Both still survive 1 px.
+- **Short boxes:** v4 had 7 boxes on holdout shorter than their text block; the pass leaves none.
+- **No pill label wraps in today's output.** The risk is the fragile ones (52 of 91 in the samples), and the pass takes that to 0.
+- **Font change on same-pick cells:** 2 holdout texts shrink (mean −0.77%, at most −1.02%); no sample text changes size.
+- **Changes in v4 + TEXT_SLACK vs v4:** 180 text boxes widen with their ink in place, and 8 texts are drawn differently. No pill needed to grow.
+
+**A/B runs** (CPU, `ab/v4ts` vs `ab/v4` on holdout, `ab/v4ts_chl2` vs `ab/v4_chl2` on challenge2):
+
+| | Cells | Designs changed | Picks changed | Changed designs that render differently (768 px) | Gate failures | s / cell |
+|---|---|---|---|---|---|---|
+| holdout | 192 | 143 | 0 | 22 | 0 | 0.725 → 0.789 |
+| challenge2 | 623 | 304 | 0 | 42 | 0 | 1.037 → 1.058 |
+
+**Visual check** (`ab/_flaws.nosync/sheets/text_slack_{samples,ab}.png`: source, v4, v4ts, and a zoom on the changed pixels; the 3 samples at 300x250 plus the 12 cells with the most changed pixels). The samples at 300x250 render the same, with wider boxes. The visible changes are:
+- a line break moved, with the same line count ("When it / is gone" → "When it is / gone"; "Every mixed case / of Solstice" → "Every mixed case of / Solstice");
+- about 1% font shrinks;
+- 1 to 2 px ink shifts.
+
+None reads as better or worse. **Verdict: neutral to the eye and much more robust**, which makes it worth turning on. No judging is needed: the picks are unchanged, and the pixel changes are tiny.
+
+**Risks.**
+- The pass only guards against a box getting relatively narrower (glyphs rendering wider at scoring). If glyphs render narrower, a line could take the next word; that is less harmful, since the text still fits its box.
+- A rewrap moves a line break the source designer set: same line count, different break.
+- The shifted last resort moves centred ink off its centre line by up to 1.5 px.
+
+**Port to today's real engine.** The real engine (`chameleon/engine` as on the `stage1-three-node` branch; this research copy with no switches stands for it here) has the same fragility: 34% of sample texts and 16% of holdout texts. A minimal port:
+- copy `text_slack.py` into `engine/pipeline/layout/`;
+- replace its `polish.safe_margins` import with the two-line margin helper (polish.py doesn't exist there);
+- after `pick_best` in `resize_with_report`, call `best = text_slack.apply(source, target_canvas, plan, measurer, best)` (it never raises, and returns `best` itself when nothing changes).
+
+Everything else it uses already exists there: `geometry`, `place.floor_px`/`resize_text`, `normalize.finalize`, `gates.check_gates` and `TextMeasurer`. With that call, today's engine goes to 0.5% / 0% fragile, with 7 / 5 texts shrunk by about 1% and no pick changes.
+
+## Balance pass (bands, groups, leftover space) (2026-10-21)
+The teacher's critiques of v4's layouts (`v3L__vs__v3L_anch` and the other v3L/v4 pairs) keep naming three things the grader barely sees: **lopsided whitespace** ("the stack sits too high, with about 30px above the headline and about 75px of empty band below the button"), **bands that stop spanning** ("the dark header bar no longer spans the canvas. It is inset with cream gaps on the left and right") and **related pieces that drift apart** ("'Ships late June' has drifted far below the CTA, cut off from its button"). `CHAMELEON_BALANCE=1` (`engine/pipeline/layout/balance.py`, one hook at the end of `generate_candidates`, after polish) repairs them on every gate-passing candidate before grading, so `pick_best` chooses among the repaired versions. With the switch off the output is byte-identical (`tests/test_balance.py` checks golden hashes of the v4 engine on the 3 samples x 13 targets, taken from git HEAD e15fb0f before the pass existed). Nothing here is teacher-judged yet; CPU measurements only.
+
+**What it does** (the safe fallback and candidates that already fail a gate are left alone; each step is kept only if the candidate still passes every hard gate and no text ends below its role floor or its size before the pass):
+- **a. Bands span.** A shape or image (not the background) that spanned the source edge to edge on an axis (95% of it, or touching both edges) spans the target on that axis again. A rectangle or `cover` image stretches (the image crops); a `contain` image may grow at most 1.25x to span, if it fits. A band that touched both edges touches both again; one inset a little keeps its insets in proportion. A band that would newly cover a content piece it didn't hold in the source is left as it was.
+- **b. Groups stay together.** Two content pieces that sat close in the source (stacked or side by side, gap at most the smaller one's size along that axis and at most 8% of the side, overlapping across it by half the narrower one), now more than 1.5x their scaled source gap apart (and 3% of the short side more): the less important one moves toward the more important one, to the scaled source gap, along the axis they now stack on. Pairs with a photo are skipped (a photo moving off its caption is a re-layout, not a split group).
+- **c. Leftover space.** Per axis, the free-floating content block (every content piece except those spanning the axis, and small pieces, at most 6% of the source, that hugged an edge in the source: the logo top-left stays top-left; the headline's group always moves) sits in its lane (the canvas, narrowed by fixed pieces before or after it). If its margins are lopsided (the larger more than 2x the smaller and more than 6% of the axis apart) and the source's weren't lopsided the same way, the block shifts toward equal margins. Then, if the block leaves more than 25% of the safe area unused on the short axis, it grows uniformly about its centre by up to 1.15x (texts re-measured and re-wrapped if needed; the headline stays the largest text).
+- Every move carries the decorations sitting on the piece, never increases a piece's overlap with another (1.5% of the short side apart), keeps ink inside the v2 safe margin (or no closer than it already was), keeps a decoration that held a piece holding it, and never leaves a piece half on a decoration.
+
+**Thresholds** are taken from the critiques' own numbers and the brief, not fitted: 2x and 6% from "30px above, 75px below" on a 768 px render (2.5x, 6% of the side); 1.5x and 25% / 1.15x as proposed; 95% "spanning" with a 1% edge tolerance (the layer code's tolerance). Train and crello_dev were used only to check them: steps reverted by the gates (1 of about 1,700 kept steps), gate failures (none), and the contact sheets below. No sweep was run, because the detectors are proxies (the content-aware sizing lesson).
+
+**Detectors** (`dev/distill/balance_flaws.py`), validated against the teacher before any tuning. All 650 designs critiqued in `v3L__vs__v3L_anch`, `v3L__vs__v4p`, `v3L_chl2__vs__v3L_anch_chl2`, `v3L_chl2__vs__v4p_chl2` and `base_chl2__vs__v3L_chl2` were rebuilt with their variant's switches (all 650 match the judged design hash). Each critique was split into its A and B paragraphs, and keyword rules decide whether a paragraph names the flaw:
+
+| Detector | critiques naming it | fires there | other critiques | fires there | gap |
+|---|---|---|---|---|---|
+| margin_imbalance (content block lopsided, the source wasn't) | 160 | 38% | 490 | 25% | +13 pts |
+| empty_band (largest empty rectangle >= 25% of the canvas and >= source + 5 pts) | 235 | 36% | 415 | 16% | +19 pts |
+| band_broken (a source-spanning band, at least 2x longer than wide, no longer spans) | 11 | 55% | 639 | 8% | +47 pts |
+| group_split (a close source pair, no photo, now > 1.5x its scaled gap apart) | 233 | 54% | 417 | 37% | +17 pts |
+| for reference: edge (bisect_flaws) | 189 | 32% | 461 | 30% | +1 pts |
+
+- All four separate, but margin imbalance and group split only moderately: the teacher names two or three flaws per design, so "not named" doesn't mean "absent".
+- **empty_band** first measured the largest empty strip across the whole canvas. It did not separate on holdout (14% vs 13%), because a photo at the side keeps any full-width strip from being empty. The largest empty rectangle does (holdout 23% vs 11%, challenge2 40% vs 18%).
+- **band_broken** first counted any element touching both edges of an axis. On strip sources that flags products (90 px tall on a leaderboard), so a band must be at least 2x longer than wide. Every holdout critique that names a broken header bar (5, all c07) fires.
+
+**Before / after on the winners** (v4 → v4 + balance; caches `bal_{tr,dev,holdout,challenge2}_{v4,b1}` in `training-data/ab/_flaws.nosync/`):
+
+| Detector | train (60) | crello_dev (60) | holdout (192) | challenge2 (623) |
+|---|---|---|---|---|
+| margin_imbalance | 13% → 5% | 22% → 10% | 14% → 10% | 22% → 15% |
+| empty_band | 12% → 7% | 17% → 20% | 9% → 9% | 22% → 21% |
+| band_broken | 0% → 0% | 12% → 5% | 11% → 8% | 11% → 9% |
+| group_split | 52% → 43% | 20% → 8% | 46% → 33% | 31% → 19% |
+| edge crowding | 12% → 10% | 35% → 37% | 16% → 16% | 33% → 37% |
+| floating | 12% → 8% | 12% → 8% | 10% → 12% | 16% → 12% |
+| mixed alignment | 27% → 25% | 8% → 13% | 33% → 32% | 22% → 23% |
+| text too small | 12% → 12% | 7% → 7% | 27% → 27% | 11% → 11% |
+| fallback picked | 10.0% → 11.7% | 15.0% → 16.7% | 10.4% → 10.4% | 20.5% → 20.5% |
+| winner gate failures | 0 → 0 | 0 → 0 | 0 → 0 | 0 → 0 |
+
+- Edge crowding rises on real ads (challenge2 +4 pts). The new hits are photos and badges that bled off the source edge, stretched back to the edge by step a: deliberate bleeds that the edge detector can't tell from crowding.
+- Per candidate (train / crello_dev): 55% / 48% of gate-passing candidates change. Kept steps: band 42 / 117, group 386 / 153, shift or grow 541 / 386. Only 1 step was undone by the gates. The pass costs about 15-30 ms per cell.
+
+**Runs** (CPU only, 3 workers; compared by design hash):
+
+| Run | Changed picks | Same candidate, balanced | Different candidate wins | Fallback |
+|---|---|---|---|---|
+| `v4b` vs `v4` (holdout) | 76 / 192 | 50 | 26 | 20 → 20 |
+| `v4b_chl2` vs `v4_chl2` (challenge2) | 251 / 623 | 127 | 124 | 128 → 128 |
+
+- `v4_chl2` (the v4 switches on challenge2) is byte-identical to `v3L_anch_chl2`: 0 of 623 cells differ. Its `winners.jsonl` has 1,241 rows because another run wrote to the same folder at the same time. The duplicates have the same hashes, and `load_winners` keeps one row per cell.
+- Changes are spread over all 13 targets.
+- Engine time: holdout 0.72 → 0.99 s per cell (measured while another run shared the CPU), challenge2 1.04 → 0.98 s. The pass itself costs 15-30 ms per cell.
+
+**Official samples** (`eval_anchored rebuild --split samples`, 13 targets + 1600x400; sheets in `chameleon/output/balance_sheets/`): 12 of 42 picks change, none for level 2.
+- **Level 1.** Story is better: logo, headline and CTA form one group instead of three bands with a dead gap. YouTube is better: the headline is centred as in the source instead of left-flush. LinkedIn and 1600x400 are a toss-up: the headline and CTA are now stacked together, but the group sits right of an empty middle. Facebook cover is worse: a different bisection layout wins, and its CTA wraps to three lines beside the headline.
+- **Level 3.** Mostly pixel-level badge and ribbon pulls. Facebook cover is a toss-up: another cluttered bisection variant wins.
+
+**Honest visual verdict** (source | v4 | v4 + balance, against `rubric.md`; 16 train/crello_dev cells, 10 holdout cells, 3 header-bar holdout cells, 5 challenge2 edge cells, all changed sample cells, about 60 cells in all):
+- **Better on about 11.**
+  - Header bars span again: c07 story, linkedin and youtube, exactly the critiqued cells.
+  - "Ships late June" is back under its button, and the eyebrow sits with its headline (c07 story, a crello "EDUCATING KIDS:" post).
+  - A crello youtube thumbnail where a faithful anchored layout now beats a blown-up bisection one.
+  - A left stripe that spans the full height again, with a slightly larger block.
+- **About the same, or a toss-up, on about 45.** Small group pulls and shifts of a few pixels, inside layouts that were already fine or still broken (the Lima & Co pattern, the TRX banner).
+- **Worse on 4, all pick switches rather than the repair itself:**
+  - level 1 facebook cover;
+  - a train leaderboard → billboard (c20) where a bisection row with the logo dots between headline and subline beats the faithful reflow;
+  - a challenge2 story (cr2_06) where the proportional reflow, its yellow band now spanning, beats a bisection layout with a much larger headline;
+  - a crello linkedin banner that now goes to the uniform fit (a toss-up the teacher may like).
+- Hierarchy is never traded for fill: the pass never shrinks text and grows only uniformly. But because about half of the changed picks are a *different* candidate winning, the grader re-ranks, and that can reward a weaker layout whose band now spans.
+
+**Verdict.** The pass fixes exactly the flaws it targets: group splits −12 pts on holdout and challenge2, imbalance −4 to −12, broken bands −2 to −7, at no gate cost. Its in-place repairs look right. The risk is the pick reshuffle (26 / 124 different winners). What to judge: `v4` vs `v4b` (76 holdout cells) and `v4_chl2` vs `v4b_chl2` (251 cells). If the judge splits, a cheaper variant is to balance only the winner (after `pick_best`), which keeps every pick and only changes the 50 / 127 in-place cells.
+
+Commands (from `distil-research/chameleon/`, `PYTHONPATH=$PWD`, CPU only, ≤ 3 processes):
+- `python -m dev.distill.balance_flaws rebuild-judged --name bal_judged` then `validate --name bal_judged`
+- `python -m dev.distill.eval_anchored rebuild --name bal_tr_b1 --split train --cells 60 --env <v4 switches> --env CHAMELEON_BALANCE=1` (likewise `crello_dev`, `holdout`, `challenge2`, `samples`)
+- `python -m dev.distill.balance_flaws rates --name bal_tr_v4 --name bal_tr_b1`
+- `python -m dev.distill.balance_flaws sheet --name bal_dev_v4 --name bal_dev_b1 --out ../training-data/ab/_flaws.nosync/sheets/balance/dev.png`
+
+### Balance pass judged (2026-10-21): leaning better, not adopted
+`v4` vs `v4b` (holdout): 18-12 (30 unsure), p = 0.36. `v4_chl2` vs `v4b_chl2` (real ads): 26-19 (35 unsure), p = 0.37.
+Split by kind of change: same candidate repaired 11-2 (holdout) / 7-8 (real ads); a different candidate wins 7-10 / 19-11. The two sets disagree, so balance stays off (committed, `CHAMELEON_BALANCE=1`). Re-test once the picker is improved: half its changes are re-picks, which depend on the grader choosing well.
+
+### Text robustness adopted (2026-10-21)
+`CHAMELEON_TEXT_SLACK=1` changes no picks and takes text that re-wraps at 1 px narrower from 32% / 13% (samples / holdout) to 0%. Adopted without a judged A/B: its visible changes are line-break moves and ~1% font shrinks.

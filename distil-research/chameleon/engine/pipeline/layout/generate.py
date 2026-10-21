@@ -462,4 +462,7 @@ def generate_candidates(source: dict, target: dict, plan: PriorityPlan, measurer
     from engine.pipeline.layout import polish
     if polish.enabled():  # CHAMELEON_POLISH=1: v2's detail fixes on every candidate (never raises)
         candidates = polish.polish_all(source, target, plan, measurer, candidates)
+    from engine.pipeline.layout import balance
+    if balance.enabled():  # CHAMELEON_BALANCE=1: bands span, groups together, leftover space balanced (never raises)
+        candidates = balance.balance_all(source, target, plan, measurer, candidates)
     return candidates
