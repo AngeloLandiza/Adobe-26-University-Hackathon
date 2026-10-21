@@ -5,6 +5,8 @@ top K by geometry (rendering is the expensive step). Only the top K can
 win. If no real candidate survives, the safe fallback is returned.
 """
 
+import os
+
 from engine.pipeline.grading.gates import check_gates
 from engine.pipeline.grading.metrics import geometry_metrics, geometry_total
 from engine.pipeline.grading.pixels import pixel_metrics, pixel_total
@@ -42,6 +44,19 @@ def pick_best(source: dict, target: dict, plan: PriorityPlan, candidates: list[C
     if not any(not cand.is_fallback for _, cand, _ in passing):
         fallback = next((c for c in candidates if c.is_fallback), None)
         return fallback or (passing[0][1] if passing else candidates[0]), reports
+
+    if os.environ.get("CHAMELEON_PICKER") == "rules":
+        # Research picker: the rulebook mined from the teacher's critiques
+        # (layout/strategies/rules.py) predicts its preference better than the
+        # weighted metrics. Every gate-passing candidate competes; the grader's
+        # geometry total breaks ties.
+        from engine.pipeline.layout.strategies import rules
+        ranked = []
+        for index, cand, geo in passing:
+            pen, _ = rules.penalty(source, cand.design, plan, measurer)
+            reports[index].total = geo
+            ranked.append((pen, -geo, cand.candidate_id, cand))
+        return min(ranked, key=lambda r: r[:3])[3], reports
 
     scored = []
     for index, cand, geo in sorted(passing, key=lambda p: (-p[2], p[1].candidate_id))[:top_k]:
