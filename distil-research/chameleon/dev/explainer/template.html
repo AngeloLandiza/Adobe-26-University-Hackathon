@@ -82,7 +82,7 @@ button:focus-visible, .switch input:focus-visible + span { outline: 2px solid va
 .el { position: absolute; transition: left .85s cubic-bezier(.65,0,.25,1), top .85s cubic-bezier(.65,0,.25,1), width .85s cubic-bezier(.65,0,.25,1), height .85s cubic-bezier(.65,0,.25,1), font-size .85s cubic-bezier(.65,0,.25,1), border-radius .85s, opacity .5s, letter-spacing .85s; }
 .el.img { background-repeat: no-repeat; background-position: center; }
 .el.missing { background: repeating-linear-gradient(45deg, rgba(255,255,255,.18) 0 6px, transparent 6px 12px); outline: 1px dashed rgba(255,255,255,.5); }
-.el.txt { white-space: pre-wrap; overflow-wrap: break-word; line-height: 1.2; }
+.el.txt { white-space: pre; line-height: 1.2; } /* lines are the official converter's word wrap; the browser never re-wraps */
 .real { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity .35s; pointer-events: none; }
 .real.on { opacity: 1; }
 .chip { display: inline-block; font: 500 0.72rem var(--f-mono); padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--blade) 18%, transparent); color: var(--ink); white-space: nowrap; }
@@ -235,7 +235,7 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
     </ul>
   </section>
 
-  <footer>Results from the CHAMELEON research sandbox (distil-research/), October 2026. The demo redraws each layout in your browser from the engine's output JSON, so text can wrap slightly differently; switch on the official renderer's image to see exactly what the judge sees.</footer>
+  <footer>Results from the CHAMELEON research sandbox (distil-research/), October 2026. The demo redraws each layout in your browser from the engine's output JSON, using the official converter's line breaks (words are never split); switch on the official renderer's image to see exactly what the judge sees.</footer>
 </div>
 
 <script>
@@ -259,11 +259,11 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
   const fam = (f) => /serif/i.test(f || "") && !/sans/i.test(f || "") ? "SolSerif, Georgia, serif" : "SolSans, 'IBM Plex Sans', system-ui, sans-serif";
   const bold = (w) => /bold|[6-9]00/i.test(String(w || "")) ? 700 : 400;
   function textHTML(e) {
-    const runs = e.style_runs || [];
-    if (!runs.length) return esc(e.content);
+    const runs = e.style_runs || [], text = e.wrap ?? e.content;
+    if (!runs.length) return esc(text);
     let out = "", cur = null, buf = "";
     const colorAt = (i) => { let c = null; for (const r of runs) if (i >= (r.start || 0) && i <= (r.end ?? 1e9) && r.color) c = r.color; return c; };
-    [...e.content].forEach((ch, i) => { const c = colorAt(i); if (c !== cur) { if (buf) out += cur ? `<span style="color:${cur}">${esc(buf)}</span>` : esc(buf); buf = ""; cur = c; } buf += ch; });
+    [...text].forEach((ch, i) => { const c = colorAt(i); if (c !== cur) { if (buf) out += cur ? `<span style="color:${cur}">${esc(buf)}</span>` : esc(buf); buf = ""; cur = c; } buf += ch; });
     if (buf) out += cur ? `<span style="color:${cur}">${esc(buf)}</span>` : esc(buf);
     return out;
   }
@@ -316,7 +316,10 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
       n.style.opacity = e.opacity ?? 1;
       n.style.transform = e.rotation ? `rotate(${e.rotation}deg)` : "";
       if (e.type === "shape") n.style.borderRadius = e.shape_type === "ellipse" ? "50%" : (e.corner_radius || 0) * k + "px";
-      if (e.type === "text") { n.style.fontSize = e.font_size * k + "px"; n.style.letterSpacing = (e.letter_spacing || 0) * k + "px"; }
+      if (e.type === "text") {
+        n.style.fontSize = e.font_size * k + "px"; n.style.letterSpacing = (e.letter_spacing || 0) * k + "px";
+        const h = textHTML(e); if (n._h !== h) { n.innerHTML = h; n._h = h; }
+      }
     }
     realimg.src = cur.png;
     realimg.classList.toggle("on", state.real);

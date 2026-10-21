@@ -467,3 +467,10 @@ Commands (from `distil-research/chameleon/`, `PYTHONPATH=$PWD`, CPU only, ≤ 3 
 - `python -m dev.distill.eval_anchored sheet --base A --name B --out F.png [--pick won]`
 - `python -m dev.distill.eval_anchored changed --run ../training-data/ab/v3L_anch --ref ../training-data/ab/v3L`
 - Detector rates: `python -m dev.distill.layer_flaws rates --name anc_tr_base --name anc2_tr`
+
+### Anchored retargeting judged (2026-10-21): new best engine
+`CHAMELEON_STRATEGIES=bisection,anchored` on top of v3L, vs v3L:
+- **Holdout: 46-11 (6 unsure), p < 0.001**, 63 changed cells; ship-readiness 2.22 -> 2.80. Wins in every slice with enough cells (wide 17-2, tall 13-5, landscape 6-0, very tall 5-1, square 4-2; strip 1-1).
+- **Real ads (challenge2): 58-21 (21 unsure), p < 0.001**, 100 of 168 changed cells; ship-readiness 1.80 -> 2.17. Square 11-1, strip 14-1, very tall 11-2; weakest slice wide 11-10.
+
+**Best engine now: v4 = v3L + anchored** (`CHAMELEON_STRATEGIES=bisection,anchored CHAMELEON_BISECT_V2=1 CHAMELEON_HIER_LOCK=1 CHAMELEON_NEAR_FIT=1 CHAMELEON_LAYERS=1`). Keeping the original composition while filling the new canvas is what the judge rewards most.
