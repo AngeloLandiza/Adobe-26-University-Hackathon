@@ -3,19 +3,22 @@
 A candidate that fails any gate is discarded. The gates mirror the official
 structural checks plus the rules RULES.md states, with tighter tolerances.
 `check_gates` never raises: geometry gates skip elements that already
-failed the schema gate.
+failed the schema gate. G10_layers (and G9's exemption for frames the source
+already draws over an element) apply only with CHAMELEON_LAYERS=1
+(layout/layer_groups.py); with it off the gates are unchanged.
 """
 
 import math
 
 from engine.pipeline.geometry import element_box, inside_canvas, rotated_aabb
+from engine.pipeline.layout import layer_groups
 from engine.pipeline.layout.normalize import EDITABLE
 from engine.pipeline.occlusion import contains, is_covered, paint_order
 from engine.pipeline.textmeasure import TextMeasurer
 from engine.pipeline.types import PriorityPlan
 
 GATES = ("G1_ids", "G2_schema", "G3_canvas", "G4_in_canvas", "G5_aspect", "G6_frozen",
-         "G7_text_fit", "G8_groups", "G9_hidden")
+         "G7_text_fit", "G8_groups", "G9_hidden", "G10_layers")
 ASPECT_TOL = 0.02   # official limit is ~5%
 GROUP_TOL = 0.5     # px
 
@@ -50,8 +53,9 @@ def _schema_ok(el, original: dict | None) -> bool:
     return el["type"] != "text" or el["font_size"] >= 1
 
 
-def _hidden_ids(elements: list[dict], plan: PriorityPlan) -> list[str]:
-    """Elements fully inside an opaque, non-layer element painted after them."""
+def _hidden_ids(elements: list[dict], plan: PriorityPlan, allowed: frozenset = frozenset()) -> list[str]:
+    """Elements fully inside an opaque, non-layer element painted after them,
+    except (element, cover) pairs in `allowed`."""
     def layer(el: dict) -> bool:
         try:
             return plan.unit_for_element(el["id"]).role in _LAYER_ROLES
@@ -60,7 +64,8 @@ def _hidden_ids(elements: list[dict], plan: PriorityPlan) -> list[str]:
 
     order = paint_order(elements)
     covers = [el for el in elements if not layer(el)]
-    return [el["id"] for el in elements if is_covered(el, covers, order)]
+    return [el["id"] for el in elements
+            if is_covered(el, [c for c in covers if (el["id"], c["id"]) not in allowed] if allowed else covers, order)]
 
 
 def check_gates(source: dict, design: dict, target: dict, plan: PriorityPlan, measurer: TextMeasurer) -> list[str]:
@@ -113,6 +118,11 @@ def check_gates(source: dict, design: dict, target: dict, plan: PriorityPlan, me
         if shape is not None and label is not None and not contains(element_box(shape), element_box(label), GROUP_TOL):
             failed.add("G8_groups")
 
-    if _hidden_ids(good, plan):
+    # CHAMELEON_LAYERS=1 (layout/layer_groups.py): a frame image the source already drew over an
+    # element may stay over it; and a container kept for this target must still hold its contents.
+    layers = layer_groups.enabled()
+    if _hidden_ids(good, plan, layer_groups.source_cover_pairs(source) if layers else frozenset()):
         failed.add("G9_hidden")
+    if layers and layer_groups.broken_containers(source, {"elements": good}, plan, target):
+        failed.add("G10_layers")
     return [g for g in GATES if g in failed]

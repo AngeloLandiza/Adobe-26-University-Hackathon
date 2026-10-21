@@ -1,0 +1,8 @@
+{
+  "name": "b2_layers",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection",
+    "CHAMELEON_BISECT_V2": "1",
+    "CHAMELEON_LAYERS": "1"
+  }
+}

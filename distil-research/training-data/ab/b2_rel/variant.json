@@ -1,0 +1,8 @@
+{
+  "name": "b2_rel",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection",
+    "CHAMELEON_BISECT_V2": "1",
+    "CHAMELEON_RELPRESERVE": "1"
+  }
+}

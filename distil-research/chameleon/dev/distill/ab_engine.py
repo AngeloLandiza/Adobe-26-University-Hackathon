@@ -26,7 +26,9 @@ at least MIN_SLICE decided cells, of B's win share.
 `--split challenge2` does the same for the real ads converted from Crello
 (training-data/corpus/challenge2.nosync/, make_real_challenge.py), with their
 rasters merged into the assets folder (assets.CHALLENGE2_FOLDERS). Run it
-under its own --name too (e.g. base_chl2).
+under its own --name too (e.g. base_chl2). `--split crello_dev` runs the
+development Crello ads (training-data/corpus/crello_dev.nosync/,
+make_crello_dev.py) the same way, with assets.CRELLO_DEV_FOLDERS.
 
 Every step is resumable (a rerun skips cells already done) and shardable.
 """
@@ -53,7 +55,7 @@ SOURCES_SUBDIR = "_sources.nosync"  # challenge ads' source renders, under the A
 NEAR_SOURCE = 0.02                  # same rule as pool.py: a target this close to the source aspect is skipped
 MIN_SLICE = 5                       # a slice needs this many decided cells to count for the generalisation score
 FAMILIES = ("solstice", "offbrand", "challenge", "crello")
-EVAL_SPLITS = ("challenge", "challenge2")  # source ads not in the pool: cells built from targets.json
+EVAL_SPLITS = ("challenge", "challenge2", "crello_dev")  # source ads not in the pool: cells built from targets.json
 
 
 # ---------------------------------------------------------------- helpers
@@ -459,7 +461,8 @@ def main(argv=None) -> int:
     r = sub.add_parser("run")
     r.add_argument("--name", required=True)
     r.add_argument("--env", action="append", default=[])
-    r.add_argument("--split", default="holdout", choices=["train", "holdout", "all", "challenge", "challenge2"])
+    r.add_argument("--split", default="holdout", choices=["train", "holdout", "all", "challenge", "challenge2",
+                                                          "crello_dev"])
     r.add_argument("--cells", type=int, default=None)
     r.add_argument("--seed", type=int, default=0)
     r.add_argument("--shard", default=None)
@@ -490,9 +493,13 @@ def main(argv=None) -> int:
             if args.split == "challenge2":
                 from dev.distill.assets import CHALLENGE2_FOLDERS
                 folders = CHALLENGE2_FOLDERS
+            elif args.split == "crello_dev":
+                from dev.distill.assets import CRELLO_DEV_FOLDERS
+                folders = CRELLO_DEV_FOLDERS
             chl = load_corpus(args.split)
             if not chl:
-                print(f"no {args.split} ads found (challenge2: run python -m dev.distill.make_real_challenge)")
+                print(f"no {args.split} ads found (challenge2: run python -m dev.distill.make_real_challenge; "
+                      "crello_dev: python -m dev.distill.make_crello_dev)")
                 return 1
             cells = challenge_cells(chl, target_list, args.cells, args.seed)
             print(f"wrote {write_sources(chl, folders=folders)} new {args.split} source renders to {AB_ROOT / SOURCES_SUBDIR}")

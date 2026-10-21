@@ -6,6 +6,7 @@ from engine.pipeline.assets import default_assets_dir
 from pathlib import Path
 
 from engine.pipeline.geometry import Box, element_box, overlap_area
+from engine.pipeline.layout import layer_groups
 from engine.pipeline.types import Unit
 from renderer.converter.assets import asset_path
 
@@ -105,9 +106,12 @@ def build_units(source: dict, assets_dir: str | Path | None = None) -> list[Unit
         units.append(unit)
 
     by_id = {el["id"]: el for el in elements}
+    # CHAMELEON_LAYERS=1: every layer of the bottom full-bleed stack (a colour field, then a cover
+    # photo or pattern over it) is background, not just the lowest (layout/layer_groups.py).
+    stack = layer_groups.background_stack(elements, width, height) if layer_groups.enabled() else set()
     for unit in units:
         members = [by_id[i] for i in unit.element_ids]
-        if unit.kind == "single" and _is_background(members[0], elements, width, height):
+        if unit.kind == "single" and (_is_background(members[0], elements, width, height) or members[0]["id"] in stack):
             unit.flags.append("background")
             unit.role = "background"
         if any(m["type"] == "image" and asset_path(str(assets_dir), m.get("asset_id")) is None for m in members):

@@ -142,3 +142,142 @@ Most CTA complaints are about where the CTA sits (jammed, floating) or that it i
 v2 is a polish pass, not a step change. A teacher-judged A/B (`bisect` vs `bisect2`) is the only way to know whether it wins.
 
 Commands: `python -m dev.distill.bisect_flaws validate | rates --name X --name Y | sheet --name X --name Y --out F.png | rebuild --name X --env ... --split judged|train|holdout|challenge`. Caches are in `training-data/ab/_flaws.nosync/` (git-ignored).
+
+## Experiments from prior work (2026-10-21)
+Three ideas from `docs/prior-work.md` (items 1, 2 and 4 of its experiment list), each behind its own switch, all on top of bisection v2. With a switch off, the output is byte-identical to before (`tests/test_prior_experiments.py` checks this on the 3 samples x 13 targets). Nothing here has been teacher-judged yet; these are CPU measurements only. Tools: `python -m dev.distill.prior_experiments rebuild | relval | nearfit | changed | summary`.
+
+**1. Hierarchy lock (`CHAMELEON_HIER_LOCK=1`, in bisection).** Keep the source's text hierarchy. Example: if the CTA label was half the headline's size in the original, it may not become 0.9x the headline in the resize.
+- Other text may keep at most its source size ratio to the headline (was 1.3x that), and at most 0.75x the placed headline (was 0.9x). Tighter caps by role: CTA label 0.6x, badge 0.5x, legal 0.45x.
+- A CTA or badge pill grows at most 1.25x as much as the headline did (both measured against the source). Past that, the label sits in a compact pill.
+- Readability floors still beat every cap. Our critiques complain about a CTA that is too small (41) or badly placed (59) more often than oversized (19), so the CTA is never shrunk under its 11 px floor to obey a cap.
+- Where a cap would push a role under its floor (on strips the headline sits at its 14 px floor and the CTA at 11 px), the engine tries to raise the headline instead (to 11 / 0.6 = 18.3 px). It keeps that layout only if no other text loses legibility; otherwise it keeps the plain one. On crowded strips this rarely succeeds, so the lift seldom applies.
+
+**2. Near-aspect source fit (`CHAMELEON_NEAR_FIT=1`, in `pick_best`).** The candidate already exists: the safe fallback is the whole original scaled uniformly and centred, with the background filling the new canvas (solid shapes stretched, cover images cropped). It always competes, but it rarely wins on the grader. So the switch changes the *policy*: when the source and target aspects are within 1.35x of each other (e.g. 1080x1080 → 1080x1350), the fallback wins unless the best re-layout beats its grader total by more than **0.10**.
+- **Why 0.10:** in the train judgments, fallback-vs-layout pairs on near-aspect cells went 12–2 for the fallback. The two it lost were the only ones where the other layout led by 0.16. Every margin from 0.05 to 0.15 matches all 14 train verdicts; 0.10 is the middle.
+- **How often it triggers:** 22 of 192 holdout cells are near-aspect. The policy changed the pick on 15 of them (fallback picked in 16, against 1 before).
+
+**3. Relation preservation (`CHAMELEON_RELPRESERVE=1`, in `pick_best`; `engine/pipeline/grading/relations.py`).** A score for how many of the source's pairwise relations a candidate keeps, computed on the content units it keeps (backgrounds, decorations and demoted units are left out). Three kinds of relation:
+- **Size order:** text against text by font size, image against image by area. Example: "the CTA is smaller than the headline".
+- **Reading order:** "the logo comes before the headline". An above-relation may become a left-of relation (a stack turning into a row on a strip keeps the order).
+- **Shared edges:** "these two texts share a left edge". If a stacked pair becomes side by side, left/centre/right maps to top/middle/bottom.
+
+Every candidate's total loses w x (1 − score). w comes from `CHAMELEON_RELPRESERVE_W`; the default, 0.15, was chosen on train judgments only.
+
+**Validation before tuning: does the score agree with the teacher?**
+
+| Judged pairs | Grader total alone | Relation score alone | Grader − 0.15 x (1 − relation) |
+|---|---|---|---|
+| Train: 466 pairs of candidates within one cell (used to choose w) | 59.7% | 62.7% (of 370 non-tied) | **68.0%** |
+| Judged A/B cells, base vs bisect (192 rows, holdout + challenge; check only) | 64.6% | **71.1%** (of 180 non-tied) | 67.7% |
+| Same, confidence ≥ 2 (178 rows) | 64.6% | **73.1%** | 68.0% |
+
+The relation score beats the grader in both sets. Blending it in adds about 3 to 8 points. This is the first hand-set term that predicts the teacher better than the grader on pairs it wasn't tuned on. On the A/B cells a larger w scored higher still (74% at w = 0.3–0.5), but w was fixed on train.
+
+**Train measurements** (60 train cells, bisection + v2 baseline; detector rates from `bisect_flaws`):
+
+| | v2 baseline | + hier lock | + near fit | + relation |
+|---|---|---|---|---|
+| Picks changed vs baseline | – | 24 | 3 | 20 |
+| Bisection's share of picks | 75% | 70% | 70% | 57% |
+| Fallback picked | 5 | 5 | 8 | 6 |
+| Seconds per cell | 0.67 | 0.74 | 0.64 | 0.64 |
+| Final designs failing gates | 0 | 0 | 0 | 0 |
+| Bisection candidates passing gates | 177/177 | 178/178 | 177/177 | 177/177 |
+| CTA competing (detector) | 38% | 38% | 38% | 40% |
+| Edge crowding | 8% | 8% | 8% | 13% |
+| Decoration orphaned | 7% | 8% | 7% | 13% |
+| Mixed alignment | 10% | 10% | 10% | 15% |
+| Squash | 2% | 2% | 2% | 5% |
+| Legal blown up | 8% | 8% | 7% | 5% |
+
+The CTA detector doesn't move under the lock. It fires mostly where the *source* already had a big CTA (CTA/headline ratio 0.5–0.6, or a wide pill), which the lock deliberately keeps, or where a template rather than bisection won. Where bisection won, the CTA's ratio to the headline dropped modestly (for example 0.45 → 0.35, 0.46 → 0.40).
+
+**Holdout runs** (192 cells each, CPU only, compared with `ab/bisect2` by design hash; no gate failures in any run):
+
+| Run | Picks that differ from bisect2 | Notes |
+|---|---|---|
+| `b2_hier` | **100 of 192** | 57 are the same bisection variant with re-sized text; 7 moved from bisection to a template. 0.75 s per cell (0.70 before). |
+| `b2_nearfit` | **15 of 192** | All on near-aspect cells (15 of 22); 13 replace a bisection layout with the fallback. |
+| `b2_rel` | **72 of 192** | 34 move from bisection to a template or the fallback. Fallback picked in 15 cells (3 before), 12 of them *not* near-aspect. |
+
+**Honest visual verdict** (contact sheets of original | v2 | experiment, 12 changed train cells each, harsh rubric, viewed only):
+- **Hierarchy lock:** mostly subtle. The headline is a bit bigger and the CTA pill and subcopy a bit smaller (text-only half page, a large leaderboard, a wide skyscraper); about 3 of 12 look better, about 8 the same. One is clearly worse: a leaderboard flipped to a row template whose CTA pill now competes with a one-line headline. It does nothing for the crowded strips, where the floors bind and the lift seldom fits.
+- **Near fit:** 3 changed cells. In 2 of them the fallback is clearly closer to a designer's version: a faithful, clean, smaller copy instead of a cramped re-layout with the steps out of order. The third is a toss-up: the shrink leaves the headline and legal small on a half page. This is consistent with the teacher's earlier 34–3 for the shrink where it was picked.
+- **Relation preservation:** mixed. About 3 of 12 are better: a more faithful reading order, and a reflow that keeps the source arrangement of a cover. About 4 are worse, because the penalty pulls picks from bisection back to templates, which bring their own flaws: a giant squashed oval decoration in two portrait cells, and a headline squeezed into a narrow column. The rest are about the same. The detector rates above show the same thing: edge, orphan, alignment and squash all rise.
+
+**What to judge next (in order):** `bisect2` vs `b2_nearfit` (15 cells, cheap, most likely to win); `bisect2` vs `b2_rel` (72 cells; the validation is the strongest evidence of the three, but the visual check and the detectors are mixed); `bisect2` vs `b2_hier` (100 cells, mostly small text-size changes, so expect many ties).
+
+## Layer preservation (real ads) (2026-10-21)
+On the 50 real Crello ads (`challenge2`), bisection v2 scores about 1.85 out of 5 against about 2.5 on our own ads. The teacher's critiques keep naming the same thing: **real ads are layered, and the engine treats every element as a separate piece.** It pulls copy out of the card, band, label or heart it sat in and leaves the empty shape stranded. It shrinks a full-bleed photo or pattern into a small patch. It places text on busy parts of a photo it wasn't on. `CHAMELEON_LAYERS=1` makes the engine keep those layers. It is off by default; with it off, the output is byte-identical (`tests/test_layers.py` checks golden hashes on the 3 samples).
+
+**Words used here.**
+- A **container** is a shape or image whose box holds one or more pieces of content, with the content drawn on top of it. Examples: a white card with a headline and a button on it; a red band with one line of copy; a circle with a price inside.
+- The **background layer** is the stack of full-bleed elements at the bottom of the ad. For example: a flat colour, with a cover photo over it, with a tint over that.
+
+**What it does** (`engine/pipeline/layout/layer_groups.py`, with small hooks in bisection, `priority/units.py` and `grading/gates.py`):
+- **Background:** every element of the bottom full-bleed stack is background, not just the lowest one. Before, a full-canvas photo over a colour field became the "hero image", and the layout shrank it into a cell. Now every strategy re-fits it full-bleed. A `cover` photo crops to the new canvas. A `contain` raster (a pattern, or a photo the converter didn't mark as cover) must keep its proportions by the rules, so it is fitted as large as the canvas allows.
+- **Containers move as one unit.** Bisection places the container and everything on it in one cell, then lays the contents out *inside* the container, using the source's padding scaled with the text.
+  - A rectangle (or a cover image) stretches to wrap its contents. If it ran off a canvas edge in the source, it is extended to that edge again, so a band stays a band.
+  - An image or a round shape keeps its proportions (a heart stays a heart), and the contents are laid out in its box.
+  - A frame image drawn *over* a photo counts as a container too.
+  - Containers inside containers nest.
+- **Too small to read:** a fixed-proportion container that can't hold its text at 1.2x the readability floor on the target canvas is not kept as a group for that target. A frame round the whole ad on a 320x50 strip is an example. Its contents are then laid out as separate units.
+- **Gates (only with the switch on):**
+  - G9 ("nothing hidden") now lets an element stay under an image that the source already drew over the whole of it. A frame raster round a photo would otherwise count as hiding the photo.
+  - A new gate, `G10_layers`, rejects any candidate (from any strategy) in which a container kept for that target no longer holds everything it held in the source.
+  - The general overlap and hidden rules are otherwise unchanged.
+
+**Development data: `crello_dev`.** These are 60 more Crello ads, built with challenge2's converter and quality gate by `dev/distill/make_crello_dev.py`. They share no design family with challenge2. Like challenge2, they are gitignored (`training-data/corpus/crello_dev.nosync/`). Load them with `load_corpus("crello_dev")` or `ab_engine run --split crello_dev`. Selection favoured layered ads but kept 18 simple ones:
+- 42 are layered: 34 have at least one container, and 29 have a photo or pattern in the background layer.
+- There are 44 top-level containers (8 stretching, 36 fixed-proportion, 9 nested).
+- In the pool of 214 eligible families, 86% are layered.
+
+All development (thresholds, the pruning rule, the gate) was done on crello_dev and the synthetic train split. Holdout and challenge2 were run once, at the end, only to measure.
+
+**Detectors** (`dev/distill/layer_flaws.py`; measured on the winning layout, against its source):
+- **Container emptied:** a container no longer holds any of its content (each piece less than half inside it).
+- **Container split:** a container holds some of its content but not all.
+- **Background shrunk:** a background-layer element covered 90% or more of the source but covers less than 90% of the target. *Avoidable* counts only elements that could have filled the target.
+- **Text newly on a busy area** or **text newly below 3:1 contrast:** measured on a render without the text, the same way the corpus quality gate measures it.
+
+| Detector (share of cells) | crello_dev 743: v2 → v2+layers | train 60: v2 → v2+layers | holdout 192: v2 → v2+layers | challenge2 623: v2 → v2+layers |
+|---|---|---|---|---|
+| Container emptied | 38% → 19% | 12% → 3% | 14% → 0% | 38% → 16% |
+| Container split | 6% → 0% | 3% → 3% | 1% → 0% | 4% → 0% |
+| Background shrunk (all / avoidable) | 10% / 2% → 8% / 0% | 0% → 0% | 0% → 0% | 22% / 0% → 22% / 0% |
+| Text newly on a busy area | 11% → 6% | 2% → 2% | 2% → 3% | 9% → 8% |
+| Text newly below 3:1 contrast | 17% → 10% | 0% → 0% | 0% → 1% | 11% → 9% |
+| Fallback picked | 12.9% → 17.4% | 8.3% → 10.0% | 1.6% → 3.6% | 17.7% → 25.4% |
+
+Notes on the table:
+- **Background shrunk:** what remains is all `contain` rasters on a canvas of a different shape. The aspect rule forbids filling the canvas with those, so none of it was avoidable.
+- **Emptied containers left over:** these are containers that were judged too small to keep as a group on that target.
+- **Other detectors:** the bisection flaw detectors (`bisect_flaws.py`) barely move. On holdout, orphaned decorations fall from 30% to 21%. Text too small is 32% → 34% on holdout and 14% → 14% on challenge2. Floating pieces are 6% → 9% on holdout.
+- **Gates and speed:**
+  - 98.6% (crello_dev) to 100% (holdout, challenge2) of bisection's candidates pass the hard gates.
+  - No winning design fails a gate. Before, 4 challenge2 winners (all fallbacks) failed G9; now none does.
+  - Engine time is about the same, 0.6 to 0.8 s per cell.
+
+**Changed picks** (`design_hash` by cell): 66 of 192 holdout cells differ from `ab/bisect2` (run `ab/b2_layers`), and 255 of 623 challenge2 cells differ from `ab/bisect2_chl2` (run `ab/b2_layers_chl2`). The detector caches re-ran every cell, and their designs match those runs exactly. Nothing has been judged yet.
+
+**Honest visual verdict** (16 changed crello_dev cells, source | v2 | v2+layers, against `rubric.md`; plus about 30 cells viewed while developing):
+- **Clearly better on about half.**
+  - Cards, bands and labels keep their copy. Before, the shape was left empty and the copy floated elsewhere.
+  - A full-width band stays full-width with its line of text.
+  - A circle or blob keeps its caption, and frames stay round their photo.
+  - A white card keeps the headline, the list and the price together.
+- **About the same on a quarter.**
+- **Worse on about a quarter.** Mostly these are cells where the engine now picks the uniformly shrunk original (fallback) or the proportional reflow, because the grader prefers it to the layered re-layout:
+  - on a near-square target that is a fair answer;
+  - on a strip (320x50) or a half page it is a small, hard-to-read ad.
+  - A few layered layouts are also awkward, such as a big fixed-proportion box holding only a tiny caption.
+
+**Risk:** the fallback share rises, by about 8 points on challenge2. The stranding fix is real, but whether it wins overall depends on those fallback cells. The next step is a teacher-judged A/B (`bisect2` vs `b2_layers`, and `bisect2_chl2` vs `b2_layers_chl2`).
+
+Commands (from `distil-research/chameleon/`, `PYTHONPATH=$PWD`, CPU only):
+- `python -m dev.distill.make_crello_dev`
+- `python -m dev.distill.layer_flaws rebuild --name X --split crello_dev|train|holdout|challenge2 --env ...`
+- `python -m dev.distill.layer_flaws rates --name X --name Y`
+- `python -m dev.distill.layer_flaws sheet --name X --name Y --out <a .nosync folder>/sheet.png`
+
+The caches and contact sheets are in `training-data/ab/_flaws.nosync/` (gitignored).

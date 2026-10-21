@@ -49,6 +49,20 @@ validation: dev/distill/bisect_flaws.py):
   parked as a fragment; one that can't is parked only where no copy ends up
   half on it (each corner, then smaller), else the v1 way.
 
+Hierarchy lock (CHAMELEON_HIER_LOCK=1; off by default, output unchanged
+when off) keeps the source's text hierarchy (docs/prior-work.md, change 1):
+- other text keeps at most its source size ratio to the headline
+  (LOCK_RATIO_SLACK) and at most LOCK_HIERARCHY_CAP of the placed headline,
+  with tighter caps by role (ROLE_CAPS: CTA label 0.6, badge 0.5, legal
+  0.45); floors still win over caps;
+- a CTA or badge pill grows at most PILL_GROWTH x the headline's scale (both
+  relative to the source); past that its label is set in a compact pill;
+- where a cap would sit under a role's floor (strips: CTA floor 11 px vs a
+  14 px headline), the headline is raised instead (its floor becomes
+  floor / cap of the subordinate roles present, legal excepted), if the
+  layout still gives every main item its floor that way; otherwise the
+  headline keeps its own floor.
+
 Variants: cut order (`rank`: cut next to the most important item so it gets
 its own cell early; `balanced`: cut where the value halves), margin 0.04 /
 0.07, direction (`long`: as above; `flow`: the first cut follows the canvas's
@@ -110,9 +124,22 @@ FRAME_SHARE = 0.3          # a decoration covering this share of a content unit 
 ALIGN_EPS = 0.5            # px: anchors this close already share an axis
 ROUND_SHAPES = ("ellipse", "circle")
 
+# -- hierarchy lock (CHAMELEON_HIER_LOCK=1) ----------------------------------------
+LOCK_ENV = "CHAMELEON_HIER_LOCK"
+LOCK_HIERARCHY_CAP = 0.75  # no other text past this share of the headline's size ...
+LOCK_RATIO_SLACK = 1.0     # ... nor past its source size ratio to the headline
+ROLE_CAPS = {"cta": 0.6, "subheadline": 0.75, "badge": 0.5, "legal": 0.45}  # x the placed headline size
+PILL_GROWTH = 1.25         # a CTA/badge pill's scale at most this x the headline's (both vs the source)
+PILL_ROLES = ("cta", "badge")
+LIFT_EXEMPT = ("legal",)   # fine print keeps its floor without raising the headline
+
 
 def v2_enabled() -> bool:
     return os.environ.get(V2_ENV) == "1"
+
+
+def lock_enabled() -> bool:
+    return os.environ.get(LOCK_ENV) == "1"
 
 
 def margins(params: dict, width: float, height: float, v2: bool) -> tuple[float, float]:
@@ -201,6 +228,35 @@ class _Model:
         self.head_font: float | None = None  # the headline's placed size, once a round has placed it
         self.last_head: float | None = None
         self.v2 = v2_enabled()
+        self.lock = lock_enabled()
+        self.lifted = False      # (lock) the headline's floor is raised to `lift` for this run
+        self.lift = self._lift(plan) if self.lock else None
+        self.layers = None       # (CHAMELEON_LAYERS) the source's layer groups (layout/layer_groups.py)
+
+    def _lift(self, plan: PriorityPlan) -> float | None:
+        """(lock) The headline size at which every subordinate text role
+        present can sit at its floor without passing its cap; None if that
+        is no more than the headline's own floor."""
+        head = next((u for u in plan.ranked_units() if u.role == "headline"), None)
+        if head is None or not self.head_src:
+            return None
+        base = floor_px("headline", self.W, self.H)
+        need = base
+        for u in plan.ranked_units():
+            if u is head or u.role in LIFT_EXEMPT:
+                continue
+            if any(self.els[i]["type"] == "text" for i in u.element_ids):
+                need = max(need, floor_px(u.role, self.W, self.H) / ROLE_CAPS.get(u.role, LOCK_HIERARCHY_CAP))
+        need = min(need, self.head_src * MAX_TEXT_GROWTH)
+        return need if need > base + 1e-6 else None
+
+    def pill_cap(self, unit: Unit, head: float | None = None) -> float:
+        """(lock) Largest scale for a CTA/badge pill: PILL_GROWTH x the
+        headline's scale over its source size, once that is known."""
+        head = self.head_font if head is None else head
+        if not self.lock or unit.role not in PILL_ROLES or unit.kind != "container_label" or not head or not self.head_src:
+            return math.inf
+        return PILL_GROWTH * head / self.head_src
 
     # -- logo size -----------------------------------------------------------
     def logo_min(self, uw: float, uh: float) -> float:
@@ -220,6 +276,11 @@ class _Model:
 
     # -- text helpers ------------------------------------------------------
     def floor(self, unit: Unit) -> float:
+        if self.lifted and unit.role == "headline":
+            return max(floor_px(unit.role, self.W, self.H), self.lift)
+        return floor_px(unit.role, self.W, self.H)
+
+    def base_floor(self, unit: Unit) -> float:
         return floor_px(unit.role, self.W, self.H)
 
     def text_cap(self, unit: Unit, head: float | None = None) -> float:
@@ -233,7 +294,11 @@ class _Model:
         cap = big * MAX_TEXT_GROWTH
         head = self.head_font if head is None else head
         if unit.role != "headline" and head and self.head_src:
-            cap = min(cap, head * min(HIERARCHY_CAP, RATIO_SLACK * big / self.head_src))
+            if self.lock:
+                cap = min(cap, head * min(ROLE_CAPS.get(unit.role, LOCK_HIERARCHY_CAP),
+                                          LOCK_RATIO_SLACK * big / self.head_src))
+            else:
+                cap = min(cap, head * min(HIERARCHY_CAP, RATIO_SLACK * big / self.head_src))
         return max(cap, floor)
 
     def max_font(self, unit: Unit, el: dict) -> float:
@@ -321,10 +386,12 @@ class _Model:
     # -- extents -----------------------------------------------------------
     def unit_ext(self, unit: Unit, axis: str, cross: float) -> tuple[float, float]:
         """(least extent at the floor, most extent it can use) along `axis`."""
-        key = ("unit", unit.unit_id, axis, round(cross, 1), self.head_font)
+        key = ("unit", unit.unit_id, axis, round(cross, 1), self.head_font, self.lifted)
         if key not in self._cache:
             try:
                 ext = self._unit_ext(unit, axis, cross, self.floor(unit))
+                if not math.isfinite(ext[0]) and self.floor(unit) > self.base_floor(unit):  # (lock) unlifted
+                    ext = self._unit_ext(unit, axis, cross, self.base_floor(unit))
                 if not math.isfinite(ext[0]):  # can't reach its floor here: size it at the hard floor
                     ext = self._unit_ext(unit, axis, cross, HARD_FLOOR)
                 if not math.isfinite(ext[0]):  # can't be placed this way at all
@@ -335,6 +402,9 @@ class _Model:
         return self._cache[key]
 
     def _unit_ext(self, unit: Unit, axis: str, cross: float, f0: float) -> tuple[float, float]:
+        if self.layers is not None and unit.kind == "layer_group":  # (layers) a container and its contents
+            from engine.pipeline.layout.layer_groups import group_ext
+            return group_ext(self, unit, axis, cross, f0)
         members = [self.els[i] for i in unit.element_ids]
         texts = [m for m in members if m["type"] == "text"]
         if len(members) == 1 and texts:
@@ -374,8 +444,9 @@ class _Model:
         k_hi = cross / other
         if texts:
             big = max(t["font_size"] for t in texts)
-            k_hi = min(k_hi, MAX_TEXT_GROWTH, self.text_cap(unit) / big)
             k_lo = f0 / big * 1.05
+            # (lock) the pill cap never asks for less than the label's floor needs
+            k_hi = min(k_hi, MAX_TEXT_GROWTH, self.text_cap(unit) / big, max(self.pill_cap(unit), k_lo))
             lo = along * k_lo if other * k_lo <= cross else math.inf
             if unit.kind == "container_label" and not any(m.get("rotation") for m in members):
                 label = texts[0]
@@ -395,7 +466,7 @@ class _Model:
             return self.minor_ext(item, axis, cross)
         if len(item.units) == 1:
             return self.unit_ext(item.units[0], axis, cross)
-        key = ("item", item.key, axis, round(cross, 1), self.head_font)
+        key = ("item", item.key, axis, round(cross, 1), self.head_font, self.lifted)
         if key in self._cache:
             return self._cache[key]
         n = len(item.units)
@@ -543,7 +614,7 @@ class _Model:
         condensed round its label, an image at its least useful size."""
         members = [self.els[i] for i in unit.element_ids]
         texts = [m for m in members if m["type"] == "text"]
-        f0 = self.floor(unit)
+        f0 = self.base_floor(unit)
         content = self.W * self.H
         if len(members) == 1 and texts:
             line_w, line_h = self._line(texts[0], f0)
@@ -743,6 +814,9 @@ def _place_minor(b, model: _Model, item: _Item) -> list[tuple[Unit, dict | None,
 
 
 def _place_unit(b, model: _Model, unit: Unit, box: Box, caps: dict) -> tuple[Unit, dict | None, bool]:
+    if model.layers is not None and unit.kind == "layer_group":  # (layers) contents laid out inside the container
+        from engine.pipeline.layout.layer_groups import place_group
+        return place_group(b, model, unit, box, caps)
     members = [model.els[i] for i in unit.element_ids]
     texts = [m for m in members if m["type"] == "text"]
     floor = model.floor(unit)
@@ -759,7 +833,13 @@ def _place_unit(b, model: _Model, unit: Unit, box: Box, caps: dict) -> tuple[Uni
         k = model.logo_cap(uw, uh)
         w, h = min(box[2], uw * k), min(box[3], uh * k)
         box = (*align_in(box, w, h), w, h)
-    geo = place_unit(unit, model.els, box, model.m, floor, align="center", max_font=max_font)
+    if texts and model.pill_cap(unit, caps.get("headline")) < math.inf:  # (lock) the pill stays modest
+        geo = _place_pill(model, unit, members, box, floor, max_font, model.pill_cap(unit, caps.get("headline")))
+    else:
+        geo = place_unit(unit, model.els, box, model.m, floor, align="center", max_font=max_font)
+    if geo is None and floor > model.base_floor(unit):  # (lock) the raised headline doesn't fit: its own floor
+        floor = model.base_floor(unit)
+        geo = place_unit(unit, model.els, box, model.m, floor, align="center", max_font=max_font)
     degraded = False
     if geo is None:
         hard_cap = None if max_font is None else max(max_font, HARD_FLOOR)
@@ -773,6 +853,23 @@ def _place_unit(b, model: _Model, unit: Unit, box: Box, caps: dict) -> tuple[Uni
     if model.v2 and geo is not None and len(members) == 1 and texts and unit.role != "legal":
         geo = {texts[0]["id"]: _no_widow(model, geo[texts[0]["id"]], box, HARD_FLOOR if degraded else floor)}
     return unit, geo, degraded
+
+
+def _place_pill(model: _Model, unit: Unit, members: list[dict], box: Box, floor: float,
+                max_font: float | None, k_cap: float) -> dict | None:
+    """(lock) A CTA/badge pill at most k_cap x its source size: rigid inside
+    a box that size; if its label can't reach the floor that way, a compact
+    pill round the label (in the full cell); failing both, the usual
+    placement."""
+    from engine.pipeline.layout.place import _place_condensed
+    uw, uh = union_box([rotated_aabb(m) for m in members])[2:]
+    w, h = min(box[2], uw * k_cap), min(box[3], uh * k_cap)
+    geo = place_unit(unit, model.els, (*align_in(box, w, h), w, h), model.m, floor, align="center", max_font=max_font)
+    if geo is None and unit.kind == "container_label" and any(m["type"] == "shape" for m in members):
+        geo = _place_condensed(members, box, model.m, floor, "center", max_font)
+    if geo is None:
+        geo = place_unit(unit, model.els, box, model.m, floor, align="center", max_font=max_font)
+    return geo
 
 
 # -- v2: widows ----------------------------------------------------------------
@@ -1182,7 +1279,7 @@ def _score(cand: Candidate, plan: PriorityPlan, model: _Model) -> float:
         if not sizes:
             got += w
             continue
-        floor = model.floor(unit)
+        floor = model.base_floor(unit)
         if min(sizes) >= floor:
             got += w * min(1.0, 0.5 + 0.5 * (min(sizes) - floor) / (0.6 * floor))
     legible = got / total if total else 0.0
@@ -1214,12 +1311,54 @@ def largest_empty_share(boxes: list[Box], width: float, height: float, grid: int
 
 
 def _variant(source, target, plan, measurer, model: _Model, params: dict) -> Candidate | None:
+    """One candidate for `params`. (lock) Also with a raised headline; that
+    one is kept only if it costs no other text its legibility (see `_no_loss`)."""
+    plain = _variant_rounds(source, target, plan, measurer, model, params)[0]
+    if model.lock and model.lift and (plain is None or _head_size(plan, plain) < model.lift - 1e-6):
+        model.lifted = True
+        try:
+            cand, ok = _variant_rounds(source, target, plan, measurer, model, params)
+        finally:
+            model.lifted = False
+        if cand is not None and ok and (plain is None or _no_loss(model, plan, cand, plain)):
+            return cand
+    return plain
+
+
+def _head_size(plan: PriorityPlan, cand: Candidate) -> float:
+    els = {e["id"]: e for e in cand.design["elements"]}
+    return max((els[i]["font_size"] for u in plan.ranked_units() if u.role == "headline"
+                for i in u.element_ids if els[i]["type"] == "text"), default=math.inf)
+
+
+def _no_loss(model: _Model, plan: PriorityPlan, new: Candidate, old: Candidate) -> bool:
+    """(lock) Is `new` (raised headline) at least as legible as `old` for every
+    other text: nothing newly degraded, nothing newly under its floor, and
+    nothing already under it any smaller? The headline must actually be bigger."""
+    if set(new.degraded_unit_ids) - set(old.degraded_unit_ids):
+        return False
+    a = {e["id"]: e for e in new.design["elements"]}
+    b = {e["id"]: e for e in old.design["elements"]}
+    for unit in plan.ranked_units():
+        sa = [a[i]["font_size"] for i in unit.element_ids if a[i]["type"] == "text"]
+        sb = [b[i]["font_size"] for i in unit.element_ids if b[i]["type"] == "text"]
+        if not sa:
+            continue
+        if unit.role == "headline":
+            if max(sa) <= max(sb) + 1e-6:
+                return False
+        elif min(sa) < min(min(sb), model.base_floor(unit)) - 1e-6:
+            return False
+    return True
+
+
+def _variant_rounds(source, target, plan, measurer, model: _Model, params: dict) -> tuple[Candidate | None, bool]:
     """Repair rounds on the item values; on a crowded canvas the least
     important items are first sent to the free-space pass, one more each time
-    a layout can't be built at all."""
+    a layout can't be built at all. Returns (best, every main item placed at its floor)."""
     all_items = _items(model, plan)
     if not all_items:
-        return None
+        return None, False
     mx, my = margins(params, model.W, model.H, model.v2)
     content_area = (model.W - 2 * mx) * (model.H - 2 * my)
     demote = _demotion_order(all_items)
@@ -1261,8 +1400,8 @@ def _variant(source, target, plan, measurer, model: _Model, params: dict) -> Can
                     if item.key in missed:
                         item.boost *= BOOST
             if main_ok:
-                return best
-    return best
+                return best, True
+    return best, False
 
 
 def _demotion_order(items: list[_Item]) -> list[_Item]:
@@ -1307,7 +1446,13 @@ def _candidates(source, target, plan, measurer) -> list[Candidate]:
         return []
     if abs((W / H) / (src_w / src_h) - 1) <= SAME_ASPECT_TOL:
         return []
+    layers, gate_plan = None, plan
+    if os.environ.get("CHAMELEON_LAYERS") == "1":  # (layers) a container and its contents move as one unit
+        from engine.pipeline.layout import layer_groups
+        layers = layer_groups.detect(source, plan, target)
+        plan = layers.plan  # the layout plan; the gates and the grader keep the real one
     model = _Model(source, target, plan, measurer)
+    model.layers = layers
     out, seen = [], set()
     for margin in (V2_MARGINS if model.v2 else MARGINS):
         for order in ORDERS:
@@ -1317,7 +1462,10 @@ def _candidates(source, target, plan, measurer) -> list[Candidate]:
                     cand = _variant(source, target, plan, measurer, model, params)
                     if cand is None:
                         continue
-                    if check_gates(source, cand.design, target, plan, measurer):
+                    if layers is not None:
+                        cand.degraded_unit_ids = layer_groups.remap_degraded(layers, cand.degraded_unit_ids,
+                                                                             cand.design, W, H)
+                    if check_gates(source, cand.design, target, gate_plan, measurer):
                         continue
                     digest = json.dumps(cand.design, sort_keys=True)
                 except Exception:
