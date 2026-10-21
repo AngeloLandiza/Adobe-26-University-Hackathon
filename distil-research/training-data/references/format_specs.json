@@ -1,0 +1,243 @@
+{
+  "note": "Only verified fields. min_text_px omitted: no checked source states one. Fetched 2026-10-21.",
+  "sizes": [
+    {
+      "name": "Instagram post",
+      "width": 1080,
+      "height": 1080,
+      "safe_zones": [],
+      "conventions": [
+        {
+          "rule": "Meta lists 4:5 (1440x1800) as the recommended feed image ratio; 1:1 is within the accepted ratio range, not the recommendation",
+          "source": "https://www.facebook.com/business/ads-guide/update/image/instagram-feed"
+        },
+        {
+          "rule": "Feed recommendations: primary text 125 chars, headline 40 chars, min width 500px, JPG/PNG, max 30MB",
+          "source": "https://www.facebook.com/business/ads-guide/update/image/instagram-feed"
+        }
+      ]
+    },
+    {
+      "name": "Instagram portrait",
+      "width": 1080,
+      "height": 1350,
+      "safe_zones": [],
+      "conventions": [
+        {
+          "rule": "4:5 is Meta's recommended Instagram feed image ratio, 1440x1800 recommended resolution (1080x1350 is the same ratio)",
+          "source": "https://www.facebook.com/business/ads-guide/update/image/instagram-feed"
+        },
+        {
+          "rule": "Feed recommendations: primary text 125 chars, headline 40 chars, JPG/PNG, max 30MB",
+          "source": "https://www.facebook.com/business/ads-guide/update/image/instagram-feed"
+        }
+      ]
+    },
+    {
+      "name": "Instagram story",
+      "width": 1080,
+      "height": 1920,
+      "safe_zones": [
+        {
+          "edge": "top",
+          "share": 0.14,
+          "source": "https://www.facebook.com/business/help/103816146375741"
+        },
+        {
+          "edge": "bottom",
+          "share": 0.14,
+          "source": "https://www.facebook.com/business/help/103816146375741"
+        },
+        {
+          "edge": "top",
+          "share": 0.14,
+          "source": "https://www.facebook.com/business/ads-guide/update/image/instagram-reels (Reels placement; use as stricter bound)"
+        },
+        {
+          "edge": "bottom",
+          "share": 0.35,
+          "source": "https://www.facebook.com/business/ads-guide/update/image/instagram-reels (Reels placement; use as stricter bound)"
+        },
+        {
+          "edge": "left",
+          "share": 0.06,
+          "source": "https://www.facebook.com/business/ads-guide/update/image/instagram-reels (Reels)"
+        },
+        {
+          "edge": "right",
+          "share": 0.06,
+          "source": "https://www.facebook.com/business/ads-guide/update/image/instagram-reels (Reels)"
+        }
+      ],
+      "conventions": [
+        {
+          "rule": "Keep text, logos and key elements out of roughly the top and bottom 14% (about 250px) in Stories/Reels",
+          "source": "https://www.facebook.com/business/help/103816146375741"
+        },
+        {
+          "rule": "For Reels, leave about 14% top, 35% bottom, 6% each side so profile icon/CTA do not cover key content",
+          "source": "https://www.facebook.com/business/ads-guide/update/image/instagram-reels"
+        },
+        {
+          "rule": "Full-screen vertical 9:16, Reels image ads recommended 1440x2560, JPG/PNG",
+          "source": "https://www.facebook.com/business/ads-guide/update/image/instagram-reels"
+        }
+      ]
+    },
+    {
+      "name": "YouTube thumbnail",
+      "width": 1280,
+      "height": 720,
+      "safe_zones": [],
+      "conventions": [
+        {
+          "rule": "16:9 ratio, JPG/PNG; YouTube recommends the largest image possible (3840x2160), min 640px wide",
+          "source": "https://support.google.com/youtube/answer/72431"
+        },
+        {
+          "rule": "Thumbnail shown at different sizes per device; keep design simple, avoid overly complex designs",
+          "source": "https://support.google.com/youtube/answer/12340300"
+        },
+        {
+          "rule": "If adding text, use an easy-to-read font and keep text short",
+          "source": "https://support.google.com/youtube/answer/12340300"
+        }
+      ]
+    },
+    {
+      "name": "LinkedIn banner",
+      "width": 1584,
+      "height": 396,
+      "safe_zones": [],
+      "conventions": [
+        {
+          "rule": "Official LinkedIn Page cover is 1512x256 (not 1584x396); PNG/JPEG, max 3MB. 1584x396 is the personal-profile banner per secondary sources only (unverified)",
+          "source": "https://www.linkedin.com/help/linkedin/answer/a563309/image-specifications-for-your-linkedin-pages-and-career-pages"
+        },
+        {
+          "rule": "Cover is trimmed horizontally or vertically per screen; keep key info centered, away from edges esp. lower-right; limited text",
+          "source": "https://www.linkedin.com/help/linkedin/answer/a563309/image-specifications-for-your-linkedin-pages-and-career-pages"
+        }
+      ]
+    },
+    {
+      "name": "Facebook cover",
+      "width": 820,
+      "height": 312,
+      "safe_zones": [],
+      "conventions": []
+    },
+    {
+      "name": "Leaderboard",
+      "width": 728,
+      "height": 90,
+      "safe_zones": [],
+      "conventions": [
+        {
+          "rule": "Google Ads lists this size as a supported image-ad size; JPG/PNG/GIF, max 150KB",
+          "source": "https://support.google.com/google-ads/answer/1722096"
+        },
+        {
+          "rule": "AdSense: top-performing size; works well above main content and on forums",
+          "source": "https://support.google.com/adsense/answer/6002621"
+        }
+      ]
+    },
+    {
+      "name": "Medium rectangle",
+      "width": 300,
+      "height": 250,
+      "safe_zones": [],
+      "conventions": [
+        {
+          "rule": "Google Ads lists this size as a supported image-ad size; JPG/PNG/GIF, max 150KB",
+          "source": "https://support.google.com/google-ads/answer/1722096"
+        },
+        {
+          "rule": "AdSense: top-performing size; works well embedded in text content or at article end",
+          "source": "https://support.google.com/adsense/answer/6002621"
+        }
+      ]
+    },
+    {
+      "name": "Wide skyscraper",
+      "width": 160,
+      "height": 600,
+      "safe_zones": [],
+      "conventions": [
+        {
+          "rule": "Google Ads lists this size as a supported image-ad size; JPG/PNG/GIF, max 150KB",
+          "source": "https://support.google.com/google-ads/answer/1722096"
+        },
+        {
+          "rule": "AdSense: best used along page sidebars",
+          "source": "https://support.google.com/adsense/answer/6002621"
+        }
+      ]
+    },
+    {
+      "name": "Billboard",
+      "width": 970,
+      "height": 250,
+      "safe_zones": [],
+      "conventions": [
+        {
+          "rule": "Google Ads lists this size as a supported image-ad size; JPG/PNG/GIF, max 150KB",
+          "source": "https://support.google.com/google-ads/answer/1722096"
+        },
+        {
+          "rule": "AdSense: premium position such as above main content; limited advertiser supply",
+          "source": "https://support.google.com/adsense/answer/6002621"
+        }
+      ]
+    },
+    {
+      "name": "Mobile banner",
+      "width": 320,
+      "height": 50,
+      "safe_zones": [],
+      "conventions": [
+        {
+          "rule": "Google Ads lists this size as a supported image-ad size; JPG/PNG/GIF, max 150KB",
+          "source": "https://support.google.com/google-ads/answer/1722096"
+        },
+        {
+          "rule": "AdSense: mobile-only; works well at the bottom of a smartphone page",
+          "source": "https://support.google.com/adsense/answer/6002621"
+        }
+      ]
+    },
+    {
+      "name": "Half page",
+      "width": 300,
+      "height": 600,
+      "safe_zones": [],
+      "conventions": [
+        {
+          "rule": "Google Ads lists this size as a supported image-ad size; JPG/PNG/GIF, max 150KB",
+          "source": "https://support.google.com/google-ads/answer/1722096"
+        },
+        {
+          "rule": "AdSense: top-performing size, one of the fastest-growing by impressions",
+          "source": "https://support.google.com/adsense/answer/6002621"
+        }
+      ]
+    },
+    {
+      "name": "Large leaderboard",
+      "width": 970,
+      "height": 90,
+      "safe_zones": [],
+      "conventions": [
+        {
+          "rule": "Google Ads lists this size as a supported image-ad size; JPG/PNG/GIF, max 150KB",
+          "source": "https://support.google.com/google-ads/answer/1722096"
+        },
+        {
+          "rule": "AdSense: can expand to 970x415; suited to high-definition content like photos/video",
+          "source": "https://support.google.com/adsense/answer/6002621"
+        }
+      ]
+    }
+  ]
+}
