@@ -3,3 +3,5 @@
 # doesn't sync thousands of PNG writes and create "name 2.png" conflict copies.
 *.nosync/
 training-data/judgments/pilot/sheets/
+# challenge2 judgements quote real Crello ad text (licence unverified): local only
+training-data/ab/*chl2*/judgments*.jsonl
