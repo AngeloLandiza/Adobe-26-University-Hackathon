@@ -1,0 +1,9 @@
+{
+  "name": "v3",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection",
+    "CHAMELEON_BISECT_V2": "1",
+    "CHAMELEON_HIER_LOCK": "1",
+    "CHAMELEON_NEAR_FIT": "1"
+  }
+}

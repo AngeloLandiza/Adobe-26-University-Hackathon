@@ -281,3 +281,21 @@ Commands (from `distil-research/chameleon/`, `PYTHONPATH=$PWD`, CPU only):
 - `python -m dev.distill.layer_flaws sheet --name X --name Y --out <a .nosync folder>/sheet.png`
 
 The caches and contact sheets are in `training-data/ab/_flaws.nosync/` (gitignored).
+
+## Round 3 leaderboard (2026-10-21): what is now the best engine
+
+All teacher-judged pairwise on changed cells (confidence >= 2). "Real ads" is challenge2: 50 real Crello ads, 623 cells, never used for development (crello_dev is the development set).
+
+| Step | Holdout (192 cells) | Real ads (623 cells) | Ship-readiness on changed cells |
+|---|---|---|---|
+| base -> bisection | 38-17 (p=0.006) | – | 2.13 -> 2.31 (holdout) |
+| bisection -> v2 (`CHAMELEON_BISECT_V2`) | **33-9** (p<0.001) | 26-17 (p=0.22) | 2.31 -> 2.54 / 1.82 -> 1.88 |
+| v2 -> + hierarchy lock | **14-4** (p=0.031) | – | 2.27 -> 2.50 |
+| v2 -> + near-fit | 11-4 (15 cells, p=0.12) | – | 2.22 -> 3.17 |
+| v2 -> + relation penalty | 28-26 | – | dropped |
+| v2 -> v3 (= v2 + hierarchy lock + near-fit) | – | **25-9** (p=0.009) | 1.73 -> 1.93 |
+| v3 -> v3L (+ `CHAMELEON_LAYERS`) | 31-20 (p=0.16) | **49-21** (p=0.001) | 2.31 -> 2.49 / **1.61 -> 2.03** |
+
+**Best engine: v3L** = `CHAMELEON_STRATEGIES=bisection CHAMELEON_BISECT_V2=1 CHAMELEON_HIER_LOCK=1 CHAMELEON_NEAR_FIT=1 CHAMELEON_LAYERS=1`.
+
+Weak spots left: strips on real ads (layers lose 6-8 there) and wide formats on holdout (6-7); the plain uniform fit now wins 31% of real-ad cells (12.5% holdout), so the re-layout still often loses to doing nothing clever. Absolute quality is still low (about 2-2.5 of 5).

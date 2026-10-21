@@ -310,7 +310,8 @@ def sample_pairs(pairs: list, max_cells: int | None, seed: int = 0) -> list:
 
 
 def judge_variants(a: str, b: str, teacher, root: Path = AB_ROOT, pool_dir: Path = POOL_DIR, shard=None,
-                   limit_calls=None, seed: int = 0, max_cells: int | None = None) -> list[dict]:
+                   limit_calls=None, seed: int = 0, max_cells: int | None = None,
+                   swap_share: float = 0.2) -> list[dict]:
     pairs, _, _ = changed_pairs(a, b, root)
     pairs = sample_pairs(pairs, max_cells, seed)
     main = pair_dir(a, b, root) / "judgments.jsonl"
@@ -322,7 +323,7 @@ def judge_variants(a: str, b: str, teacher, root: Path = AB_ROOT, pool_dir: Path
 
     return judge_mod.judge_pairs(
         pairs, teacher, original, out,
-        pairs_per_call=4, swap_share=0.2, seed=seed, pool_dir=Path(root), limit_calls=limit_calls,
+        pairs_per_call=4, swap_share=swap_share, seed=seed, pool_dir=Path(root), limit_calls=limit_calls,
         shard=shard, done_files=[main] if shard else None)
 
 
@@ -475,6 +476,8 @@ def main(argv=None) -> int:
     j.add_argument("--shard", default=None)
     j.add_argument("--merge", action="store_true")
     j.add_argument("--limit-calls", type=int, default=None)
+    j.add_argument("--swap-share", type=float, default=0.2,
+                   help="share of pairs also asked in the swapped order (1.0 = every pair both ways; disagreements count as ties)")
     j.add_argument("--seed", type=int, default=0)
     j.add_argument("--max-cells", type=int, default=None, help="judge at most this many changed cells (stratified by brand)")
     p = sub.add_parser("report")
@@ -517,7 +520,8 @@ def main(argv=None) -> int:
             return 0
         from dev.distill.teacher import ClaudeCodeTeacher
         rows = judge_variants(args.a, args.b, ClaudeCodeTeacher(args.model), shard=parse_shard(args.shard),
-                              limit_calls=args.limit_calls, seed=args.seed, max_cells=args.max_cells)
+                              limit_calls=args.limit_calls, seed=args.seed, max_cells=args.max_cells,
+                              swap_share=args.swap_share)
         print(f"judged {len(rows)} new pairs")
     else:
         print(write_report(args.a, args.b))
