@@ -203,3 +203,38 @@ def test_sample_pairs_caps_and_keeps_every_brand():
     assert {p[0]["brand"] for p in got} == {"solstice", "offbrand"}
     assert got == sample_pairs(pairs, 10, seed=0)
     assert sample_pairs(pairs, None, seed=0) == pairs and sample_pairs(pairs, 500, seed=0) == pairs
+
+
+def test_samples_split_is_the_3_samples_x_every_target(tmp_path):
+    from dev.distill.corpus import SAMPLE_TASKS, load_corpus
+    smp = load_corpus("samples")
+    assert sorted(d["task_id"] for d in smp) == sorted(SAMPLE_TASKS)
+    assert all(d["split"] == "samples" for d in smp)
+    assert {d["task_id"]: d["split"] for d in load_corpus("train")}["warmup_01"] == "train"  # corpus unchanged
+    by_stem = {f"chameleon_sample_level{i}": t for i, t in ((1, "warmup_01"), (2, "core_01"), (3, "advanced_01"))}
+    for path in Path("input").glob("*.json"):
+        tid = next(t for s, t in by_stem.items() if path.stem.startswith(s))
+        assert next(d for d in smp if d["task_id"] == tid)["source"] == json.loads(path.read_text())["source"]
+    cells, designs, folders = ab.split_cells("samples")
+    n_targets = len(json.loads(ab.TARGETS_PATH.read_text()))
+    assert len(cells) == 3 * n_targets and folders == () and set(designs) == set(SAMPLE_TASKS)
+    assert "warmup_01@instagram_post" in {c["cell"] for c in cells}  # near-source targets kept
+    assert {c["split"] for c in cells} == {"samples"} and "samples" in ab.SOURCE_SPLITS
+    assert "samples" not in ab.EVAL_SPLITS  # other tools' eval-split handling unchanged
+
+
+def test_judge_uses_source_renders_for_samples(world, monkeypatch, tmp_path):
+    """samples cells take the judge's original from _sources.nosync, not the pool."""
+    _W1[0] = world["designs"]["t1"]["source"]["canvas"]["width"]
+    _fake_resize(monkeypatch)
+    cells = [dict(c, split="samples") for c in _cells(world)]
+    for name, env in (("sa", {}), ("sb", {"AB_X": "1"})):
+        ab.run_variant(name, env, cells, world["designs"], world["targets"], root=world["root"], workers=1,
+                       log=lambda *_: None)
+    for tid in ("t0", "t1"):
+        p = ab.source_png(world["root"], tid)
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_bytes(b"smp-src")
+    teacher = Fake()
+    rows = ab.judge_variants("sa", "sb", teacher, root=world["root"], pool_dir=tmp_path / "no_pool")
+    assert rows and all(r["split"] == "samples" for r in rows)

@@ -5,3 +5,5 @@
 training-data/judgments/pilot/sheets/
 # challenge2 judgements quote real Crello ad text (licence unverified): local only
 training-data/ab/*chl2*/judgments*.jsonl
+# challenge3 (second real-ad evaluation set) judgements quote Crello ad text too: local only
+training-data/ab/*chl3*/judgments*.jsonl

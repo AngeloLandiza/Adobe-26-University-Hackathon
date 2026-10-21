@@ -29,13 +29,17 @@ CHALLENGE2_FOLDERS = (BRAND_ASSETS_DIR, SYNTH_ASSETS_DIR, CHALLENGE2_ASSETS_DIR)
 # merged in only when asked: merged_assets_dir(*CRELLO_DEV_FOLDERS).
 CRELLO_DEV_ASSETS_DIR = DATA_ROOT / "corpus" / "crello_dev.nosync" / "assets"
 CRELLO_DEV_FOLDERS = (BRAND_ASSETS_DIR, SYNTH_ASSETS_DIR, CRELLO_DEV_ASSETS_DIR)
-# where asset_exists/asset_file look (cr2_ and crd_ names never clash)
-LOOKUP_FOLDERS = (*CHALLENGE2_FOLDERS, CRELLO_DEV_ASSETS_DIR)
+# The second real-ad evaluation set's rasters (split "challenge3", all named `cr3_*`), gitignored the same way;
+# merged in only when asked: merged_assets_dir(*CHALLENGE3_FOLDERS).
+CHALLENGE3_ASSETS_DIR = DATA_ROOT / "corpus" / "challenge3.nosync" / "assets"
+CHALLENGE3_FOLDERS = (BRAND_ASSETS_DIR, SYNTH_ASSETS_DIR, CHALLENGE3_ASSETS_DIR)
+# where asset_exists/asset_file look (cr2_, crd_ and cr3_ names never clash)
+LOOKUP_FOLDERS = (*CHALLENGE2_FOLDERS, CRELLO_DEV_ASSETS_DIR, CHALLENGE3_ASSETS_DIR)
 
 
 def asset_file(asset_id: str) -> Path | None:
     """The file `asset_id` names in the brand kit, the synthetic assets or the
-    Crello (challenge2, crello_dev) rasters, or None."""
+    Crello (challenge2, crello_dev, challenge3) rasters, or None."""
     return next((d / asset_id for d in LOOKUP_FOLDERS if (d / asset_id).is_file()), None)
 
 

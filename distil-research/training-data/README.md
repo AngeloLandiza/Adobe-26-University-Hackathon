@@ -27,6 +27,7 @@ teacher-cache/            raw teacher answers, so reruns cost nothing (gitignore
 | [floor-plans/](floor-plans/) | teacher-designed floor plans and their win rates | not generated yet (B2) | student B2, then C | yes |
 | [role-labels/](role-labels/) | teacher's role + importance labels per ad | not generated yet (A) | student A | yes |
 | [attention/](attention/) | relation features (how specific pieces relate) for every judged candidate | `python -m dev.attention.features_dataset` | attention experiments E1+ | yes |
+| picker/ | picker studies: per cell, K gate-passing candidates with their grader / relation / flaw features, and the teacher's ranking of them (does pick_best choose what the teacher prefers?) | `python -m dev.distill.picker_study` | a learned picker | rows yes (Crello splits: `private.nosync/`, no), renders no |
 | [teacher-cache/](teacher-cache/) | raw teacher responses keyed by prompt hash | `dev/distill/teacher.py` | reruns only | no |
 
 ## Rules

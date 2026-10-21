@@ -29,6 +29,14 @@ rasters merged into the assets folder (assets.CHALLENGE2_FOLDERS). Run it
 under its own --name too (e.g. base_chl2). `--split crello_dev` runs the
 development Crello ads (training-data/corpus/crello_dev.nosync/,
 make_crello_dev.py) the same way, with assets.CRELLO_DEV_FOLDERS.
+`--split challenge3` runs the second real-ad evaluation set
+(training-data/corpus/challenge3.nosync/, make_challenge3.py) with
+assets.CHALLENGE3_FOLDERS; evaluation only, like challenge2 (name runs *_chl3).
+
+`--split samples` runs the 3 official samples (input/*.json; corpus train ads
+warmup_01, core_01, advanced_01) x ALL 13 targets (39 cells, near-source
+targets included), with their source renders under `_sources.nosync/` like
+the challenge splits, so `judge` and `report` work the same way.
 
 Every step is resumable (a rerun skips cells already done) and shardable.
 """
@@ -55,7 +63,9 @@ SOURCES_SUBDIR = "_sources.nosync"  # challenge ads' source renders, under the A
 NEAR_SOURCE = 0.02                  # same rule as pool.py: a target this close to the source aspect is skipped
 MIN_SLICE = 5                       # a slice needs this many decided cells to count for the generalisation score
 FAMILIES = ("solstice", "offbrand", "challenge", "crello")
-EVAL_SPLITS = ("challenge", "challenge2", "crello_dev")  # source ads not in the pool: cells built from targets.json
+EVAL_SPLITS = ("challenge", "challenge2", "crello_dev", "challenge3")  # not in the pool: cells built from targets.json
+SAMPLES_SPLIT = "samples"            # the 3 official samples x every target (near-source ones too)
+SOURCE_SPLITS = (*EVAL_SPLITS, SAMPLES_SPLIT)  # splits whose source renders live under the A/B root
 
 
 # ---------------------------------------------------------------- helpers
@@ -100,15 +110,17 @@ def pool_cells(pool_dir: Path, split: str = "holdout", n: int | None = None, see
     return [cells[c] for c in sorted(cells)]
 
 
-def challenge_cells(designs: list[dict], targets: list[dict], n: int | None = None, seed: int = 0) -> list[dict]:
+def challenge_cells(designs: list[dict], targets: list[dict], n: int | None = None, seed: int = 0,
+                    skip_near: bool = True) -> list[dict]:
     """One row per (challenge ad, target) cell: every target except those within
-    NEAR_SOURCE of the ad's own aspect (the engine only reflows those). Built from
-    the designs and dev/targets.json; pool.jsonl is not involved."""
+    NEAR_SOURCE of the ad's own aspect (the engine only reflows those; keep
+    them with skip_near=False). Built from the designs and dev/targets.json;
+    pool.jsonl is not involved."""
     rows = []
     for d in sorted(designs, key=lambda d: d["task_id"]):
         cw, ch = d["source"]["canvas"]["width"], d["source"]["canvas"]["height"]
         for t in targets:
-            if abs((t["width"] / t["height"]) / (cw / ch) - 1) <= NEAR_SOURCE:
+            if skip_near and abs((t["width"] / t["height"]) / (cw / ch) - 1) <= NEAR_SOURCE:
                 continue
             rows.append({"cell": f"{d['task_id']}@{t['name']}", "task_id": d["task_id"],
                          "split": d.get("split", "challenge"), "brand": d.get("brand", "challenge"),
@@ -117,6 +129,27 @@ def challenge_cells(designs: list[dict], targets: list[dict], n: int | None = No
         chosen = judge_mod.pick_cells(rows, n, seed)
         rows = [r for r in rows if r["cell"] in chosen]
     return sorted(rows, key=lambda r: r["cell"])
+
+
+def folders_for(split: str) -> tuple:
+    """The asset folders a split's ads need (() = brand kit + synthetic)."""
+    from dev.distill import assets
+    return {"challenge2": assets.CHALLENGE2_FOLDERS, "crello_dev": assets.CRELLO_DEV_FOLDERS,
+            "challenge3": assets.CHALLENGE3_FOLDERS}.get(split, ())
+
+
+def split_cells(split: str, n: int | None = None, seed: int = 0, pool_dir: Path = POOL_DIR):
+    """(cells, designs by task_id, asset folders) for `--split`. Pool splits
+    (train / holdout / all) come from pool.jsonl; the evaluation splits and
+    `samples` are built from the designs and dev/targets.json."""
+    from dev.distill.corpus import load_corpus
+    target_list = json.loads(TARGETS_PATH.read_text())
+    if split in SOURCE_SPLITS:
+        ads = load_corpus(split)
+        cells = challenge_cells(ads, target_list, n, seed, skip_near=split != SAMPLES_SPLIT)
+        return cells, {d["task_id"]: d for d in ads}, folders_for(split)
+    cells = pool_cells(pool_dir, split, n, seed)
+    return cells, {d["task_id"]: d for d in load_corpus(None if split == "all" else split)}, ()
 
 
 def source_png(root: Path, task_id: str) -> Path:
@@ -316,7 +349,7 @@ def judge_variants(a: str, b: str, teacher, root: Path = AB_ROOT, pool_dir: Path
     pairs = sample_pairs(pairs, max_cells, seed)
     main = pair_dir(a, b, root) / "judgments.jsonl"
     out = judge_mod.shard_file(main, *shard) if shard else main
-    challenge = {p[0]["task_id"] for p in pairs if p[0]["split"] in EVAL_SPLITS}
+    challenge = {p[0]["task_id"] for p in pairs if p[0]["split"] in SOURCE_SPLITS}
 
     def original(task_id: str) -> Path:  # challenge ads aren't in the pool: their source renders live under root
         return source_png(root, task_id) if task_id in challenge else Path(pool_dir) / RENDERS_SUBDIR / task_id / "source.png"
@@ -462,8 +495,7 @@ def main(argv=None) -> int:
     r = sub.add_parser("run")
     r.add_argument("--name", required=True)
     r.add_argument("--env", action="append", default=[])
-    r.add_argument("--split", default="holdout", choices=["train", "holdout", "all", "challenge", "challenge2",
-                                                          "crello_dev"])
+    r.add_argument("--split", default="holdout", choices=["train", "holdout", "all", *SOURCE_SPLITS])
     r.add_argument("--cells", type=int, default=None)
     r.add_argument("--seed", type=int, default=0)
     r.add_argument("--shard", default=None)
@@ -489,28 +521,16 @@ def main(argv=None) -> int:
         if args.merge:
             print(f"merged {merge_winners(args.name)} rows")
             return 0
-        from dev.distill.corpus import load_corpus
-        target_list = json.loads(TARGETS_PATH.read_text())
-        folders = ()
-        if args.split in EVAL_SPLITS:
-            if args.split == "challenge2":
-                from dev.distill.assets import CHALLENGE2_FOLDERS
-                folders = CHALLENGE2_FOLDERS
-            elif args.split == "crello_dev":
-                from dev.distill.assets import CRELLO_DEV_FOLDERS
-                folders = CRELLO_DEV_FOLDERS
-            chl = load_corpus(args.split)
-            if not chl:
+        cells, designs, folders = split_cells(args.split, args.cells, args.seed)
+        if args.split in SOURCE_SPLITS:
+            if not designs:
                 print(f"no {args.split} ads found (challenge2: run python -m dev.distill.make_real_challenge; "
-                      "crello_dev: python -m dev.distill.make_crello_dev)")
+                      "crello_dev: python -m dev.distill.make_crello_dev; challenge3: python -m "
+                      "dev.distill.make_challenge3)")
                 return 1
-            cells = challenge_cells(chl, target_list, args.cells, args.seed)
-            print(f"wrote {write_sources(chl, folders=folders)} new {args.split} source renders to {AB_ROOT / SOURCES_SUBDIR}")
-            designs = {d["task_id"]: d for d in chl}
-        else:
-            cells = pool_cells(POOL_DIR, args.split, args.cells, args.seed)
-            designs = {d["task_id"]: d for d in load_corpus(None if args.split == "all" else args.split)}
-        targets = {t["name"]: t for t in target_list}
+            print(f"wrote {write_sources(list(designs.values()), folders=folders)} new {args.split} source renders "
+                  f"to {AB_ROOT / SOURCES_SUBDIR}")
+        targets = {t["name"]: t for t in json.loads(TARGETS_PATH.read_text())}
         rows = run_variant(args.name, parse_env(args.env), cells, designs, targets, shard=parse_shard(args.shard),
                            workers=args.workers, folders=folders)
         print(f"ran {len(rows)} new cells of {len(cells)} for {args.name}")
