@@ -78,3 +78,13 @@ Honest read: the archetype candidates look like plausible, clean designs and the
 2. Offer them as extra candidates only for ads that have a hero image and short copy (the long-copy cases clip), alongside existing candidates, so the judge decides.
 3. Skip the text-only archetypes (`_1` plans) for now; they resemble what `stack`/`columns` already produce.
 4. A better follow-up than these plans: let hero and text overlap (a hero-behind-text slot type); that is how real ads reach 50% hero, and the current format cannot say it.
+
+## Result: added to bisection, the grader almost never picks them (2026-10-21)
+
+Run: `ab_engine run --name bisect_arch --env CHAMELEON_STRATEGIES=bisection --env CHAMELEON_EXTRA_TEMPLATES=../training-data/references/arch_selected_templates.json --split holdout` (the shipped plans plus the 7 hero-first archetypes above).
+
+- **1 of 192 holdout picks changed** vs bisection alone (`arch_facebook_cover_2`). Nothing to judge, so no teacher calls were spent.
+- Why (`dev/references/arch_rank_diag.py`, every third holdout cell): archetype candidates are built in 54 of 64 cells and **all 176 pass the gates**, but the best one ranks **15th (median)** among the passing candidates, often last.
+- What pushes them down (`dev/references/arch_metric_gap.py`, weighted metric gap, winner minus best archetype): legibility +0.029 (largest), then degradation, spacing, hierarchy (+0.013 each) and faithfulness +0.011. The hero takes the room, so the text gets smaller and moves farther from the source layout. Same flaw as the visual verdict.
+
+**Conclusion:** side-by-side hero plans cost too much text size to win, and the grader is right to reject them on legibility. Real ads reach a ~50% hero by putting the text **over** the image, which the floor-plan format can't express. The next real step is a hero-behind-text slot type (a background hero slot with text slots allowed on top, plus a contrast check). That is an engine change, not a new template.
