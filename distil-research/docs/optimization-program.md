@@ -619,3 +619,24 @@ Split by kind of change: same candidate repaired 11-2 (holdout) / 7-8 (real ads)
 
 ### Text robustness adopted (2026-10-21)
 `CHAMELEON_TEXT_SLACK=1` changes no picks and takes text that re-wraps at 1 px narrower from 32% / 13% (samples / holdout) to 0%. Adopted without a judged A/B: its visible changes are line-break moves and ~1% font shrinks.
+
+## Learned picker (CHAMELEON_PICKER=learned) (2026-10-21)
+The grader picks the teacher's favourite among its top 4 diverse candidates only 31% of the time (chance ~25%). `CHAMELEON_PICKER=learned` lets a small pairwise logistic model, trained on 312 teacher rankings of exactly those shortlists, choose instead (`engine/pipeline/grading/learned_picker.py`, weights in `picker_weights.json`, 2.5 KB, offline).
+- **How:** `pick_best` runs as before (gates, pixels for the top K, near-fit), then rebuilds the picker study's shortlist: the grader's pick, then by total with at most 2 per family, plus the fallback. It adds pixel metrics where the grader skipped them, plus the relation score, family, grader total and target log aspect, and takes the model's argmax. It only chooses among gate-passing candidates. Any error, fewer than 2 shortlisted, or a target within 2% of the source aspect (no such cell in training) keeps the grader's pick. Unset: byte-identical (golden v4 hashes, `tests/test_learned_picker.py`).
+- **Offline:** grouped 5-fold CV top-1 43% vs grader 31% (teacher score of pick 2.57 vs 2.46, oracle 2.95); holdout 47% vs 33% (2.77 vs 2.73).
+- **Parity:** `python -m dev.distill.train_picker parity` on all 312 ranked cells gives the same grader pick and the same shortlist (312/312), features within 5e-7 of the stored ones (the stored totals are rounded to 6 places), and the engine's pick equals the offline argmax (312/312).
+- **Cost:** +0.035 s per cell on average (median 0.018 s, max 0.33 s). Engine time per cell goes from 0.69 to 0.75 s on holdout.
+- **What changes** (v5 = v4 + text slack, the new baseline; v5p = v5 + learned picker): holdout 94 / 192 cells (49%), challenge2 284 / 623 (46%), samples 18 / 39. Gate failures 0 everywhere. Fallback picks: holdout 10% → 6%, challenge2 21% → 20%, samples 15% → 8%. The model moves picks from bisection to anchored: holdout anchored 63 → 118 and bisection 91 → 32; challenge2 anchored 172 → 268 and bisection 262 → 151, with reflow 10 → 37. It also overrides near-fit in both directions (challenge2: fallback → other 68, other → fallback 67).
+- **Look (rubric, my own eye, 30 cells):** mixed, no clear win.
+  - Better: the core linkedin banner (a calm anchored layout like the source instead of a giant two-line headline and a body squeezed into a 6-line column), the advanced large leaderboard, a cr2 facebook cover and a cr2 leaderboard.
+  - Worse: cells where it trades a big, readable headline for a smaller, more faithful arrangement: core half_page, core story (b2_tall_3 parks the NEW FLAVOR badge just above the CTA), the advanced linkedin and half_page (badges scattered), and two cases where the fallback replaces a bolder re-layout (a cr2 linkedin banner, c11 instagram_post). It also overrides near-fit on advanced → instagram_post (the near-original fallback becomes a cramped bisection).
+  - About half the changed cells are toss-ups.
+- **Verdict:** off by default; worth a judged A/B (`v5` vs `v5p`, `v5_chl2` vs `v5p_chl2`, capped). The model has no source-vs-target aspect feature, so it cannot see why near-fit chose the fallback. A cheap variant to judge next to it would leave the pick alone when near-fit chose the fallback. Contact sheet: `training-data/ab/_flaws.nosync/sheets/picker/v5_vs_v5p.png`.
+
+Commands (from `distil-research/chameleon/`, `PYTHONPATH=$PWD`, CPU only, ≤ 3 processes):
+- `python -m dev.distill.train_picker train [--lam 3] --write` (CV + holdout report, writes the weights)
+- `python -m dev.distill.train_picker parity --workers 3`
+- `python -m dev.distill.ab_engine run --name v5p --env <v4 switches> --env CHAMELEON_TEXT_SLACK=1 --env CHAMELEON_PICKER=learned --split holdout --workers 3` (likewise `challenge2`, `samples`)
+
+### Learned picker judged (2026-10-21): a coin flip, dropped
+`v5` vs `v5p` (holdout): 27-26 for v5 (7 unsure). `v5_chl2` vs `v5p_chl2` (real ads): 36-34 for the picker (10 unsure). It changes about half of all picks and gains nothing. Lesson: the study's "headroom" (teacher's best of 4 minus the grader's pick) is inflated by judging noise (the max of four noisy scores), so a model fitted to it chases noise. Only judged head-to-head A/Bs decide. Stays off (`CHAMELEON_PICKER=learned`).

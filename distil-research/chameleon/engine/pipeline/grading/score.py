@@ -20,6 +20,11 @@ Research switches (off by default; with them off the pick is unchanged):
   GUARD_EMPTY of the canvas larger than the re-layout's (the shrink leaves
   room unused that the re-layout fills). Thresholds set on train judgments
   (dev/distill/nearfit_guard.py; `near_fit_features`).
+- CHAMELEON_PICKER=rules: the rulebook (layout/strategies/rules.py) picks
+  among all gate-passing candidates.
+- CHAMELEON_PICKER=learned: after the grader's pick (near-fit included), a
+  pairwise model of the teacher's preference picks among the grader's
+  diverse shortlist (grading/learned_picker.py, picker_weights.json).
 """
 
 import os
@@ -192,4 +197,13 @@ def pick_best(source: dict, target: dict, plan: PriorityPlan, candidates: list[C
                 if not (guard_enabled() and guard_blocks(near_fit_features(
                         source, plan, measurer, fb[1].design, winner.design))):
                     winner = fb[1]
+    if os.environ.get("CHAMELEON_PICKER") == "learned":
+        # Research picker: a pairwise model of the teacher's preference
+        # (grading/learned_picker.py) chooses among the grader's diverse
+        # shortlist of gate-passing candidates; any error keeps the grader's pick.
+        try:
+            from engine.pipeline.grading import learned_picker
+            winner = learned_picker.choose(source, target, plan, candidates, reports, winner, measurer)
+        except Exception:
+            pass
     return winner, reports

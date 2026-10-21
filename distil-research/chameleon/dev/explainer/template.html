@@ -57,9 +57,9 @@ section { display: grid; gap: 18px; margin-top: 64px; }
 button:focus-visible, .switch input:focus-visible + span { outline: 2px solid var(--blade); outline-offset: 2px; }
 
 /* stage ladder: the pipeline as a sequence of stops */
-.ladder { position: relative; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; padding-top: 4px; }
-.ladder::before { content: ""; position: absolute; left: 8.33%; right: 8.33%; top: 15px; height: 2px; background: var(--mat-line); }
-.ladder .fillbar { position: absolute; left: 8.33%; top: 15px; height: 2px; background: var(--blade); width: 0; transition: width .6s cubic-bezier(.65,0,.25,1); }
+.ladder { position: relative; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0; padding-top: 4px; }
+.ladder::before { content: ""; position: absolute; left: 7.14%; right: 7.14%; top: 15px; height: 2px; background: var(--mat-line); }
+.ladder .fillbar { position: absolute; left: 7.14%; top: 15px; height: 2px; background: var(--blade); width: 0; transition: width .6s cubic-bezier(.65,0,.25,1); }
 .stop { position: relative; display: grid; justify-items: center; gap: 6px; background: none; border: 0; cursor: pointer; padding: 0 2px; color: var(--ink-soft); font: 500 0.78rem/1.25 var(--f-body); text-align: center; }
 .stop .dot { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--mat-line); background: var(--panel); display: grid; place-items: center; font: 500 0.66rem var(--f-mono); transition: all .3s; }
 .stop.done .dot { border-color: var(--blade); }
@@ -170,13 +170,14 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
 
   <section aria-labelledby="how-h">
     <div class="eyebrow">How it works</div>
-    <h2 id="how-h">Five stages, each judged before it stayed</h2>
+    <h2 id="how-h">Six stages, each judged before it stayed</h2>
     <div class="steps">
       <div class="panel step"><span class="n">1 · today</span><h3>Fixed floor plans</h3><p>Today's engine tries a few fixed plans (a stack, a row, columns), fits the pieces in, and its grader picks the best-scoring one.</p></div>
       <div class="panel step"><span class="n">2 · bisection</span><h3>Cut to the content</h3><p>Cut the canvas along its long side, again and again, so each piece gets space by importance and by what it needs to stay readable.</p></div>
       <div class="panel step"><span class="n">3 · detail fixes</span><h3>Fix what the judge named</h3><p>Safer margins, a minimum logo size, legal text that fits in a few lines, no stranded last words, one alignment axis, decorations kept round and whole.</p></div>
       <div class="panel step"><span class="n">4 · hierarchy &amp; near-fit</span><h3>Keep the order of importance</h3><p>The CTA, subhead and fine print stay clearly smaller than the headline. When the shape barely changes, a plain shrink of the original is kept.</p></div>
       <div class="panel step"><span class="n">5 · layers</span><h3>Keep what sits on what</h3><p>Backgrounds fill the new canvas, and text stays inside the card, band or circle it sat on, moving with it as one piece.</p></div>
+      <div class="panel step"><span class="n">6 · anchored</span><h3>Keep every piece in its place</h3><p>Each piece keeps its spot in the original, top-left or centred or bottom edge, while the design grows to fill the new canvas. Text boxes get a safety margin so no line can re-wrap at scoring time.</p></div>
     </div>
   </section>
 
@@ -217,7 +218,8 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
           <tr><td>Relationship score</td><td>picks layouts that keep the original's order</td><td class="r">28–26</td><td><span class="pill lose">dropped</span> a coin flip</td></tr>
           <tr><td>Real-ad templates</td><td>layout families clustered from 1,606 real ads</td><td class="r">changed 1 of 192 picks</td><td><span class="pill lose">dropped</span> text got too small</td></tr>
           <tr><td>Polish + near-fit guard</td><td>detail fixes on every layout, stricter near-fit</td><td class="r">13–7 · 5–13</td><td><span class="pill mid">off</span> opposite directions</td></tr>
-          <tr><td>Anchored retargeting</td><td>keeps each piece on its original anchor, fills the canvas</td><td class="r">being judged</td><td><span class="pill mid">pending</span></td></tr>
+          <tr><td>Balance pass</td><td>bands span the canvas, related pieces stay together, leftover space evened out</td><td class="r">18–12 · 26–19</td><td><span class="pill mid">off</span> leaning better, not proven</td></tr>
+          <tr><td>Learned picker (ML)</td><td>a small model trained on 282 of Claude's rankings picks the layout</td><td class="r">26–27 · 36–34</td><td><span class="pill lose">dropped</span> a coin flip</td></tr>
         </tbody>
       </table>
     </div>
@@ -229,6 +231,7 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
     <ul class="limits">
       <li>Real ads still average about 2 out of 5. The gain is real and confirmed on ads nothing was tuned on, but the bar is still low.</li>
       <li>On the default ad, the final pipeline is not better at every size. At LinkedIn size it builds the cleaner row layout and then picks a weaker one, by 0.921 to 0.917 on the engine's grader. Picking between good layouts is the next target.</li>
+      <li>Anchored layouts win often on other ads (try Summer Flavours, Sunset Sessions or Cucumber Mint) but never on the three official Solstice samples, where the grader still prefers bisection. A learned picker trained on Claude's rankings did not fix this: its gain turned out to be judging noise.</li>
       <li>Near-fit keeps a plain shrink when the shape barely changes (Portrait from a square ad). Claude preferred that, but the brief asks to "rearrange the design, not simply shrink or stretch it", so the official judge may disagree.</li>
       <li>The judge is Claude applying the official criteria, not the official evaluator. The real-ad tests use Crello templates set in the two Solstice fonts.</li>
       <li>Everything lives in the research copy of the engine, behind switches that are off by default.</li>
@@ -247,12 +250,13 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
     { id: "bisect", name: "+ Bisection", desc: "Adds bisection: the canvas is cut along its long side, giving each piece space by importance and need." },
     { id: "v2", name: "+ Detail fixes", desc: "Adds the fixes Claude's critiques kept asking for: safer margins, a minimum logo size, legal text that fits, no stranded words, one alignment axis, whole decorations." },
     { id: "v3", name: "+ Hierarchy & near-fit", desc: "Adds the hierarchy lock (CTA, subhead and fine print stay clearly smaller than the headline) and near-fit (a plain shrink is kept when the shape barely changes)." },
-    { id: "v3L", name: "+ Layers · final", desc: "Adds layers: backgrounds fill the new canvas and text stays on the card or band it sat on. This is the current best pipeline." },
+    { id: "v3L", name: "+ Layers", desc: "Adds layers: backgrounds fill the new canvas and text stays on the card or band it sat on." },
+    { id: "v5", name: "+ Anchored · final", desc: "Adds anchored layouts: every piece keeps its place in the original (top-left stays top-left, centred stays centred) while the design grows to fill the new canvas. Text boxes also get a safety margin so no line can re-wrap. This is the current best pipeline." },
   ];
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const $ = (s) => document.querySelector(s);
   const stage = $("#stage"), canvas = $("#canvas"), realimg = $("#realimg");
-  const state = { ex: D.examples[0], size: D.sizes.find((s) => s.id === "mrec"), st: 5, real: false, timer: null };
+  const state = { ex: D.examples[0], size: D.sizes.find((s) => s.id === "mrec"), st: 6, real: false, timer: null };
   let nodes = {};
 
   const esc = (s) => s.replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
@@ -326,7 +330,7 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
 
     // ladder
     document.querySelectorAll(".stop").forEach((b, i) => { b.setAttribute("aria-pressed", String(i === state.st)); b.classList.toggle("done", i <= state.st); });
-    $("#fillbar").style.width = (state.st / 5) * 83.34 + "%";
+    $("#fillbar").style.width = (state.st / 6) * 85.72 + "%";
 
     // caption: what this stage adds, what it picked, whether it changed anything
     const size = s.id === "orig" ? `${cur.W}×${cur.H}` : `${state.size.name} ${state.size.w}×${state.size.h}`;
@@ -341,7 +345,7 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
 
     // trio of real renders
     const o = state.ex.outs[state.size.id];
-    $("#trio").innerHTML = [["Original", state.ex.png, `${state.ex.canvas.width}×${state.ex.canvas.height}`], ["Today", o.base.png, `${state.size.w}×${state.size.h}`], ["Final", o.v3L.png, `${state.size.w}×${state.size.h}`]]
+    $("#trio").innerHTML = [["Original", state.ex.png, `${state.ex.canvas.width}×${state.ex.canvas.height}`], ["Today", o.base.png, `${state.size.w}×${state.size.h}`], ["Final", o.v5.png, `${state.size.w}×${state.size.h}`]]
       .map(([n, src, d]) => `<figure><div class="frame"><img src="${src}" alt="${n}: ${state.ex.name} at ${d}"></div><figcaption><b>${n}</b> · ${d}</figcaption></figure>`).join("");
   }
 
@@ -351,7 +355,7 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
     if (state.timer) return stopPlay();
     $("#play").setAttribute("aria-pressed", "true"); $("#play").textContent = "Pause";
     let i = 0; go(0);
-    const tick = () => { i += 1; if (i > 5) return stopPlay(); go(i); state.timer = setTimeout(tick, reduce ? 1400 : 1900); };
+    const tick = () => { i += 1; if (i > 6) return stopPlay(); go(i); state.timer = setTimeout(tick, reduce ? 1400 : 1900); };
     state.timer = setTimeout(tick, reduce ? 1400 : 1700);
   }
 
@@ -367,7 +371,7 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
     const b = document.createElement("button"); b.type = "button"; b.id = "size-" + sz.id;
     b.innerHTML = `${sz.name}<small>${sz.w}×${sz.h}</small>`;
     b.setAttribute("aria-pressed", String(sz === state.size));
-    b.onclick = () => { stopPlay(); state.size = sz; if (state.st === 0) state.st = 5; [...sizes.children].forEach((c) => c.setAttribute("aria-pressed", String(c === b))); render(); };
+    b.onclick = () => { stopPlay(); state.size = sz; if (state.st === 0) state.st = 6; [...sizes.children].forEach((c) => c.setAttribute("aria-pressed", String(c === b))); render(); };
     sizes.appendChild(b);
   });
   STAGES.forEach((s, i) => {
@@ -392,6 +396,8 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
     ["Detail fixes → + Hierarchy & near-fit", "50 real ads", 25, 9, "0.009", true],
     ["+ Layers", "50 real ads", 49, 21, "0.001", true],
     ["+ Layers", "held-back ads", 31, 20, "0.16", false],
+    ["+ Anchored", "held-back ads", 46, 11, "<0.001", true],
+    ["+ Anchored", "50 real ads", 58, 21, "<0.001", true],
   ];
   $("#results").innerHTML = RES.map(([w, set, a, b, p, sig]) =>
     `<div class="res"><div class="what">${w}<span>${set}</span></div><div class="split" data-w="${a}" data-l="${b}"><div class="w">${a}</div><div class="l">${b}</div></div><div class="p ${sig ? "sig" : ""}">p ${p.startsWith("<") ? "" : "= "}${p}</div></div>`).join("");

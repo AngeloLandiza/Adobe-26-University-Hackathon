@@ -2,7 +2,7 @@ import base64, io, json, sys
 from pathlib import Path
 from PIL import Image
 O = Path(sys.argv[1]); ASSETS = Path(sys.argv[2]); FONTS = Path(sys.argv[3])
-STAGES = ["base", "bisect", "v2", "v3", "v3L"]
+STAGES = ["base", "bisect", "v2", "v3", "v3L", "v5"]
 EX = json.loads((O / "examples.json").read_text()); SIZES = json.loads((O / "sizes.json").read_text())
 orig = json.loads((O / "stage_original.json").read_text())
 st = {s: json.loads((O / f"stage_{s}.json").read_text()) for s in STAGES}

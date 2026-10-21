@@ -97,41 +97,9 @@ def _jsonable(x):
 
 # ---------------------------------------------------------------- choosing the K
 
-def family(cand) -> str:
-    """The strategy family of a candidate: its template (row, stack, bisection, fallback, ...)."""
-    return "fallback" if cand.is_fallback else (cand.template or cand.candidate_id.split("/")[0])
-
-
-def choose(candidates: list, reports: list, pick, k: int = K, max_per_family: int = MAX_PER_FAMILY) -> list[int]:
-    """Indices (into `candidates`) of the K to show, grader's order: the pick
-    first, then by grader total (fully graded ones first) with at most
-    `max_per_family` per family; the fallback is always included when it
-    passes the gates (replacing the last non-pick choice if needed)."""
-    by_id = {r.candidate_id: r for r in reports}
-    passing = [i for i, c in enumerate(candidates) if by_id.get(c.candidate_id) and by_id[c.candidate_id].passed_gates]
-    order = sorted(passing, key=lambda i: (not by_id[candidates[i].candidate_id].rendered,
-                                           -by_id[candidates[i].candidate_id].total, candidates[i].candidate_id))
-    pick_i = next((i for i in passing if candidates[i] is pick), None)
-    if pick_i is None:
-        pick_i = next((i for i in passing if candidates[i].candidate_id == pick.candidate_id), None)
-    chosen = [pick_i] if pick_i is not None else []
-    count = defaultdict(int)
-    for i in chosen:
-        count[family(candidates[i])] += 1
-    for i in order:
-        if len(chosen) >= k:
-            break
-        if i in chosen or count[family(candidates[i])] >= max_per_family:
-            continue
-        chosen.append(i)
-        count[family(candidates[i])] += 1
-    fb = next((i for i in passing if candidates[i].is_fallback), None)
-    if fb is not None and fb not in chosen:
-        if len(chosen) < k:
-            chosen.append(fb)
-        elif len(chosen) > 1:
-            chosen[-1] = fb
-    return chosen
+# The shortlist lives in the engine (CHAMELEON_PICKER=learned rebuilds it at pick
+# time, so its features match the studies'); the study shows the teacher the same K.
+from engine.pipeline.grading.learned_picker import family, shortlist as choose  # noqa: E402,F401
 
 
 # ---------------------------------------------------------------- prepare (CPU)
