@@ -1,0 +1,6 @@
+{
+  "name": "bisect",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection"
+  }
+}

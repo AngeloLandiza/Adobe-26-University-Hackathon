@@ -1,0 +1,6 @@
+{
+  "name": "retr",
+  "env": {
+    "CHAMELEON_RETRIEVAL": "1"
+  }
+}

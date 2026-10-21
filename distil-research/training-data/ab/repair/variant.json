@@ -1,0 +1,6 @@
+{
+  "name": "repair",
+  "env": {
+    "CHAMELEON_STRATEGIES": "rule_repair"
+  }
+}
