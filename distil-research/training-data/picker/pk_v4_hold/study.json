@@ -1,0 +1,14 @@
+{
+  "name": "pk_v4_hold",
+  "split": "holdout",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection,anchored",
+    "CHAMELEON_BISECT_V2": "1",
+    "CHAMELEON_HIER_LOCK": "1",
+    "CHAMELEON_LAYERS": "1",
+    "CHAMELEON_NEAR_FIT": "1"
+  },
+  "k": 4,
+  "seed": 0,
+  "max_per_family": 2
+}
