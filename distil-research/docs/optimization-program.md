@@ -688,3 +688,10 @@ Colab L4, 632 steps (2 epochs), ~87 min; eval loss 0.379 -> 0.311 at step 300, s
 - 0.01: holdout **14-5** (p = 0.064), ship-readiness 2.38 -> 2.67; samples 1/39 picks changed; real ads (challenge2) 19-22 (p = 0.76), 2.04 -> 2.07.
 - 0.02: holdout 19-15 (its extra 16 flips beyond 0.01 went against it); samples 4-1 (2.20 -> 3.10).
 Verdict: 0.01 is the sweet spot; it helps on Solstice-style ads and is neutral on real ads (combined 33-27). Low risk, not proven; kept as an option for the final engine (v5 + `CHAMELEON_ANCHOR_BONUS=0.01`).
+
+### Can the student ship offline? (2026-10-22)
+v2 student exported to GGUF Q4_K_M (`colab/chameleon_export_gguf.ipynb`, 2.5 GB) and run with llama.cpp (llama-cpp-python 0.3.36) on the M4's CPU only, 4 threads (`dev/distill/student_cpu_bench.py`):
+- The prompt must reproduce the training format exactly, including the empty `<think>\n\n</think>\n\n` block after `<|im_start|>assistant\n`; llama.cpp's default chat template makes the model emit `<tool_call>` tags instead of a layout.
+- Speed: load 3 s; **22.9 s mean per layout** (median 19.1, max 45.4) for ~1,000-1,700 prompt tokens + 150-400 output tokens. 8 threads is ~5% faster (memory-bound). v5 takes ~1 s.
+- Quality of the shipped file: 22/30 plans pass the gates; **judged vs v5 (both orders): 16-6 for v5, p = 0.052; ship-readiness 2.82 (v5) vs 2.09.** 4-bit GGUF quantization moves coordinates by 8-62 px vs the Colab model and loses the parity the Colab model had (11-13).
+**Verdict: the student is not a stage-one candidate** (worse and ~20x slower when shipped). Keep it as a finale direction; v5 (+ optional `CHAMELEON_ANCHOR_BONUS=0.01`) is the engine to port.
