@@ -182,9 +182,13 @@ def pick_best(source: dict, target: dict, plan: PriorityPlan, candidates: list[C
             report.total = weights.geometry_share * geo + (1 - weights.geometry_share) * pix
         return report.total
 
+    # CHAMELEON_ANCHOR_BONUS: a small head start for anchored layouts (the teacher prefers them far more
+    # often than the grader does; unset or 0 = today's behaviour exactly).
+    bonus = float(os.environ.get("CHAMELEON_ANCHOR_BONUS") or 0)
+    lift = (lambda c: bonus if c.candidate_id.startswith("anchored") else 0.0) if bonus else (lambda c: 0.0)
     scored = []
-    for index, cand, geo in sorted(passing, key=lambda p: (-p[2], p[1].candidate_id))[:top_k]:
-        scored.append((grade(index, cand, geo), cand))
+    for index, cand, geo in sorted(passing, key=lambda p: (-(p[2] + lift(p[1])), p[1].candidate_id))[:top_k]:
+        scored.append((grade(index, cand, geo) + lift(cand), cand))
     winner = min(scored, key=lambda s: (-s[0], s[1].candidate_id))[1]
     if not winner.is_fallback and near_fit(source, target):
         fb = next(((i, c, g) for i, c, g in passing if c.is_fallback), None)

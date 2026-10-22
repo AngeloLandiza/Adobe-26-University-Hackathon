@@ -682,3 +682,9 @@ Colab L4, 632 steps (2 epochs), ~87 min; eval loss 0.379 -> 0.311 at step 300, s
 ### Student v2 + DPO (2026-10-22): worse, dropped
 `colab/chameleon_layout_dpo.ipynb`: the v2 student answered 600 training prompts; pairs chosen = Sonnet's layout, rejected = the student's own; the SFT adapter merged into the base as the DPO reference; DPO with a fresh LoRA (beta 0.1, lr 5e-6, 1 epoch). 24/30 held-out plans pass the gates.
 **Judged vs v5 (both orders): 15-7 for v5 (2 unsure), p = 0.13; ship-readiness 2.67 (v5) vs 2.27 (DPO student)**, down from the v2 student's 11-13 / 2.52. Pushing away from its own exact coordinates did not teach better geometry; the v2 SFT student stays the best student.
+
+### Anchored tie-break bonus (2026-10-22)
+`CHAMELEON_ANCHOR_BONUS=x` adds x to anchored candidates' grader totals (shortlist and final pick). On 105 sampled train cells, half the anchored layouts that lose do so by < 0.0094. Judged vs v5, both orders:
+- 0.01: holdout **14-5** (p = 0.064), ship-readiness 2.38 -> 2.67; samples 1/39 picks changed; real ads (challenge2) 19-22 (p = 0.76), 2.04 -> 2.07.
+- 0.02: holdout 19-15 (its extra 16 flips beyond 0.01 went against it); samples 4-1 (2.20 -> 3.10).
+Verdict: 0.01 is the sweet spot; it helps on Solstice-style ads and is neutral on real ads (combined 33-27). Low risk, not proven; kept as an option for the final engine (v5 + `CHAMELEON_ANCHOR_BONUS=0.01`).
