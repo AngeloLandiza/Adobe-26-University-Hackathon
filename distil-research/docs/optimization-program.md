@@ -933,3 +933,7 @@ Commands (from `distil-research/chameleon/`, `PYTHONPATH=$PWD`, CPU only, at mos
 - `python -m dev.distill.eval_targets designs --split holdout|train|samples --variant sonnet --variant v5 --variant v5sw --variant v5t --variant v5tw --variant plan --variant plant` (train: `--cells 90 --model <tuning model> [--set W_TARGET=1000] --tag t`)
 - `python -m dev.distill.eval_targets dist --split holdout --variant v5 --variant v5tw ...` | `sheet --split holdout --variant v5 --variant v5tw --variant v5t --variant sonnet --out <.nosync png>`
 - `python -m dev.distill.ab_engine run --name v5t --env <v5> --env CHAMELEON_TARGETS=1 --split holdout|challenge2|samples --workers 3` (`=winner` for v5tw*; names `*_chl2`, `*_smp`)
+
+### Learned proportions judged (2026-10-22), both orders
+`v5` vs `v5tw` (holdout): 22-20 for v5 (18 unsure), p = 0.88, ship-readiness 2.51 vs 2.44. `v5_chl2` vs `v5tw_chl2` (real ads): 36-27 for targets (37 unsure), p = 0.31, 2.08 -> 2.16.
+**Verdict:** moving v5's sizes halfway to Sonnet's (headline error halved, 56-13 cells closer by the teacher-distance proxy) is not a judged win. With the oracle-plan result, Sonnet's advantage is neither its plan alone nor its proportions alone; it lives in the joint geometry. The before-grading variant (v5t) was not judged (the winner-only variant was not positive). Kept as an option (`CHAMELEON_TARGETS`), not adopted.
