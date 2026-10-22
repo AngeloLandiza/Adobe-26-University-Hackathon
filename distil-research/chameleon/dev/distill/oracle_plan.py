@@ -463,15 +463,17 @@ def naive(source: dict, target: dict, plan, P: Plan, m) -> dict | None:
     return _Naive(source, target, plan, P, m).run()
 
 
-def realize(source: dict, target: dict, plan, P: Plan, m, stats: dict | None = None) -> tuple[dict | None, dict | None]:
-    """(naive placement, plan + solver) for a plan; either may be None."""
+def realize(source: dict, target: dict, plan, P: Plan, m, stats: dict | None = None,
+            targets: dict | None = None) -> tuple[dict | None, dict | None]:
+    """(naive placement, plan + solver) for a plan; either may be None. `targets`
+    (layout/targets.predict): Sonnet's predicted sizes as extra solver pulls."""
     from engine.pipeline.layout import solver
     design = naive(source, target, plan, P, m)
     if design is None:
         return None, None
     layout = _layout(source, plan, target)
     anchors = {uid: {ax: a for ax, a in p.anchor.items() if a != "none"} for uid, p in P.units.items()}
-    solved = solver.realize(source, target, plan, m, design, anchors, layout=layout, stats=stats)
+    solved = solver.realize(source, target, plan, m, design, anchors, layout=layout, stats=stats, targets=targets)
     return design, solved if solved is not None else design
 
 

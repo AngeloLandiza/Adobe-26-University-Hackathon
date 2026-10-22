@@ -465,7 +465,8 @@ def generate_candidates(source: dict, target: dict, plan: PriorityPlan, measurer
     from engine.pipeline.layout import balance
     if balance.enabled():  # CHAMELEON_BALANCE=1: bands span, groups together, leftover space balanced (never raises)
         candidates = balance.balance_all(source, target, plan, measurer, candidates)
-    from engine.pipeline.layout import solver
-    if solver.enabled():  # CHAMELEON_SOLVER=1: gaps, margins and alignment re-solved by an LP (never raises)
-        candidates = solver.solve_all(source, target, plan, measurer, candidates)
+    from engine.pipeline.layout import solver, targets
+    if solver.enabled() or targets.enabled():  # CHAMELEON_SOLVER=1: gaps, margins and alignment re-solved by an LP
+        # CHAMELEON_TARGETS=1: the same LP with Sonnet's predicted sizes as pulls (never raises)
+        candidates = solver.solve_all(source, target, plan, measurer, candidates, with_targets=targets.enabled())
     return candidates

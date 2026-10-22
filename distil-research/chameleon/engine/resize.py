@@ -67,10 +67,12 @@ def resize_with_report(source: dict, target_canvas: dict) -> tuple[dict, Priorit
         best = strategy_registry.refine(source, target_canvas, plan, measurer, best)  # CHAMELEON_STRATEGIES refiners
     except Exception:
         best, reports = candidates[0], []
-    from engine.pipeline.layout import solver
-    if solver.winner_only():  # CHAMELEON_SOLVER=winner: re-solve only the picked layout's geometry
-        try:
-            best = solver.solve_candidate(source, target_canvas, plan, measurer, best)
+    from engine.pipeline.layout import solver, targets
+    if solver.winner_only() or targets.winner_only():  # =winner: re-solve only the picked layout's geometry
+        try:  # CHAMELEON_TARGETS=winner: with Sonnet's predicted sizes as pulls
+            opts = solver.target_opts(source, target_canvas, plan) if targets.winner_only() else None
+            if opts is not None or solver.winner_only():
+                best = solver.solve_candidate(source, target_canvas, plan, measurer, best, opts=opts)
         except Exception:
             pass
     if slack:

@@ -230,6 +230,10 @@ class _Model:
         self.lifted = False      # (lock) the headline's floor is raised to `lift` for this run
         self.lift = self._lift(plan) if self.lock else None
         self.layers = None       # (CHAMELEON_LAYERS) the source's layer groups (layout/layer_groups.py)
+        self.targets: dict = {}  # (CHAMELEON_TARGETS=1) Sonnet's predicted sizes (layout/targets.py)
+        from engine.pipeline.layout import targets as _targets
+        if _targets.enabled():
+            self.targets = _targets.predict(source, plan, target)
 
     def _lift(self, plan: PriorityPlan) -> float | None:
         """(lock) The headline size at which every subordinate text role
@@ -296,6 +300,10 @@ class _Model:
                                           LOCK_RATIO_SLACK * big / self.head_src))
             else:
                 cap = min(cap, head * min(HIERARCHY_CAP, RATIO_SLACK * big / self.head_src))
+        want = self.targets.get(f"font_{unit.role}")
+        if want:  # (targets) no bigger than Sonnet would set it: the spare room goes to the rest (the hero)
+            from engine.pipeline.layout.targets import TEXT_SLACK
+            cap = min(cap, TEXT_SLACK * want * min(self.W, self.H))
         return max(cap, floor)
 
     def max_font(self, unit: Unit, el: dict) -> float:

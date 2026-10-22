@@ -47,6 +47,17 @@ CHAMELEON_SOLVER=winner only the picked layout is re-solved instead
 the grader's picks stay those of the engine without the pass. Never raises.
 `realize` (used by dev/distill/oracle_plan.py) solves a placement with
 extra anchor pulls and a larger growth cap.
+
+Sonnet's proportions (CHAMELEON_TARGETS=1 before grading, =winner after the
+pick; layout/targets.py): every block whose units have a predicted size
+(text by role, CTA pill, logo, hero) gets a target scale (the units'
+priority-weighted geometric mean; none when they disagree) and a strong L1
+pull (W_TARGET, the W_KEEP tier) toward it. Its scale may then go below 1
+(down to T_S_MIN, never under a text's role floor or the v2 logo floor) or
+past S_MAX (up to the target, T_S_MAX; text still at most 1.5x its source
+size); hard rules unchanged otherwise, and the headline's font stays the
+largest. A lone text that shrank is re-wrapped on fewer lines when it has
+the room (T_REWRAP). Without predictions nothing changes.
 """
 
 from __future__ import annotations
@@ -83,6 +94,14 @@ W_SNAP = 30.0
 W_ANCHOR = 30.0       # (realize) plan anchors
 W_FID = 10.0
 W_FILL = 1.0
+# Sonnet's proportions (CHAMELEON_TARGETS, layout/targets.py): per-block scale pulled toward the predicted size
+W_TARGET = 1000.0     # per px of the block's long side between its size and the target size
+T_S_MIN = 0.6         # a block with a target may shrink to this x (never below its role floors) ...
+T_S_MAX = 2.5         # ... and grow to this x (text still at most MAX_TEXT_GROWTH x its source size)
+LOGO_MIN_PX = 12      # (targets) a logo never shrinks below this height (bisection.LOGO_MIN_PX) ...
+T_SHRINK_IMAGES = True   # (targets) False: a block without text (hero, logo) never shrinks (worse on train: hero, logo)
+T_REWRAP = True       # (targets) a shrunk lone text re-wraps into its pre-solve width when that saves a line
+T_DEAD = 0.05         # a block within this ratio of its target is left alone (no pull)
 _LAYER_ROLES = ("background", "decoration")
 _EPS = 0.5
 
@@ -138,6 +157,9 @@ class Block:
     texts: list[str] = field(default_factory=list)
     src_box: Box | None = None
     s_max: float = 1.0
+    s_lo: float = 1.0                               # least scale (below 1 only with a target)
+    t_ratio: float | None = None                    # (targets) scale that gives the predicted size
+    font: float = 0.0                               # largest font in the block
     fixed: tuple[bool, bool] = (False, False)       # (x, y)
     bleed: tuple[bool, bool, bool, bool] = (False, False, False, False)  # l, t, r, b
     pin: tuple[bool, bool, bool, bool] = (False, False, False, False)
@@ -163,6 +185,8 @@ class Opts:
     anchors: dict = field(default_factory=dict)   # block id -> {"x": "start|centre|end", "y": ...} (realize)
     gap_min_hard: bool = False                    # (realize) gaps >= GAP_MIN even if the start was closer
     fidelity: float = W_FID
+    targets: dict | None = None                   # (CHAMELEON_TARGETS) layout/targets.predict output
+    w_target: float | None = None                 # (targets) pull weight; None: W_TARGET
 
 
 def _layout_plan(source: dict, plan: PriorityPlan, target: dict) -> PriorityPlan:
@@ -187,10 +211,15 @@ class _Model:
         self.short, self.long = min(self.W, self.H), max(self.W, self.H)
         self.src = {e["id"]: e for e in source["elements"]}
         self.placed = {e["id"]: dict(e) for e in design["elements"]}
+        self.untight = {e["id"]: e for e in design["elements"]}   # before the text boxes are tightened
         self.mx, self.my = safe_margins(self.W, self.H)
         self.tightened: set[str] = set()
         self._tighten()
         self.blocks = self._blocks()
+        for b in self.blocks:
+            b.font = max((self.placed[i].get("font_size") or 0.0 for i in b.texts), default=0.0)
+        if opts.targets:
+            self._target_ratios(opts.targets)
 
     # -- text boxes tightened to their ink -----------------------------------
     def _tighten(self) -> None:
@@ -298,6 +327,60 @@ class _Model:
                 if e0 and e["width"] > 0 and e["height"] > 0:
                     cap = min(cap, max(1.0, LOGO_MAX_GROWTH * min(e0["width"] / e["width"], e0["height"] / e["height"])))
         return max(1.0, cap)
+
+
+    # -- Sonnet's proportions (targets) --------------------------------------------
+    def _floor_scale(self, b: "Block") -> float:
+        """Least scale keeping every text of the block at its role floor (and a logo at its v2 floor)."""
+        from engine.pipeline.layout.place import floor_px
+        lo = T_S_MIN
+        for i in b.texts:
+            f = self.placed[i].get("font_size") or 0.0
+            try:
+                role = self.plan.unit_for_element(i).role or "other_text"
+            except KeyError:
+                role = "other_text"
+            fl = floor_px(role, self.W, self.H)
+            lo = max(lo, 1.0 if f <= fl else fl / f)
+        if b.role == "logo":
+            from engine.pipeline.layout.polish import logo_floor
+            x, y, w, h = b.box
+            if w > 0 and h > 0:
+                fl = logo_floor(self.W, self.H, w, h, min(LOGO_MIN_PX, h))
+                lo = max(lo, 1.0 if h <= fl else fl / h)
+        return min(1.0, lo)
+
+    def _target_ratios(self, T: dict) -> None:
+        from engine.pipeline.layout.targets import group_ratio
+        for b in self.blocks:
+            if b.fixed[0] or b.fixed[1]:
+                continue
+            # the priority-plan units inside the block (a layer group holds several)
+            ids = set(b.content)
+            members = [u for u in self.plan.ranked_units() if u.element_ids and set(u.element_ids) <= ids]
+            r = group_ratio(members, self.placed, T, self.W, self.H)
+            if r is None or abs(r - 1.0) <= T_DEAD:
+                continue
+            lo = self._floor_scale(b)
+            hi = T_S_MAX
+            for i in b.texts:
+                s0 = self.src.get(i, {}).get("font_size")
+                f = self.placed[i].get("font_size")
+                if s0 and f:
+                    hi = min(hi, max(1.0, MAX_TEXT_GROWTH * s0 / f))
+            if b.role == "logo":
+                for i in b.content:
+                    e0, e = self.src.get(i), self.placed[i]
+                    if e0 and e["width"] > 0 and e["height"] > 0:
+                        hi = min(hi, max(1.0, LOGO_MAX_GROWTH * min(e0["width"] / e["width"], e0["height"] / e["height"])))
+            if not b.texts and not T_SHRINK_IMAGES:  # pictures may grow toward their target, never shrink
+                lo = 1.0
+            b.t_ratio = min(max(r, lo), max(hi, 1.0))
+            if abs(b.t_ratio - 1.0) <= 1e-3:
+                b.t_ratio = None
+                continue
+            b.s_lo = min(1.0, lo) if b.t_ratio < 1.0 else 1.0
+            b.s_max = max(b.s_max, b.t_ratio)
 
 
 def tighten_text(el: dict, m) -> dict:
@@ -433,7 +516,7 @@ class _Solve:
             x0, y0, w, h = b.box
             vx = self.lp.var(x0 if b.fixed[0] else None, x0 if b.fixed[0] else None)
             vy = self.lp.var(y0 if b.fixed[1] else None, y0 if b.fixed[1] else None)
-            vs = self.lp.var(1.0, max(1.0, b.s_max))
+            vs = self.lp.var(b.s_lo, max(1.0, b.s_max))
             self.pos.append({"x": vx, "y": vy, "s": vs})
 
     # expressions on the content extent / the full extent
@@ -503,9 +586,13 @@ def solve_model(model: _Model) -> tuple[list[tuple[float, float, float]], dict] 
     # -- hard: hierarchy (no text block outgrows the headline block's scale) -----
     head = next((i for i, b in enumerate(B) if b.role == "headline" and b.texts), None)
     if head is not None:
+        fh = B[head].font
         for i, b in enumerate(B):
             if i != head and b.texts:
-                lp.le({P.pos[i]["s"]: 1.0, P.pos[head]["s"]: -1.0})
+                if opts.targets and fh > 0 and 0 < b.font <= fh:   # its largest font stays at most the headline's
+                    lp.le({P.pos[i]["s"]: b.font, P.pos[head]["s"]: -fh})
+                else:
+                    lp.le({P.pos[i]["s"]: 1.0, P.pos[head]["s"]: -1.0})
 
     # -- the tree: order, gaps, centring --------------------------------------
     close = _close_pairs(model)
@@ -631,15 +718,23 @@ def solve_model(model: _Model) -> tuple[list[tuple[float, float, float]], dict] 
                 c = sum(_span(b.box, ax)) / 2
                 lp.absolute(_add(P.centre(i, ax), {None: -c}), P.w(opts.fidelity))
 
+    # -- Sonnet's proportions: each block's scale pulled toward its target size -------
+    for i, b in enumerate(B):
+        if b.t_ratio is not None:
+            L = max(b.box[2], b.box[3])
+            lp.absolute({P.pos[i]["s"]: L, None: -b.t_ratio * L}, P.w(W_TARGET if opts.w_target is None else opts.w_target))
+            stats["targets"] = stats.get("targets", 0) + 1
+
     # -- fill: grow toward the safe area when much of it is unused --------------------
     if _fill_allowed(model, boxes):
         for i, b in enumerate(B):
-            if b.s_max > 1.0:
+            if b.s_max > 1.0 and b.t_ratio is None:
                 wt = (b.rank ** -0.7) if math.isfinite(b.rank) and b.rank > 0 else 0.2
                 lp.c[P.pos[i]["s"]] -= W_FILL * wt
     else:
-        for i in range(len(B)):
-            lp.ub[P.pos[i]["s"]] = 1.0
+        for i, b in enumerate(B):
+            if b.t_ratio is None:
+                lp.ub[P.pos[i]["s"]] = 1.0
 
     x = lp.solve()
     if x is None:
@@ -759,8 +854,11 @@ def _apply(model: _Model, sol: list[tuple[float, float, float]]) -> dict[str, di
                 if "letter_spacing" in t:
                     new["letter_spacing"] = t["letter_spacing"]
                 if not m.fits(new, new["font_size"], new["width"], new["height"]):
-                    size = m.fit_font_size(dict(e), new["width"], new["height"], f0, f0 * s)
-                    size = f0 if size is None else size
+                    lo, hi = (f0, f0 * s) if s > 1.0 else (0.85 * f0 * s, f0 * s)
+                    size = m.fit_font_size(dict(e), new["width"], new["height"], lo, hi)
+                    size = (f0 if s > 1.0 else None) if size is None else size
+                    if size is None:
+                        return None
                     t = resize_text(e, size)
                     new.update(font_size=size)
                     if "letter_spacing" in t:
@@ -768,7 +866,54 @@ def _apply(model: _Model, sol: list[tuple[float, float, float]]) -> dict[str, di
                     if not m.fits(new, size, new["width"], new["height"]):
                         return None
             placed[i] = new
+    if model.opts.targets and T_REWRAP:
+        _rewrap(model, sol, placed)
     return placed
+
+
+def _rewrap(model: _Model, sol, placed: dict) -> None:
+    """(targets) A lone text block that shrank keeps its line breaks under a uniform scale ("Chase /
+    the Light" set smaller); re-wrap it on fewer lines in the narrowest of its inked width, its slot
+    width on the candidate and the safe width of the canvas that saves a line, centred on its solved
+    box (its alignment edge kept), if it stays inside the safe margins and off every other block."""
+    from engine.pipeline.layout.text_slack import slack_px
+    m = model.m
+    solved = []
+    for b, (x, y, s) in zip(model.blocks, sol):
+        fx, fy, fw, fh = b.full
+        solved.append((x + (fx - b.box[0]) * s, y + (fy - b.box[1]) * s, fw * s, fh * s))
+    for k, (b, (x, y, s)) in enumerate(zip(model.blocks, sol)):
+        if s > 1.0 - 1e-3 or len(b.content) != 1 or b.decos or b.content[0] not in b.texts:
+            continue
+        i = b.content[0]
+        e0, new = model.placed[i], placed[i]
+        if new.get("rotation"):
+            continue
+        f = new["font_size"]
+        n_now = m.line_count(new, f, new["width"])
+        for w0 in sorted({e0["width"], model.untight.get(i, e0)["width"], model.W - 2 * model.mx}):
+            n_wide = m.line_count(new, f, w0)
+            if n_wide >= n_now or w0 <= new["width"]:
+                continue
+            ink = max(m.line_widths(new, f, w0), default=0.0)
+            nw = min(w0, ink + slack_px(ink))
+            if m.line_count(new, f, nw) != n_wide:
+                nw = w0
+            nh = m.block_height(new, f, nw) + _EPS
+            align = new.get("text_align") or "left"
+            nx = new["x"] if align == "left" else new["x"] + new["width"] - nw if align == "right" else \
+                new["x"] + (new["width"] - nw) / 2
+            nx = min(max(nx, model.mx), model.W - model.mx - nw)
+            ny = new["y"] + (new["height"] - nh) / 2
+            box = (nx, ny, nw, nh)
+            if nx < model.mx - _EPS or ny < 0 or nx + nw > model.W - model.mx + _EPS or ny + nh > model.H:
+                continue
+            if any(overlap_area(box, o) > 0.5 for j, o in enumerate(solved) if j != k):
+                continue
+            out = dict(new, x=nx, y=ny, width=nw, height=nh)
+            if m.fits(out, f, nw, nh) and m.line_count(out, f, nw) == n_wide:
+                placed[i] = out
+                break
 
 
 def _moved(model: _Model, sol) -> bool:
@@ -807,8 +952,16 @@ def solve_design(source: dict, target: dict, plan: PriorityPlan, measurer, desig
     return out
 
 
+def target_opts(source: dict, target: dict, plan: PriorityPlan) -> Opts | None:
+    """(CHAMELEON_TARGETS) solver options with Sonnet's predicted proportions, or None (nothing predicted)."""
+    from engine.pipeline.layout import targets
+    pred = targets.predict(source, plan, target)
+    return Opts(targets=pred) if pred else None
+
+
 def solve_candidate(source: dict, target: dict, plan: PriorityPlan, measurer, cand: Candidate,
-                    layout: PriorityPlan | None = None, stats: dict | None = None) -> Candidate:
+                    layout: PriorityPlan | None = None, stats: dict | None = None,
+                    opts: Opts | None = None) -> Candidate:
     """`cand` re-solved (same id, template, params and degraded units), or
     `cand` itself if it fails a gate, nothing changes, or the result fails a
     gate the original passed."""
@@ -819,7 +972,7 @@ def solve_candidate(source: dict, target: dict, plan: PriorityPlan, measurer, ca
         if stats is not None:
             stats["status"] = "base_failed"
         return cand
-    design = solve_design(source, target, plan, measurer, cand.design, layout, stats=stats)
+    design = solve_design(source, target, plan, measurer, cand.design, layout, opts=opts, stats=stats)
     if design is None:
         return cand
     if check_gates(source, design, target, plan, measurer):
@@ -831,17 +984,19 @@ def solve_candidate(source: dict, target: dict, plan: PriorityPlan, measurer, ca
 
 
 def solve_all(source: dict, target: dict, plan: PriorityPlan, measurer, candidates: list[Candidate],
-              log: list | None = None) -> list[Candidate]:
-    """Every gate-passing non-fallback candidate re-solved (never raises)."""
+              log: list | None = None, with_targets: bool = False) -> list[Candidate]:
+    """Every gate-passing non-fallback candidate re-solved (never raises);
+    `with_targets`: with Sonnet's proportions as pulls (CHAMELEON_TARGETS=1)."""
     try:
         layout = _layout_plan(source, plan, target)
+        opts = target_opts(source, target, plan) if with_targets else None
     except Exception:
         return candidates
     out = []
     for cand in candidates:
         stats: dict = {}
         try:
-            new = solve_candidate(source, target, plan, measurer, cand, layout, stats)
+            new = solve_candidate(source, target, plan, measurer, cand, layout, stats, opts)
         except Exception as exc:  # the solver never sinks a candidate
             stats["status"] = f"error:{type(exc).__name__}"
             new = cand
@@ -852,9 +1007,11 @@ def solve_all(source: dict, target: dict, plan: PriorityPlan, measurer, candidat
 
 
 def realize(source: dict, target: dict, plan: PriorityPlan, measurer, design: dict, anchors: dict,
-            s_max: float = 2.0, layout: PriorityPlan | None = None, stats: dict | None = None) -> dict | None:
+            s_max: float = 2.0, layout: PriorityPlan | None = None, stats: dict | None = None,
+            targets: dict | None = None) -> dict | None:
     """(oracle plan) Solve a naive placement with plan anchors pulling blocks
     to canvas edges / the centre line and a larger growth cap; None if it
     can't be solved. Blocks are named by their unit ids joined with '+'."""
-    opts = Opts(s_max=s_max, fill_unused=0.0, anchors=anchors, gap_min_hard=False, fidelity=W_FID / 5)
+    opts = Opts(s_max=s_max, fill_unused=0.0, anchors=anchors, gap_min_hard=False, fidelity=W_FID / 5,
+                targets=targets or None)
     return solve_design(source, target, plan, measurer, design, layout, opts, stats)

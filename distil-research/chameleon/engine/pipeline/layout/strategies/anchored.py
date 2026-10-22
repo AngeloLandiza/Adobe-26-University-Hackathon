@@ -197,6 +197,7 @@ class _Ctx:
         self.Ws, self.Hs = float(source["canvas"]["width"]), float(source["canvas"]["height"])
         self.W, self.H = float(target["width"]), float(target["height"])
         self.target = target
+        self.k: dict[str, float] = {}   # (targets) unit id -> the piece's own scale (Sonnet's predicted size)
         self.short = min(self.W, self.H)
         self.margin = SAFE_MARGIN * self.short
         self.els = {e["id"]: e for e in source["elements"]}
@@ -521,7 +522,7 @@ def _lay_entity(ctx: _Ctx, ent: _Entity, s: float, photo_k: float = 1.0) -> bool
             if kx == "stretch":
                 g0, g1 = p.box[0], ctx.Ws - p.box[0] - p.box[2]
                 cap = ctx.W - max(g0 * s, ctx.margin) - max(g1 * s, ctx.margin)
-        sz = _size(ctx, p, s, cap, photo_k)
+        sz = _size(ctx, p, ctx.k.get(p.unit.unit_id, s), cap, photo_k)
         if sz is None:
             return False
         ent.sized.append(sz)
@@ -914,7 +915,7 @@ def _builder_cls():
     return _BUILDER
 
 
-def _build(ctx: _Ctx, pieces: list[_Piece], s: float, spread: bool, measurer) -> Candidate | None:
+def _build(ctx: _Ctx, pieces: list[_Piece], s: float, spread: bool, measurer, mode: str | None = None) -> Candidate | None:
     geo = _layout(ctx, pieces, s, spread)
     if geo is None or not _hierarchy_ok(ctx, geo):
         return None
@@ -926,7 +927,7 @@ def _build(ctx: _Ctx, pieces: list[_Piece], s: float, spread: bool, measurer) ->
         unit_geo = {i: geo[i] for i in p.unit.element_ids}
         b._record(p.unit, unit_geo, False)
     r = s / ctx.s0
-    params = {"mode": "spread" if spread else "anchored", "r": round(r, 3)}
+    params = {"mode": mode or ("spread" if spread else "anchored"), "r": round(r, 3)}
     cid = f"{NAME}/" + "/".join(f"{k}={v}" for k, v in sorted(params.items()))
     return b.finish(cid, NAME, params)
 
@@ -997,6 +998,13 @@ def _candidates(source: dict, target: dict, plan: PriorityPlan, measurer) -> lis
                 built[(r, True)] = cand
                 picks.append((r, True))
                 break
+    cap = MAX_CANDIDATES
+    from engine.pipeline.layout import targets as _targets
+    if _targets.enabled():  # (CHAMELEON_TARGETS=1) pieces at Sonnet's predicted sizes, anchored as usual
+        extra = _target_builds(ctx, pieces, measurer, plan)
+        built.update(extra)
+        picks.extend(extra)
+        cap += len(extra)
     out, seen = [], set()
     for key in picks:
         cand = built[key]
@@ -1010,6 +1018,48 @@ def _candidates(source: dict, target: dict, plan: PriorityPlan, measurer) -> lis
             continue
         seen.add(digest)
         out.append(cand)
-        if len(out) >= MAX_CANDIDATES:
+        if len(out) >= cap:
             break
     return out
+
+
+TARGET_PICKS = 2   # (targets) candidates with every piece at its predicted size: the largest feasible scale ...
+                   # ... for the rest (positions, gaps, pieces without a target) and the one nearest the pieces' own
+
+
+def _target_builds(ctx: _Ctx, pieces: list[_Piece], measurer, plan: PriorityPlan) -> dict:
+    """(CHAMELEON_TARGETS=1) Each piece with a predicted size (layout/targets.py) is
+    sized at that scale instead of the global s; positions, gaps and the
+    other pieces follow s as usual. Built at every ratio; kept: the largest
+    feasible s and the s nearest the pieces' own scales. Keys (r, "targets")."""
+    from engine.pipeline.layout import targets as _targets
+    T = _targets.predict(ctx.source, plan, ctx.target)
+    if not T:
+        return {}
+    ks = {}
+    for p in pieces:
+        ids = set(p.unit.element_ids)
+        members = [u for u in plan.ranked_units() if u.element_ids and set(u.element_ids) <= ids]
+        k = _targets.group_ratio(members, ctx.els, T, ctx.W, ctx.H)  # target size / source size
+        if k is not None:
+            ks[p.unit.unit_id] = k
+    if not ks:
+        return {}
+    ctx.k = ks
+    built = {}
+    try:
+        for r in _ratios(ctx):
+            try:
+                cand = _build(ctx, pieces, ctx.s0 * r, False, measurer, mode="targets")
+            except Exception:
+                cand = None
+            if cand is not None:
+                built[(r, "targets")] = cand
+    finally:
+        ctx.k = {}
+    if not built:
+        return {}
+    rs = sorted(r for r, _ in built)
+    own = math.exp(sum(math.log(k) for k in ks.values()) / len(ks)) / ctx.s0
+    keep = {rs[-1], min(rs, key=lambda r: abs(math.log(r / own)))}
+    return {key: c for key, c in built.items() if key[0] in keep}

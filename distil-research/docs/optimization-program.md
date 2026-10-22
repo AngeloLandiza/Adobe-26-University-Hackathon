@@ -842,3 +842,94 @@ Commands (from `distil-research/chameleon/`, `PYTHONPATH=$PWD`, CPU only, at mos
 | v5 vs v5 + solver on the winner (`v5sw`, holdout) | 11-11 (38 unsure) | 2.54 vs 2.46 |
 | v5_chl2 vs v5sw_chl2 (real ads) | solver 17-9 (p = 0.17, 74 unsure) | 1.90 -> 1.96 |
 **Verdict:** Sonnet's advantage lives in its exact geometry, not just its plan: realizing Sonnet's own plan with the solver keeps only about half of it (21-5 -> 17-9 vs v5). A plan-predicting student is therefore capped below that oracle; not pursued. The solver polish is mostly below the judge's resolution (38/60 and 74/100 unsure): harmless and leaning positive on real ads; optional (`CHAMELEON_SOLVER=winner`), not a gain.
+
+## Sonnet's learned proportions (CHAMELEON_TARGETS) (2026-10-22)
+The judged result above says Sonnet's lead lives in its exact geometry. Its proportions differ from v5's in a consistent way: a smaller headline (median font / short side 0.088 vs 0.110 on the holdout cells) and a hero that is no smaller. Those proportions turn out to be predictable from a few numbers about the source and the target, so the engine can be told "make each piece the size Sonnet would" without running Sonnet. CPU only; nothing judged yet.
+
+**Words used here.**
+- A **target** is one number Sonnet's layout has that we try to predict: for example the headline's font size divided by the canvas's short side (`font_headline`), or the square root of the share of the canvas the hero photo covers (`hero`; 0.4 means 16% of the canvas).
+- **Ridge regression** is a straight-line fit (a weighted sum of the inputs) whose weights are kept small, so it doesn't overfit. The inputs are 14 numbers (target and source aspect, target area, how much the short side grows, headline length and size, element counts, hero share, the same quantity measured on the source, the role's text length) plus every pairwise product of 9 of them.
+- **Grouped cross-validation**: the 2,659 Sonnet layouts are split into 5 parts by *parent ad* (an ad and all its augmented variants stay in one part); each part is predicted by a model fitted on the other four. R² is the share of the spread explained (1 = perfect, 0 = no better than always guessing the mean).
+- **Teacher distance**: on a cell where Sonnet made a layout, how far a variant's geometry is from Sonnet's: |log size ratio| of headline font, hero, CTA and logo (0.10 means about 10% too big or too small), the IoU of the two content bounding boxes, and the mean distance between matching unit centres as a share of the canvas diagonal.
+
+### 1. The models (`dev/distill/fit_targets.py` -> `engine/pipeline/layout/sonnet_targets.json`, 45 KB)
+Fitted on the layouts as the engine draws them (`llm_layout.execute`: images kept in proportion, text fitted into Sonnet's box), which is what the judge saw. Fitting on Sonnet's raw numbers instead biased the CTA font by +20% (its labels often don't fit the box it asked for). Each target picks its scale (plain or log) and penalty by CV. The holdout column is the final model on the 93 Sonnet holdout layouts (holdout ads, never fitted on).
+
+| Target | n (parent ads) | mean | CV R² | CV MAE | Holdout R² (n) |
+|---|---|---|---|---|---|
+| font_headline | 2,659 (45) | 0.150 | **0.91** | 0.018 | 0.91 (93) |
+| font_subheadline | 2,377 (39) | 0.069 | 0.88 | 0.010 | 0.81 (93) |
+| font_other_text (body) | 1,243 (15) | 0.059 | 0.92 | 0.007 | 0.94 (68) |
+| font_cta (label) | 1,499 (28) | 0.074 | 0.93 | 0.010 | - |
+| font_legal | 804 (16) | 0.037 | 0.91 | 0.005 | 0.93 (46) |
+| font_badge | 1,479 (27) | 0.063 | 0.89 | 0.010 | 0.90 (93) |
+| cta_h (pill height / S) | 1,431 (25) | 0.211 | 0.93 | 0.029 | - |
+| cta_w (pill width / W) | 1,431 (25) | 0.366 | 0.84 | 0.055 | - |
+| logo (sqrt area share) | 1,488 (23) | 0.168 | 0.68 | 0.020 | 0.19 (32) |
+| hero (sqrt area share) | 2,143 (38) | 0.373 | 0.66 | 0.054 | 0.82 (61) |
+| content_w (bbox / W) | 2,659 (45) | 0.903 | 0.32 | 0.032 | 0.57 (93) |
+| content_h (bbox / H) | 2,659 (45) | 0.816 | 0.51 | 0.074 | 0.09 (93) |
+| margin / S | 2,659 (45) | 0.062 | 0.18 | 0.024 | dropped |
+| gap / headline font | 2,659 (45) | 0.536 | 0.27 | 0.255 | dropped |
+
+- Sizes are very predictable; *where* things go (margins, gaps, the content box) is not. The two weakest targets (R² < 0.3) are not written. The content-box targets are written but unused: they can't be expressed as a clean pull in the LP.
+- Grouping by parent ad is stricter than grouping by ad (the first estimate, 0.86 for hero share, grouped variants of one ad apart).
+- The holdout ads have no `cta` role (the heuristic plan calls their button a badge), hence no holdout number for CTA targets.
+- **Runtime** (`engine/pipeline/layout/targets.py`, plain Python over a few dozen numbers, no numpy needed): `predict` returns only the targets it is sure of: the role exists in the source and every base input is inside the training range widened by 25% of it. Never raises.
+
+### 2. Where the targets act
+- **Solver pull (`solver.py`, both modes).** Each block gets a target scale: the scale that brings its units to their predicted sizes (text by role font, a CTA also by its pill height, logo and hero by area), averaged over the units in the block by priority; no target when they disagree (a headline on its photo that should shrink while the photo should grow). Then:
+  - an L1 pull of weight 1000 per px of the block's long side (the W_KEEP tier, so it beats equal gaps and margins but not shared lines);
+  - the block may shrink (down to 0.6x, never under a role floor or the v2 logo floor) or grow past 1.2x (up to its target, 2.5x at most; text still at most 1.5x its source size);
+  - the headline's font stays the largest (font-based, not scale-based);
+  - a lone text that shrank is re-wrapped on fewer lines when it has room (its inked width, its slot, or the safe width, whichever is narrowest and saves a line, staying off every other block), so "Chase / the Light" set smaller becomes "Chase the Light". On the 90 train cells this re-wraps 24.
+- **Bisection (`CHAMELEON_TARGETS=1` only):** `text_cap` also caps each text at 1.1x its predicted size (floors still win). This is the one place bisection decides a text's size, and the room a smaller headline frees goes to whoever can use it, mostly the hero.
+- **Anchored (`=1` only):** up to 2 extra candidates (`anchored/mode=targets/r=...`) where each piece with a prediction is sized at its own predicted scale instead of the global s, and positions, gaps and the other pieces follow s as usual (the largest feasible s, and the one nearest the pieces' own scales). The normal candidates are unchanged.
+- **Modes:** `CHAMELEON_TARGETS=1` = the strategies above, plus the solver with pulls on every gate-passing candidate before grading. `=winner` = only the picked layout is re-solved with pulls after `pick_best`, so no pick changes. Unset: byte-identical; `tests/test_targets.py` checks the golden v5 hashes on 3 samples x 13 targets and that `predict` is never called.
+
+### 3. Teacher distance (`dev/distill/eval_targets.py`)
+Tuned on 90 train cells from one parent-ad fold, with a model fitted without that fold: pull weight 300 / 1000 / 3000 (1000 kept), dead zone, text slack, whether pictures may shrink (they may: forbidding it made hero and logo errors worse). Holdout, all 93 Sonnet holdout cells, final settings (mean / median; lower is better except IoU):
+
+| Variant | head | hero | logo | content IoU | centre dist | headline font (median) | hero share (median) | closer to Sonnet than v5 (cells) | gate fails |
+|---|---|---|---|---|---|---|---|---|---|
+| v5 | 0.252 / 0.246 | 0.332 / 0.132 | 0.161 / 0.128 | 0.853 / 0.886 | 0.139 / 0.146 | 0.110 | 13.1% | - | 0 |
+| v5 + solver (winner) | 0.252 / 0.246 | 0.329 / 0.132 | 0.161 / 0.128 | 0.863 / 0.889 | 0.145 / 0.148 | 0.110 | 13.3% | 2-2 | 0 |
+| **v5 + targets (before grading, `v5t`)** | 0.125 / 0.107 | 0.297 / 0.122 | 0.210 / 0.129 | 0.841 / 0.862 | 0.137 / 0.143 | 0.091 | 11.6% | 51-22 | 0 |
+| **v5 + targets (winner, `v5tw`)** | 0.127 / 0.107 | 0.296 / 0.128 | **0.143 / 0.087** | 0.851 / 0.872 | 0.146 / 0.149 | 0.091 | 11.4% | **56-13** | 0 |
+| Sonnet plan + solver | 0.115 / 0.081 | 0.228 / 0.091 | 0.563 / 0.582 | 0.839 / 0.857 | 0.061 / 0.050 | 0.094 | 15.5% | 46-44 | 4 |
+| Sonnet plan + solver + targets | 0.110 / 0.098 | 0.244 / 0.111 | 0.563 / 0.582 | 0.831 / 0.851 | 0.060 / 0.047 | 0.093 | 12.4% | 51-39 | 4 |
+| Sonnet | | | | | | 0.088 | 14.8% | | |
+
+- **Headline: the error halves** (median 25% -> 11%), and the median headline goes from 0.110 to 0.091 of the short side (Sonnet 0.088). Logo error falls by a third with the winner-only pull. The 90 train cells say the same (head 0.252 -> 0.117 median, logo 0.238 -> 0.118, hero 0.145 -> 0.110; 62-15 closer).
+- **Hero: barely moves**, and the median hero share even drops (13.1% -> 11.4%, Sonnet 14.8%). The model predicts heroes about the size v5 already gives on these ads (median -3%), shrinking is always possible while growing needs room, and the hero model is the weakest of the size models (R² 0.66). The "bigger hero" half of the diagnosis is not delivered.
+- Arrangement doesn't move: content IoU and centre distance stay at v5's level (centre 0.14 vs 0.05 for the plan variants). The targets fix sizes, not structure.
+- Targets don't help Sonnet's own plan: its buckets are already Sonnet's sizes, so the model's guesses are noise there (plan+solver head 0.081 -> 0.098 median).
+
+### 4. Look (source | v5 | v5tw | v5t | Sonnet; 16 holdout cells + 3 samples x 6 sizes, against `rubric.md`)
+Sheets: `training-data/ab/_flaws.nosync/sheets/targets/{holdout,samples}.png` (`eval_targets sheet`).
+- **v5tw is v5 with Sonnet's type scale.** Same composition, smaller headline (often re-wrapped onto one line: warmup medium rectangle, c02 facebook cover, the way Sonnet sets them), logos resized, the rest unchanged. When the smaller headline sits in a stack that doesn't reflow, it leaves more empty space (core story, both linkedin banners: "Chase / the Light" stays on 2 small lines when the CTA or hero blocks the wider measure). Headline dominance drops a little, though it stays the largest text. Honest read: closer to Sonnet's proportions, about half the changed cells a toss-up, a few slightly emptier.
+- **v5t re-picks most cells** (134 / 192 on holdout). Some are clearly more Sonnet-like: anchored targets candidates on facebook covers (hero left, one-line headline, CTA under it), the c02 skyscraper with the bottle on top, bisection medium rectangles with a one-line headline. Others are worse: a warmup story with the CTA parked at the bottom edge, a core medium rectangle with an oversized stack. As with balance and the solver, re-picks are a coin flip; only the judge can tell.
+
+### 5. Runs (CPU, 3 workers; compared with v5 by design hash, `eval_solver changed --ab` / `visible`)
+| Run | Changed / cells | Same candidate | Different winner | Visible | Fallback | Gate failures | s / cell |
+|---|---|---|---|---|---|---|---|
+| `v5t` (holdout) | 174 / 192 | 40 | 134 | 174 | 20 -> 19 | 0 | 0.69 -> 0.79 |
+| `v5t_chl2` (real ads) | 466 / 623 | 161 | 305 | 447 | 128 -> 121 | 0 | 0.78 -> 0.85 |
+| `v5t_smp` (samples) | 33 / 39 | 10 | 23 | - | 6 -> 6 | 0 | 1.30 -> 1.43 |
+| `v5tw` (holdout) | 169 / 192 | 169 | 0 | 168 | 20 | 0 | 0.73 |
+| `v5tw_chl2` (real ads) | 385 / 623 | 385 | 0 | 367 | 128 | 0 | 0.81 |
+| `v5tw_smp` (samples) | 33 / 39 | 33 | 0 | - | 6 | 0 | 1.33 |
+Median visible change per changed cell: 18% of pixels (v5tw), 24% (v5t) on holdout; 11% / 14% on real ads. Near-fit fallbacks are never touched.
+
+**Verdict:** the targets do what they say: v5's sizes move halfway to Sonnet's (headline, logo), at 0 gate cost and +0.04-0.1 s per cell. They don't touch Sonnet's arrangement, and they don't enlarge the hero. Whether proportions alone carry part of Sonnet's +1 point is the judge's call; the winner-only variant is the clean test.
+
+### What to judge (coordinator; both orders)
+1. `ab_engine judge --a v5 --b v5tw --max-cells 60 --swap-share 1.0` (holdout, winner only: proportions alone).
+2. `ab_engine judge --a v5_chl2 --b v5tw_chl2 --max-cells 100 --swap-share 1.0` (real ads).
+3. Only if 1 or 2 is positive: `--a v5 --b v5t --max-cells 60` and `--a v5_chl2 --b v5t_chl2 --max-cells 100` (with the strategies' sizes and re-picks).
+
+Commands (from `distil-research/chameleon/`, `PYTHONPATH=$PWD`, CPU only, at most 3 processes; `<v5>` = the six v5 switches):
+- `python -m dev.distill.fit_targets fit [--write]` (CV + holdout table; `--exclude-fold 0 --out <.nosync json>` for a tuning model)
+- `python -m dev.distill.eval_targets designs --split holdout|train|samples --variant sonnet --variant v5 --variant v5sw --variant v5t --variant v5tw --variant plan --variant plant` (train: `--cells 90 --model <tuning model> [--set W_TARGET=1000] --tag t`)
+- `python -m dev.distill.eval_targets dist --split holdout --variant v5 --variant v5tw ...` | `sheet --split holdout --variant v5 --variant v5tw --variant v5t --variant sonnet --out <.nosync png>`
+- `python -m dev.distill.ab_engine run --name v5t --env <v5> --env CHAMELEON_TARGETS=1 --split holdout|challenge2|samples --workers 3` (`=winner` for v5tw*; names `*_chl2`, `*_smp`)
