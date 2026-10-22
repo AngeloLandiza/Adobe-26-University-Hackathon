@@ -675,3 +675,6 @@ With the engine's balance + text-slack passes applied to each student plan (`ing
 ### Student v2 (Qwen3-4B + LoRA on 2,659 compact Sonnet layouts) (2026-10-21)
 Colab L4, 632 steps (2 epochs), ~87 min; eval loss 0.379 -> 0.311 at step 300, still falling, no overfitting. 25/30 held-out plans pass the gates.
 **Judged vs v5 (both orders): 13-11 for v5 (1 unsure), p = 0.84; ship-readiness 2.62 (v5) vs 2.52 (student).** With repair: 14-10, 2.58 vs 2.48. 7x more data took the student from clearly worse (18-3) to roughly even with v5; it does not beat v5 yet, and the engine's repair passes no longer help.
+
+### Student Qwen3-8B on v2 (2026-10-22)
+20/30 plans pass the gates (4B v2: 25/30). **Judged vs v5 (both orders): 8-8 (4 unsure); ship-readiness 2.70 (v5) vs 2.58.** No better than the 4B, slower and fails the gates more often: the 4B is the student to keep. Distillation has reached parity with v5, not superiority.
