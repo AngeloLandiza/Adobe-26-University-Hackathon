@@ -212,7 +212,8 @@ def ingest(outputs: Path, name: str, baseline: str, repair: bool = False) -> Non
         png = Path(r["png"])
         (out_dir / png).parent.mkdir(parents=True, exist_ok=True)
         try:
-            design = execute(source, target, plan, measurer, _parse_json(o["output"]))
+            ans = _parse_json(o["output"])
+            design = execute(source, target, plan, measurer, _compact_to_elements(ans["e"]) if "e" in ans else ans)
             if repair:  # the engine's geometry passes on the LLM's plan: balance (fill, groups, margins) + text slack
                 from engine.pipeline.layout import balance, text_slack
                 from engine.pipeline.types import Candidate
@@ -287,7 +288,13 @@ def gen(split: str, out: Path, model: str, effort: str, workers: int, ads: int |
     from engine.pipeline.render import render_to_image
     from engine.resize import _get_measurer
 
-    designs = sorted(load_corpus(split), key=lambda d: d["task_id"])[:ads] if ads else sorted(load_corpus(split), key=lambda d: d["task_id"])
+    if split == "extra":  # train-only augmented ads outside the corpus (dev/distill/extra_ads.py)
+        from dev.distill.extra_ads import load_extra
+        pool = load_extra()
+    else:
+        pool = load_corpus(split)
+    designs = sorted(pool, key=lambda d: d["task_id"])
+    designs = designs[:ads] if ads else designs
     targets = json.loads(ab.TARGETS_PATH.read_text())
     out.mkdir(parents=True, exist_ok=True)
     keep_f = out / f"gen_{split}.jsonl"

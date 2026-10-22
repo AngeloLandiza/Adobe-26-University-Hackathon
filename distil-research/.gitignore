@@ -7,3 +7,6 @@ training-data/judgments/pilot/sheets/
 training-data/ab/*chl2*/judgments*.jsonl
 # challenge3 (second real-ad evaluation set) judgements quote Crello ad text too: local only
 training-data/ab/*chl3*/judgments*.jsonl
+# raw distillation generations (regenerable; the merged train_v2.jsonl is committed)
+training-data/llm-distill/gen_*.jsonl
+training-data/llm-distill/qc.nosync/
