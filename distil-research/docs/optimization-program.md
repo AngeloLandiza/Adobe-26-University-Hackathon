@@ -833,3 +833,12 @@ Commands (from `distil-research/chameleon/`, `PYTHONPATH=$PWD`, CPU only, at mos
 - `python -m dev.distill.eval_anchored rebuild --name sol_tr_s1 --split train --cells 60 --env <v5> --env CHAMELEON_SOLVER=1`, then `balance_flaws rates --name sol_tr_v5 --name sol_tr_s1`
 - `python -m dev.distill.eval_solver cands --split train --cells 60` | `changed --a v5 --b v5s --ab` | `visible --a v5 --b v5s` | `sheet ...` | `absheet --run v5 --run gen_lean_hold --run oracle_plan_solver --cell ...`
 - `python -m dev.distill.oracle_plan run --baseline v5` and `oracle_plan show --cell <cell>`
+
+### Solver and oracle-plan judged (2026-10-22), both orders
+| Comparison | Result | Ship-readiness |
+|---|---|---|
+| raw Sonnet (`gen_lean_hold`) vs Sonnet plan + solver (`oracle_plan_solver`) | **raw Sonnet 20-7, p = 0.019** | 2.90 vs 2.28 |
+| v5 vs Sonnet plan + solver | plan+solver 17-9 (p = 0.17) | 2.41 -> 2.56 |
+| v5 vs v5 + solver on the winner (`v5sw`, holdout) | 11-11 (38 unsure) | 2.54 vs 2.46 |
+| v5_chl2 vs v5sw_chl2 (real ads) | solver 17-9 (p = 0.17, 74 unsure) | 1.90 -> 1.96 |
+**Verdict:** Sonnet's advantage lives in its exact geometry, not just its plan: realizing Sonnet's own plan with the solver keeps only about half of it (21-5 -> 17-9 vs v5). A plan-predicting student is therefore capped below that oracle; not pursued. The solver polish is mostly below the judge's resolution (38/60 and 74/100 unsure): harmless and leaning positive on real ads; optional (`CHAMELEON_SOLVER=winner`), not a gain.
