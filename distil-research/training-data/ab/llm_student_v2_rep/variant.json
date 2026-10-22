@@ -1,0 +1,7 @@
+{
+  "name": "llm_student_v2_rep",
+  "env": {
+    "LLM_LAYOUT": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/training-data/llm-distill/eval_outputs_Qwen3-4B_v2.jsonl",
+    "fallback": "v5"
+  }
+}
