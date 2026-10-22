@@ -695,3 +695,141 @@ v2 student exported to GGUF Q4_K_M (`colab/chameleon_export_gguf.ipynb`, 2.5 GB)
 - Speed: load 3 s; **22.9 s mean per layout** (median 19.1, max 45.4) for ~1,000-1,700 prompt tokens + 150-400 output tokens. 8 threads is ~5% faster (memory-bound). v5 takes ~1 s.
 - Quality of the shipped file: 22/30 plans pass the gates; **judged vs v5 (both orders): 16-6 for v5, p = 0.052; ship-readiness 2.82 (v5) vs 2.09.** 4-bit GGUF quantization moves coordinates by 8-62 px vs the Colab model and loses the parity the Colab model had (11-13).
 **Verdict: the student is not a stage-one candidate** (worse and ~20x slower when shipped). Keep it as a finale direction; v5 (+ optional `CHAMELEON_ANCHOR_BONUS=0.01`) is the engine to port.
+
+## Geometry solver (CHAMELEON_SOLVER) and the oracle-plan test (2026-10-22)
+The research plan (`docs/research/beating-v5-offline.md`) says: let a model or v5 decide the *structure* (what goes where, in what order), and let a small solver compute the exact boxes. Two questions, CPU only, nothing judged yet:
+1. Does a solver pass on top of v5 fix the leftover spacing flaws?
+2. Does "Sonnet's plan + the solver's geometry" keep Sonnet's quality? (If not, a small plan model is pointless.)
+
+**Words used here.**
+- A **block** is one piece the solver moves: a content unit, or a container with everything on it (the layer groups), or several units the candidate already overlaps (text set on a photo), merged. A decoration sitting on one block moves with it. Example: the headline, the CTA pill with its label, the white card with its copy.
+- The **topology** is the structure read off a layout: which block is above or left of which, which blocks form a row or a column, which edges and centre lines they share, which small pieces hug a canvas edge.
+- An **LP** (linear program) finds the numbers that make a weighted sum of costs as small as possible while every rule ("constraint") holds. Here: HiGHS through `scipy.optimize.linprog`.
+
+### Part 1: the solver pass (`engine/pipeline/layout/solver.py`)
+`CHAMELEON_SOLVER=1` re-solves every gate-passing candidate (not the fallback) before grading, as a hook at the end of `generate_candidates`. `CHAMELEON_SOLVER=winner` re-solves only the picked layout after `pick_best` (`engine/resize.py`), so no pick changes. Off by default; with it off the output is byte-identical (`tests/test_solver.py` checks golden hashes of the v5 engine on the 3 samples x 13 targets, taken before the pass existed).
+
+**What it reads off the candidate.** Text boxes are first cut to their inked lines (plus the text-slack margin; the line breaks don't change), so the solver works on what is visible. The blocks are then cut into nested rows and columns (an XY-cut: split wherever a clean gap runs across all of them). A block that spans an axis (a band) or touches a canvas edge stays on it. A small piece that hugged an edge in the source and still sits near it (a logo top-left) is *pinned*.
+
+**The LP.** Three numbers per block: x, y and one uniform scale s. Images and groups keep their proportions by construction, and there are about 5 blocks and 46 variables per candidate.
+- **Hard rules:**
+  - inside the canvas and the v5 safe margin (or no closer than the candidate already was);
+  - every block keeps its order in its row or column, with a gap;
+  - s >= 1, so nothing shrinks;
+  - no text past 1.5x its source size;
+  - no text block grows more than the headline's block, so the headline stays the largest text.
+- **Costs, in tiers** (each tier about 3-10x the next):
+  1. Keep every shared edge or centre line, and keep a block centred in its row or column if it was (1000).
+  2. Keep pinned edges (300).
+  3. Equal gaps in each row or column (100). There are two gap sizes per row or column: pairs that sat close in the source may stay closer than the rest.
+  4. Equal margins on both sides of the free content (100), unless the source was lopsided the same way. Margins are measured from the canvas edge, or from a pinned block.
+  5. Snap lines that are almost aligned (30).
+  6. Stay near the candidate's own block centres (10).
+  7. Grow toward the safe area (1), only when the content leaves more than 25% of the safe area unused on an axis, at most 1.2x.
+
+The candidate itself always satisfies every rule, so the LP never fails. The result must still pass every hard gate, or the original is kept.
+
+**Measured on train** (60 cells, `eval_anchored rebuild` caches `sol_tr_v5`, `sol_tr_s1`, `sol_tr_sw`; `python -m dev.distill.eval_solver cands --split train --cells 60`):
+
+| | v5 | v5 + solver (all candidates) | v5 + solver (winner only) |
+|---|---|---|---|
+| margin_imbalance | 13% | 10% | **7%** |
+| empty_band | 12% | **17%** | 12% |
+| group_split | 52% | 52% | 52% |
+| edge crowding | 12% | 10% | 12% |
+| floating | 12% | 15% | 13% |
+| mixed alignment | 27% | 27% | 25% |
+| text too small | 12% | 12% | 12% |
+| decoration orphaned | 5% | 7% | 7% |
+| widow (any) | 7% | 3% | 3% |
+| winner gate failures | 0 | 0 | 0 |
+| engine seconds per cell | 0.70 | 0.76 | 0.74 |
+
+- **Per candidate** (1,591 candidates):
+  - 79% are re-solved, 9% come out unchanged, and 12% already failed a gate and are left alone;
+  - none fails a gate after solving;
+  - 1.8 ms mean per candidate, LP and both gate checks included (p95 3.3 ms; max 260 ms, the first scipy call).
+- **What moves:** margins even out and widows go. Group splits don't move at all: the pass keeps the candidate's own structure, and a split pair sits in two different rows.
+- **What gets worse with all candidates:** empty bands and floating pieces rise, because about 40% of the changes are a *different* candidate winning (the balance pass had the same problem).
+
+**Runs** (CPU, 2-3 workers, compared with v5 by design hash; `eval_solver changed --ab`, `eval_solver visible`). "Visible" means at least 1% of the 768 px render's pixels changed by more than 40 levels, so these are real moves, not 1 px nudges. The median changed cell has 9-13% of its pixels moved.
+
+| Run | Changed / cells | Same candidate re-solved | Different winner | Visible | Fallback | Gate failures | s / cell |
+|---|---|---|---|---|---|---|---|
+| `v5s` (holdout) | 162 / 192 | 88 | 74 | 157 | 20 -> 20 | 0 | 0.69 -> 0.73 |
+| `v5s_chl2` (real ads) | 430 / 623 | 245 | 185 | 403 | 128 -> 122 | 0 | 0.79 -> 0.82 |
+| `v5s_smp` (samples) | 33 / 39 | 19 | 14 | 33 | 6 -> 5 | 0 | 1.30 -> 1.31 |
+| `v5sw` (holdout, winner only) | 159 / 192 | 159 | 0 | 153 | 20 | 0 | 0.69 |
+| `v5sw_chl2` (real ads, winner only) | 409 / 623 | 409 | 0 | 374 | 128 | 0 | 0.80 |
+| `v5sw_smp` (samples, winner only) | 32 / 39 | 32 | 0 | 32 | 6 | 0 | 1.26 |
+
+Changed cells by target shape (holdout `v5s`, changed / cells, of which a different winner):
+- strip 40/43 (19)
+- wide 43/49 (19)
+- very tall 24/26 (9)
+- tall 23/30 (13)
+- square 21/29 (8)
+- landscape 11/15 (6)
+
+Real ads (`v5s_chl2`) follow the same pattern: strip 111/147, wide 106/148, very tall 73/94, square 58/90, tall 54/100, landscape 28/44.
+
+**Honest visual verdict** (source | v5 | v5 + solver against `rubric.md`; 6 + 16 train cells and the 3 samples at 728x90, 970x250, 320x50 and 1584x396; sheets in `training-data/ab/_flaws.nosync/sheets/solver/`):
+- **In-place repairs are small and mostly neutral-to-better:**
+  - a column moved off the top so its margins match;
+  - gaps made even in a stack;
+  - a leaderboard headline slightly larger.
+- **Re-picks are a coin flip, and some are worse:**
+  - the core billboard switches to a row template with a tiny badge and a tiny CTA;
+  - a train billboard switches to a bisection layout with an empty left half;
+  - the warmup linkedin banner becomes a calm anchored stack, which is better.
+- **Equal gaps don't fix a spread-out layout.** When an anchored "spread" layout already has equal gaps (headline at the top, button in the middle, subline at the bottom of a portrait), the LP is already at its optimum. It also sometimes spreads a row evenly where a designer would group (core linkedin: the text column is pushed to the right edge).
+
+**Verdict:** the formulation works mechanically (fast, never infeasible, 0 gate failures) but does not visibly lift v5. Expect a small effect at best. Judge the winner-only mode first: it is the clean test of the geometry itself, without re-picks.
+
+### Part 2: oracle plan (`dev/distill/oracle_plan.py`)
+Sonnet's 31 holdout layouts that have a v5 cell (`qc.nosync/gen_holdout*.jsonl`) are each reduced to a **discrete plan**, per unit:
+- the region on a coarse grid (3x3; 1x5 on wide or strip canvases, 5x1 on very tall ones);
+- reading order;
+- an anchor per axis (start / centre / end / none, relative to the canvas);
+- a scale bucket: text by its largest font / the short side, anything else by sqrt(area share), on a x1.3 geometric grid;
+- the line count of each text;
+- group-together (close and aligned);
+- demoted (text at its floor);
+- edges it bleeds off;
+- the **tree**: Sonnet's units as nested rows and columns with their order.
+
+Example, linkedin banner: `["x", ["product", ["y", ["wordmark", "headline", "subhead"]], "cta_bg"]]`, with the headline in font bucket 10 on 1 line.
+
+**Realization** throws Sonnet's coordinates away:
+1. The tree is allocated top-down in the safe area, each unit at its bucket size, never below its role floor, through the engine's `place_unit`. A squeezed row keeps every unit at least at its floor size. A band that bled off an edge holds the pack at that edge and is stretched back to it.
+2. Background and decorations go the engine's way.
+3. `solver.realize` runs the same LP with the plan's anchors as pulls, a 2x growth cap and a weaker pull toward the naive positions.
+
+**First attempt, and why it changed:** placing each unit inside its grid cells gave headlines a third of the width (text much smaller than Sonnet's) and lost the order where cells overlapped. The tree plus line counts fixed both.
+
+**Results** (31 cells; variants `oracle_plan_solver`, and `oracle_plan_naive` for reference; a plan that fails a gate falls back to v5's winner, like `llm_layout ingest`):
+- **27 / 31 realized and pass every gate.** The 4 fallbacks are three 320x50 cells and one 160x600 cell with a widely letter-spaced kicker. Raw Sonnet falls back on 5 cells.
+- 27 differ from v5 and 29 from `gen_lean_hold` (raw Sonnet). All are visibly different: the median cell has 27-32% of its pixels changed.
+- The solver changed the naive placement in 25 of 27 cells.
+
+**Honest visual verdict** (source | v5 | raw Sonnet | plan only | plan + solver; 16 cells, sheets `oracle_[b-e].png`):
+- **Plan + solver keeps Sonnet's arrangement on almost every cell:** the same order, rows and columns, and anchoring, the band back at the top. The design reads as the same one.
+- **Often better filled than raw Sonnet:** the instagram portraits, the c07 youtube thumbnail and half page get larger text that fills the canvas, and the linkedin headline grows.
+- **Worse on a few:**
+  - a 160x600 skyscraper where equal gaps push the button to the bottom edge;
+  - a medium rectangle where Sonnet's large button bucket gives an oversized button;
+  - stories where the stack is spread with equal gaps rather than grouped.
+- **My read:** about at parity with raw Sonnet. So a plan model plus the solver could plausibly carry most of Sonnet's +1 point, but only the judge can say.
+
+### What to judge (coordinator; both orders)
+1. `ab_engine judge --a gen_lean_hold --b oracle_plan_solver --swap-share 1.0` (29 changed cells, no cap). This is the oracle question: a tie or a win means train the plan model.
+2. `ab_engine judge --a v5 --b oracle_plan_solver --swap-share 1.0` (27 cells). Sonnet beat v5 21-5 on these cells.
+3. `ab_engine judge --a v5 --b v5sw --max-cells 60 --swap-share 1.0` (holdout, winner only).
+4. `ab_engine judge --a v5_chl2 --b v5sw_chl2 --max-cells 100 --swap-share 1.0` (real ads, winner only).
+5. Only if 3 or 4 is positive: `--a v5 --b v5s --max-cells 60` and `--a v5_chl2 --b v5s_chl2 --max-cells 100` (all candidates, with re-picks).
+
+Commands (from `distil-research/chameleon/`, `PYTHONPATH=$PWD`, CPU only, at most 3 processes; `<v5>` = the six v5 switches):
+- `python -m dev.distill.ab_engine run --name v5s --env <v5> --env CHAMELEON_SOLVER=1 --split holdout|challenge2|samples --workers 3` (`=winner` for v5sw*)
+- `python -m dev.distill.eval_anchored rebuild --name sol_tr_s1 --split train --cells 60 --env <v5> --env CHAMELEON_SOLVER=1`, then `balance_flaws rates --name sol_tr_v5 --name sol_tr_s1`
+- `python -m dev.distill.eval_solver cands --split train --cells 60` | `changed --a v5 --b v5s --ab` | `visible --a v5 --b v5s` | `sheet ...` | `absheet --run v5 --run gen_lean_hold --run oracle_plan_solver --cell ...`
+- `python -m dev.distill.oracle_plan run --baseline v5` and `oracle_plan show --cell <cell>`

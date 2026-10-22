@@ -465,4 +465,7 @@ def generate_candidates(source: dict, target: dict, plan: PriorityPlan, measurer
     from engine.pipeline.layout import balance
     if balance.enabled():  # CHAMELEON_BALANCE=1: bands span, groups together, leftover space balanced (never raises)
         candidates = balance.balance_all(source, target, plan, measurer, candidates)
+    from engine.pipeline.layout import solver
+    if solver.enabled():  # CHAMELEON_SOLVER=1: gaps, margins and alignment re-solved by an LP (never raises)
+        candidates = solver.solve_all(source, target, plan, measurer, candidates)
     return candidates

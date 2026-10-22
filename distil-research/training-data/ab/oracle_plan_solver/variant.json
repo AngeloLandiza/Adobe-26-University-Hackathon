@@ -1,0 +1,14 @@
+{
+  "name": "oracle_plan_solver",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection,anchored",
+    "CHAMELEON_BISECT_V2": "1",
+    "CHAMELEON_HIER_LOCK": "1",
+    "CHAMELEON_NEAR_FIT": "1",
+    "CHAMELEON_LAYERS": "1",
+    "CHAMELEON_TEXT_SLACK": "1",
+    "ORACLE_PLAN": "sonnet gen_holdout",
+    "solver": "True",
+    "fallback": "v5"
+  }
+}

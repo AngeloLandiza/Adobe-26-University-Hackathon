@@ -1,0 +1,13 @@
+{
+  "name": "v5s",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection,anchored",
+    "CHAMELEON_BISECT_V2": "1",
+    "CHAMELEON_HIER_LOCK": "1",
+    "CHAMELEON_NEAR_FIT": "1",
+    "CHAMELEON_LAYERS": "1",
+    "CHAMELEON_TEXT_SLACK": "1",
+    "CHAMELEON_LLM": "heuristic",
+    "CHAMELEON_SOLVER": "1"
+  }
+}
