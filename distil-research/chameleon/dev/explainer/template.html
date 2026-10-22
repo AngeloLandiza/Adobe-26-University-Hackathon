@@ -57,13 +57,15 @@ section { display: grid; gap: 18px; margin-top: 64px; }
 button:focus-visible, .switch input:focus-visible + span { outline: 2px solid var(--blade); outline-offset: 2px; }
 
 /* stage ladder: the pipeline as a sequence of stops */
-.ladder { position: relative; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0; padding-top: 4px; }
-.ladder::before { content: ""; position: absolute; left: 7.14%; right: 7.14%; top: 15px; height: 2px; background: var(--mat-line); }
-.ladder .fillbar { position: absolute; left: 7.14%; top: 15px; height: 2px; background: var(--blade); width: 0; transition: width .6s cubic-bezier(.65,0,.25,1); }
+.ladder { position: relative; display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 0; padding-top: 4px; }
+.ladder::before { content: ""; position: absolute; left: 5.56%; right: 5.56%; top: 15px; height: 2px; background: var(--mat-line); }
+.ladder .fillbar { position: absolute; left: 5.56%; top: 15px; height: 2px; background: var(--blade); width: 0; transition: width .6s cubic-bezier(.65,0,.25,1); }
 .stop { position: relative; display: grid; justify-items: center; gap: 6px; background: none; border: 0; cursor: pointer; padding: 0 2px; color: var(--ink-soft); font: 500 0.78rem/1.25 var(--f-body); text-align: center; }
 .stop .dot { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--mat-line); background: var(--panel); display: grid; place-items: center; font: 500 0.66rem var(--f-mono); transition: all .3s; }
 .stop.done .dot { border-color: var(--blade); }
 .stop[aria-pressed="true"] { color: var(--ink); font-weight: 600; }
+.stop.exp .dot { border-style: dashed; }
+.stop.exp { font-style: italic; }
 .stop[aria-pressed="true"] .dot { background: var(--blade); border-color: var(--blade); color: var(--panel); transform: scale(1.12); }
 .row { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; }
 .play { font: 600 0.88rem var(--f-body); border: 1px solid var(--ink); background: none; color: var(--ink); border-radius: 999px; padding: 7px 16px; cursor: pointer; }
@@ -91,7 +93,7 @@ button:focus-visible, .switch input:focus-visible + span { outline: 2px solid va
 .caption b { font-weight: 600; }
 
 /* original / today / final strip of real renders */
-.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: end; }
+.trio { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; align-items: end; }
 .trio figure { margin: 0; display: grid; gap: 6px; min-width: 0; }
 .trio .frame { height: 150px; display: grid; place-items: center; background: var(--stage-bg); border-radius: 8px; padding: 8px; }
 .trio img { max-width: 100%; max-height: 134px; display: block; }
@@ -113,7 +115,7 @@ button:focus-visible, .switch input:focus-visible + span { outline: 2px solid va
 .split { display: flex; height: 26px; border-radius: 6px; overflow: hidden; font: 600 0.78rem var(--f-mono); background: var(--mat); }
 .split div { display: flex; align-items: center; padding: 0 8px; color: #fff; width: 50%; transition: width 1.1s cubic-bezier(.3,.7,.2,1); white-space: nowrap; overflow: hidden; }
 .split .w { background: var(--win); } .split .l { background: var(--old); justify-content: flex-end; }
-@media (max-width: 620px) { .res { grid-template-columns: minmax(0, 1fr) 64px; } .res .split { grid-column: 1 / -1; grid-row: 2; } }
+@media (max-width: 620px) { .trio { grid-template-columns: repeat(2, minmax(0, 1fr)); } .res { grid-template-columns: minmax(0, 1fr) 64px; } .res .split { grid-column: 1 / -1; grid-row: 2; } }
 .big { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; align-items: start; }
 @media (max-width: 720px) { .big { grid-template-columns: 1fr; } }
 .score { font: 800 clamp(2.6rem, 7vw, 3.8rem)/1 var(--f-display); color: var(--win); font-variant-numeric: tabular-nums; }
@@ -205,6 +207,14 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
     </div>
   </section>
 
+  <section aria-labelledby="llm-h">
+    <div class="eyebrow">Experimental</div>
+    <h2 id="llm-h">Can a language model design it?</h2>
+    <p>Claude laid out ads directly from the ad's JSON, and the engine only fitted the text and checked the hard rules. Then a small open model that could run offline was trained on Claude's layouts. All results are against the final pipeline, judged in both image orders.</p>
+    <div class="panel results" id="llmres"></div>
+    <p class="note">The scoring container has no internet, so Claude itself can't be used at scoring time; only a small local model could. More training data took it from clearly worse (3–18) to about even (11–13). It doesn't beat the final pipeline yet, so it isn't part of it.</p>
+  </section>
+
   <section aria-labelledby="why-h">
     <div class="eyebrow">Tried and dropped</div>
     <h2 id="why-h">Every idea faced the same judge</h2>
@@ -254,6 +264,8 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
     { id: "v3", name: "+ Hierarchy & near-fit", desc: "Adds the hierarchy lock (CTA, subhead and fine print stay clearly smaller than the headline) and near-fit (a plain shrink is kept when the shape barely changes)." },
     { id: "v3L", name: "+ Layers", desc: "Adds layers: backgrounds fill the new canvas and text stays on the card or band it sat on." },
     { id: "v5", name: "+ Anchored · final", desc: "Adds anchored layouts: every piece keeps its place in the original (top-left stays top-left, centred stays centred) while the design grows to fill the new canvas. Text boxes also get a safety margin so no line can re-wrap. This is the current best pipeline." },
+    { id: "student", name: "Small model (experimental)", exp: true, desc: "A 4-billion-parameter open model (Qwen3-4B) fine-tuned on 2,659 Sonnet layouts lays the ad out on its own; the engine fits the text and checks the hard rules. It could run offline in the scored container, but it is not part of the shipped pipeline: judged against the final pipeline it comes out about even (11–13)." },
+    { id: "teacher", name: "Sonnet (ceiling)", exp: true, desc: "Claude Sonnet lays the ad out directly. It cannot run in the offline scoring container; it shows the quality the small model is learning to reach. Judged against the final pipeline it wins clearly (13–1)." },
   ];
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const $ = (s) => document.querySelector(s);
@@ -304,6 +316,9 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
   function pickText(out) {
     if (!out) return "";
     const fam = out.c.split("/")[0].split(":")[0];
+    if (out.c.startsWith("fallback-v5")) return "nothing usable (its plan broke a hard rule), so the final pipeline's layout is shown";
+    if (out.c === "student") return "the small model's own layout";
+    if (out.c === "teacher") return "Sonnet's own layout";
     if (out.f) return "the plain shrink of the original";
     if (fam === "bisection") return "a bisection layout";
     if (["row", "stack", "columns"].includes(fam)) return `the “${fam}” floor plan`;
@@ -332,7 +347,7 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
 
     // ladder
     document.querySelectorAll(".stop").forEach((b, i) => { b.setAttribute("aria-pressed", String(i === state.st)); b.classList.toggle("done", i <= state.st); });
-    $("#fillbar").style.width = (state.st / 6) * 85.72 + "%";
+    $("#fillbar").style.width = (state.st / 8) * 88.89 + "%";
 
     // caption: what this stage adds, what it picked, whether it changed anything
     const size = s.id === "orig" ? `${cur.W}×${cur.H}` : `${state.size.name} ${state.size.w}×${state.size.h}`;
@@ -347,7 +362,7 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
 
     // trio of real renders
     const o = state.ex.outs[state.size.id];
-    $("#trio").innerHTML = [["Original", state.ex.png, `${state.ex.canvas.width}×${state.ex.canvas.height}`], ["Today", o.base.png, `${state.size.w}×${state.size.h}`], ["Final", o.v5.png, `${state.size.w}×${state.size.h}`]]
+    $("#trio").innerHTML = [["Original", state.ex.png, `${state.ex.canvas.width}×${state.ex.canvas.height}`], ["Today", o.base.png, `${state.size.w}×${state.size.h}`], ["Final", o.v5.png, `${state.size.w}×${state.size.h}`], ["Small model", o.student.png, `${state.size.w}×${state.size.h}`]]
       .map(([n, src, d]) => `<figure><div class="frame"><img src="${src}" alt="${n}: ${state.ex.name} at ${d}"></div><figcaption><b>${n}</b> · ${d}</figcaption></figure>`).join("");
   }
 
@@ -357,7 +372,7 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
     if (state.timer) return stopPlay();
     $("#play").setAttribute("aria-pressed", "true"); $("#play").textContent = "Pause";
     let i = 0; go(0);
-    const tick = () => { i += 1; if (i > 6) return stopPlay(); go(i); state.timer = setTimeout(tick, reduce ? 1400 : 1900); };
+    const tick = () => { i += 1; if (i > 8) return stopPlay(); go(i); state.timer = setTimeout(tick, reduce ? 1400 : 1900); };
     state.timer = setTimeout(tick, reduce ? 1400 : 1700);
   }
 
@@ -378,7 +393,7 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
   });
   STAGES.forEach((s, i) => {
     const b = document.createElement("button"); b.type = "button"; b.className = "stop"; b.id = "stage-" + s.id;
-    b.innerHTML = `<span class="dot">${i}</span><span>${s.name}</span>`;
+    b.innerHTML = `<span class="dot">${i}</span><span>${s.name}</span>`; if (s.exp) b.classList.add("exp");
     b.onclick = () => { stopPlay(); go(i); };
     ladder.appendChild(b);
   });
@@ -403,6 +418,15 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
   ];
   $("#results").innerHTML = RES.map(([w, set, a, b, p, sig]) =>
     `<div class="res"><div class="what">${w}<span>${set}</span></div><div class="split" data-w="${a}" data-l="${b}"><div class="w">${a}</div><div class="l">${b}</div></div><div class="p ${sig ? "sig" : ""}">p ${p.startsWith("<") ? "" : "= "}${p}</div></div>`).join("");
+  const LLM = [
+    ["Claude Opus designs (ceiling)", "20 held-back ads", 14, 1, "0.001", true],
+    ["Same, re-judged blind by Claude Sonnet", "second judge", 14, 1, "0.001", true],
+    ["Claude Sonnet designs, from the JSON only", "20 held-back ads", 13, 1, "0.002", true],
+    ["Small model v1 (370 examples)", "30 held-back tasks", 3, 18, "0.001", false],
+    ["Small model v2 (2,659 examples)", "30 held-back tasks", 11, 13, "0.84", false],
+  ];
+  $("#llmres").innerHTML = LLM.map(([w, set, a, b, p, sig]) =>
+    `<div class="res"><div class="what">${w}<span>${set}</span></div><div class="split" data-w="${a}" data-l="${b}"><div class="w">${a}</div><div class="l">${b}</div></div><div class="p ${sig && a > b ? "sig" : ""}">p ${p.startsWith("<") ? "" : "= "}${p}</div></div>`).join("");
   document.querySelectorAll(".bars").forEach((box) => {
     const max = +box.dataset.max;
     JSON.parse(box.dataset.bars).forEach(([label, v, cls, txt]) => {
