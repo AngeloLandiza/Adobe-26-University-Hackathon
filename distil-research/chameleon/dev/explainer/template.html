@@ -212,7 +212,7 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
     <h2 id="llm-h">Can a language model design it?</h2>
     <p>Claude laid out ads directly from the ad's JSON, and the engine only fitted the text and checked the hard rules. Then a small open model that could run offline was trained on Claude's layouts. All results are against the final pipeline, judged in both image orders.</p>
     <div class="panel results" id="llmres"></div>
-    <p class="note">The scoring container has no internet, so Claude itself can't be used at scoring time; only a small local model could. More training data took it from clearly worse (3–18) to about even (11–13). It doesn't beat the final pipeline yet, so it isn't part of it.</p>
+    <p class="note">The scoring container has no internet, so Claude itself can't be used at scoring time; only a small local model could. More training data took it from clearly worse (3–18) to about even (11–13). A model twice the size did no better (8–8), and preference training made it worse (7–15). It doesn't beat the final pipeline yet, so it isn't part of it.</p>
   </section>
 
   <section aria-labelledby="why-h">
@@ -424,6 +424,8 @@ footer { margin-top: 56px; font-size: 0.82rem; color: var(--ink-soft); max-width
     ["Claude Sonnet designs, from the JSON only", "20 held-back ads", 13, 1, "0.002", true],
     ["Small model v1 (370 examples)", "30 held-back tasks", 3, 18, "0.001", false],
     ["Small model v2 (2,659 examples)", "30 held-back tasks", 11, 13, "0.84", false],
+    ["Small model 8B on the same data", "30 held-back tasks", 8, 8, "1.0", false],
+    ["Small model v2 + preference training (DPO)", "30 held-back tasks", 7, 15, "0.13", false],
   ];
   $("#llmres").innerHTML = LLM.map(([w, set, a, b, p, sig]) =>
     `<div class="res"><div class="what">${w}<span>${set}</span></div><div class="split" data-w="${a}" data-l="${b}"><div class="w">${a}</div><div class="l">${b}</div></div><div class="p ${sig && a > b ? "sig" : ""}">p ${p.startsWith("<") ? "" : "= "}${p}</div></div>`).join("");
