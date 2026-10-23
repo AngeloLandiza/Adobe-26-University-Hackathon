@@ -1,0 +1,17 @@
+{
+  "name": "v7_dev",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection,anchored",
+    "CHAMELEON_BISECT_V2": "1",
+    "CHAMELEON_HIER_LOCK": "1",
+    "CHAMELEON_NEAR_FIT": "1",
+    "CHAMELEON_LAYERS": "1",
+    "CHAMELEON_TEXT_SLACK": "1",
+    "CHAMELEON_CTA_WRAP": "1",
+    "CHAMELEON_HEADLINE_BREAK": "1",
+    "CHAMELEON_LOGO_FLOOR": "confident",
+    "CHAMELEON_KEEP_HERO": "1",
+    "CHAMELEON_TALL_FILL": "1",
+    "CHAMELEON_STRIP_FIT": "1"
+  }
+}

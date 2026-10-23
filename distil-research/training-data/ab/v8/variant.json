@@ -1,0 +1,15 @@
+{
+  "name": "v8",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection,anchored,structure_reflow",
+    "CHAMELEON_BISECT_V2": "1",
+    "CHAMELEON_HIER_LOCK": "1",
+    "CHAMELEON_NEAR_FIT": "1",
+    "CHAMELEON_LAYERS": "1",
+    "CHAMELEON_TEXT_SLACK": "1",
+    "CHAMELEON_CTA_WRAP": "1",
+    "CHAMELEON_HEADLINE_BREAK": "1",
+    "CHAMELEON_LOGO_FLOOR": "confident",
+    "CHAMELEON_STRIP_FIT": "1"
+  }
+}
