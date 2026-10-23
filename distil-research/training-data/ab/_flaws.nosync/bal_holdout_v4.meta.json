@@ -1,0 +1,13 @@
+{
+  "name": "bal_holdout_v4",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection,anchored",
+    "CHAMELEON_BISECT_V2": "1",
+    "CHAMELEON_HIER_LOCK": "1",
+    "CHAMELEON_NEAR_FIT": "1",
+    "CHAMELEON_LAYERS": "1"
+  },
+  "split": "holdout",
+  "cells": null,
+  "seed": 0
+}

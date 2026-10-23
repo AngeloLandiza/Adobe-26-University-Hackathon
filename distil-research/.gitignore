@@ -2,11 +2,8 @@
 # These folders end in ".nosync" so iCloud Drive (the repo lives in ~/Documents)
 # doesn't sync thousands of PNG writes and create "name 2.png" conflict copies.
 *.nosync/
-training-data/judgments/pilot/sheets/
-# challenge2 judgements quote real Crello ad text (licence unverified): local only
-training-data/ab/*chl2*/judgments*.jsonl
-# challenge3 (second real-ad evaluation set) judgements quote Crello ad text too: local only
-training-data/ab/*chl3*/judgments*.jsonl
-# raw distillation generations (regenerable; the merged train_v2.jsonl is committed)
-training-data/llm-distill/gen_*.jsonl
-training-data/llm-distill/qc.nosync/
+# training-data/ is shared in full (for Esteban), including its .nosync folders
+!training-data/**/*.nosync/
+# except the raw Crello parquet shards (~365 MB each, over GitHub's 100 MB file limit):
+# re-download them, see training-data/references/crello.nosync/README.md
+training-data/references/crello.nosync/data/*.parquet

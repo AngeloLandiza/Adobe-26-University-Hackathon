@@ -1,0 +1,11 @@
+{
+  "name": "t60_rel",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection",
+    "CHAMELEON_BISECT_V2": "1",
+    "CHAMELEON_RELPRESERVE": "1"
+  },
+  "split": "train",
+  "cells": 60,
+  "seed": 0
+}

@@ -1,0 +1,14 @@
+{
+  "name": "bal_dev_b1",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection,anchored",
+    "CHAMELEON_BISECT_V2": "1",
+    "CHAMELEON_HIER_LOCK": "1",
+    "CHAMELEON_NEAR_FIT": "1",
+    "CHAMELEON_LAYERS": "1",
+    "CHAMELEON_BALANCE": "1"
+  },
+  "split": "crello_dev",
+  "cells": 60,
+  "seed": 0
+}

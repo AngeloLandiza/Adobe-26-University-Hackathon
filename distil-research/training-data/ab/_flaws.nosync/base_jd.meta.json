@@ -1,0 +1,9 @@
+{
+  "name": "base_jd",
+  "env": {
+    "CHAMELEON_FLEX": "0"
+  },
+  "split": "judged_ab",
+  "cells": null,
+  "seed": 0
+}

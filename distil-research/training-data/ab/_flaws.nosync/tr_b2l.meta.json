@@ -1,0 +1,11 @@
+{
+  "name": "tr_b2l",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection",
+    "CHAMELEON_BISECT_V2": "1",
+    "CHAMELEON_LAYERS": "1"
+  },
+  "split": "train",
+  "cells": 60,
+  "seed": 0
+}

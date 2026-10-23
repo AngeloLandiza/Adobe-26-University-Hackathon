@@ -1,0 +1,9 @@
+{
+  "name": "bisect_jd",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection"
+  },
+  "split": "judged_ab",
+  "cells": null,
+  "seed": 0
+}

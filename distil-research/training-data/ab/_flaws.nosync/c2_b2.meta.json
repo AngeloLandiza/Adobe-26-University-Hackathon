@@ -1,0 +1,10 @@
+{
+  "name": "c2_b2",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection",
+    "CHAMELEON_BISECT_V2": "1"
+  },
+  "split": "challenge2",
+  "cells": null,
+  "seed": 0
+}

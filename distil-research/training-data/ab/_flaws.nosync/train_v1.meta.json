@@ -1,0 +1,9 @@
+{
+  "name": "train_v1",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection"
+  },
+  "split": "train",
+  "cells": 60,
+  "seed": 0
+}

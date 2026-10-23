@@ -1,0 +1,16 @@
+2659 train layouts, 45 parent ads; 93 holdout layouts
+font_headline      n= 2659 ads= 45 mean=0.150 CV R2= 0.91 MAE=0.0183 [log, lam 30.0]  holdout n=93 R2= 0.91 MAE=0.0171
+font_subheadline   n= 2377 ads= 39 mean=0.069 CV R2= 0.88 MAE=0.0104 [id, lam 3.0]  holdout n=93 R2= 0.81 MAE=0.0155
+font_other_text    n= 1243 ads= 15 mean=0.059 CV R2= 0.92 MAE=0.0070 [id, lam 100.0]  holdout n=68 R2= 0.94 MAE=0.0061
+font_cta           n= 1499 ads= 28 mean=0.074 CV R2= 0.93 MAE=0.0102 [id, lam 3.0]
+font_legal         n=  804 ads= 16 mean=0.037 CV R2= 0.91 MAE=0.0051 [id, lam 100.0]  holdout n=46 R2= 0.93 MAE=0.0041
+font_badge         n= 1479 ads= 27 mean=0.063 CV R2= 0.89 MAE=0.0097 [id, lam 100.0]  holdout n=93 R2= 0.90 MAE=0.0088
+cta_h              n= 1431 ads= 25 mean=0.211 CV R2= 0.93 MAE=0.0293 [id, lam 100.0]
+cta_w              n= 1431 ads= 25 mean=0.366 CV R2= 0.84 MAE=0.0554 [log, lam 3.0]
+logo               n= 1488 ads= 23 mean=0.168 CV R2= 0.68 MAE=0.0199 [id, lam 100.0]  holdout n=32 R2= 0.19 MAE=0.0389
+hero               n= 2143 ads= 38 mean=0.373 CV R2= 0.66 MAE=0.0544 [id, lam 3.0]  holdout n=61 R2= 0.82 MAE=0.0443
+content_w          n= 2659 ads= 45 mean=0.903 CV R2= 0.32 MAE=0.0323 [id, lam 100.0]  holdout n=93 R2= 0.57 MAE=0.0250
+content_h          n= 2659 ads= 45 mean=0.816 CV R2= 0.51 MAE=0.0737 [id, lam 100.0]  holdout n=93 R2= 0.09 MAE=0.0498
+margin             n= 2659 ads= 45 mean=0.062 CV R2= 0.18 MAE=0.0235 [id, lam 100.0]  holdout n=93 R2=-1.24 MAE=0.0271  -> dropped
+gap                n= 2659 ads= 45 mean=0.536 CV R2= 0.27 MAE=0.2548 [id, lam 100.0]  holdout n=93 R2= 0.54 MAE=0.2798  -> dropped
+wrote /Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/chameleon/engine/pipeline/layout/sonnet_targets.json (45137 bytes, 12 targets)

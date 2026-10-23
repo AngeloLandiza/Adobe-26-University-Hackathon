@@ -1,0 +1,11 @@
+{
+  "name": "t60_hier",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection",
+    "CHAMELEON_BISECT_V2": "1",
+    "CHAMELEON_HIER_LOCK": "1"
+  },
+  "split": "train",
+  "cells": 60,
+  "seed": 0
+}

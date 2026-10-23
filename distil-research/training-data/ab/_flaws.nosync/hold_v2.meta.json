@@ -1,0 +1,10 @@
+{
+  "name": "hold_v2",
+  "env": {
+    "CHAMELEON_STRATEGIES": "bisection",
+    "CHAMELEON_BISECT_V2": "1"
+  },
+  "split": "holdout",
+  "cells": null,
+  "seed": 0
+}
