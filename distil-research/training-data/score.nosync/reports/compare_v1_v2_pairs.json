@@ -1,0 +1,196 @@
+{
+ "v1": {
+  "d>=1": {
+   "ab:ALL": [
+    0.725,
+    2578
+   ],
+   "ab:challenge": [
+    0.739,
+    414
+   ],
+   "ab:challenge2": [
+    0.754,
+    655
+   ],
+   "ab:challenge3": [
+    0.898,
+    137
+   ],
+   "ab:holdout": [
+    0.689,
+    1362
+   ],
+   "ab:samples": [
+    0.6,
+    10
+   ],
+   "picker:ALL": [
+    0.808,
+    1321
+   ],
+   "picker:crello_dev": [
+    0.766,
+    367
+   ],
+   "picker:holdout": [
+    0.914,
+    139
+   ],
+   "picker:samples": [
+    0.0,
+    2
+   ],
+   "picker:train": [
+    0.811,
+    813
+   ]
+  },
+  "decided": {
+   "ab:ALL": [
+    0.676,
+    4272
+   ],
+   "ab:challenge": [
+    0.685,
+    711
+   ],
+   "ab:challenge2": [
+    0.675,
+    1326
+   ],
+   "ab:challenge3": [
+    0.846,
+    188
+   ],
+   "ab:holdout": [
+    0.658,
+    2037
+   ],
+   "ab:samples": [
+    0.6,
+    10
+   ],
+   "picker:ALL": [
+    0.808,
+    1321
+   ],
+   "picker:crello_dev": [
+    0.766,
+    367
+   ],
+   "picker:holdout": [
+    0.914,
+    139
+   ],
+   "picker:samples": [
+    0.0,
+    2
+   ],
+   "picker:train": [
+    0.811,
+    813
+   ]
+  }
+ },
+ "v2": {
+  "d>=1": {
+   "ab:ALL": [
+    0.74,
+    2578
+   ],
+   "ab:challenge": [
+    0.761,
+    414
+   ],
+   "ab:challenge2": [
+    0.768,
+    655
+   ],
+   "ab:challenge3": [
+    0.905,
+    137
+   ],
+   "ab:holdout": [
+    0.705,
+    1362
+   ],
+   "ab:samples": [
+    0.6,
+    10
+   ],
+   "picker:ALL": [
+    0.811,
+    1321
+   ],
+   "picker:crello_dev": [
+    0.757,
+    367
+   ],
+   "picker:holdout": [
+    0.885,
+    139
+   ],
+   "picker:samples": [
+    0.0,
+    2
+   ],
+   "picker:train": [
+    0.824,
+    813
+   ]
+  },
+  "decided": {
+   "ab:ALL": [
+    0.683,
+    4272
+   ],
+   "ab:challenge": [
+    0.703,
+    711
+   ],
+   "ab:challenge2": [
+    0.683,
+    1326
+   ],
+   "ab:challenge3": [
+    0.814,
+    188
+   ],
+   "ab:holdout": [
+    0.664,
+    2037
+   ],
+   "ab:samples": [
+    0.6,
+    10
+   ],
+   "picker:ALL": [
+    0.811,
+    1321
+   ],
+   "picker:crello_dev": [
+    0.757,
+    367
+   ],
+   "picker:holdout": [
+    0.885,
+    139
+   ],
+   "picker:samples": [
+    0.0,
+    2
+   ],
+   "picker:train": [
+    0.824,
+    813
+   ]
+  }
+ },
+ "v1_vs_solo": {
+  "spearman": 0.6445184852732221,
+  "pearson": 0.6491732747223157,
+  "mae_1to10_after_linear_map": 0.8799701491299416,
+  "in_fold_share": 0.963855421686747
+ }
+}

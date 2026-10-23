@@ -1,0 +1,97 @@
+{
+ "pairs": 634,
+ "rules": {
+  "R1_text_floor": {
+   "pairwise_agreement": 0.573,
+   "decided_pairs": 431,
+   "violation_rate": 0.661
+  },
+  "R2_dead_space": {
+   "pairwise_agreement": 0.623,
+   "decided_pairs": 329,
+   "violation_rate": 0.408
+  },
+  "R3_cramped": {
+   "pairwise_agreement": 0.647,
+   "decided_pairs": 303,
+   "violation_rate": 0.385
+  },
+  "R4_edge_margin": {
+   "pairwise_agreement": 0.525,
+   "decided_pairs": 337,
+   "violation_rate": 0.384
+  },
+  "R5_logo": {
+   "pairwise_agreement": 0.71,
+   "decided_pairs": 69,
+   "violation_rate": 0.09
+  },
+  "R6_looks_shrunk": {
+   "pairwise_agreement": 0.522,
+   "decided_pairs": 270,
+   "violation_rate": 0.301
+  },
+  "R7_uneven_gaps": {
+   "pairwise_agreement": 0.656,
+   "decided_pairs": 349,
+   "violation_rate": 0.387
+  },
+  "R8_reading_order": {
+   "pairwise_agreement": 0.676,
+   "decided_pairs": 487,
+   "violation_rate": 0.727
+  },
+  "R9_hierarchy": {
+   "pairwise_agreement": 0.642,
+   "decided_pairs": 246,
+   "violation_rate": 0.353
+  },
+  "R10_collision": {
+   "pairwise_agreement": 0.686,
+   "decided_pairs": 159,
+   "violation_rate": 0.148
+  },
+  "R11_orphan_word": {
+   "pairwise_agreement": 0.641,
+   "decided_pairs": 92,
+   "violation_rate": 0.121
+  },
+  "R12_alignment": {
+   "pairwise_agreement": 0.584,
+   "decided_pairs": 202,
+   "violation_rate": 0.277
+  },
+  "R13_image_small": {
+   "pairwise_agreement": 0.686,
+   "decided_pairs": 290,
+   "violation_rate": 0.36
+  }
+ },
+ "fitted_weights": {
+  "R1_text_floor": 0.375,
+  "R2_dead_space": 0.152,
+  "R3_cramped": 0.33,
+  "R4_edge_margin": 0.0,
+  "R5_logo": 0.129,
+  "R6_looks_shrunk": 0.235,
+  "R7_uneven_gaps": 0.266,
+  "R8_reading_order": 0.649,
+  "R9_hierarchy": 0.116,
+  "R10_collision": 0.016,
+  "R11_orphan_word": 0.28,
+  "R12_alignment": 0.093,
+  "R13_image_small": 0.329
+ },
+ "train_pairwise": {
+  "hand_weights": 0.745,
+  "fitted_weights": 0.705,
+  "engine_grader": 0.549,
+  "pairs": 397
+ },
+ "holdout_pairwise": {
+  "hand_weights": 0.764,
+  "fitted_weights": 0.755,
+  "engine_grader": 0.65,
+  "pairs": 237
+ }
+}

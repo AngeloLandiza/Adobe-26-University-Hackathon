@@ -1,0 +1,239 @@
+{
+ "holdout": {
+  "table": [
+   {
+    "variant": "base",
+    "judged_rank": 1,
+    "n": 192,
+    "mean": 2.1656222701432237,
+    "worst10_mean": 1.4029854658463647,
+    "fatal_rate": 0.0
+   },
+   {
+    "variant": "bisect",
+    "judged_rank": 2,
+    "n": 192,
+    "mean": 2.310464858427623,
+    "worst10_mean": 1.4928143767804083,
+    "fatal_rate": 0.0
+   },
+   {
+    "variant": "bisect2",
+    "judged_rank": 3,
+    "n": 192,
+    "mean": 2.3597031093858725,
+    "worst10_mean": 1.530413307248241,
+    "fatal_rate": 0.0
+   },
+   {
+    "variant": "v3",
+    "judged_rank": 4,
+    "n": 192,
+    "mean": 2.390231851108647,
+    "worst10_mean": 1.608297130537273,
+    "fatal_rate": 0.0
+   },
+   {
+    "variant": "v3L",
+    "judged_rank": 5,
+    "n": 192,
+    "mean": 2.399702044419127,
+    "worst10_mean": 1.6046861026201946,
+    "fatal_rate": 0.0
+   },
+   {
+    "variant": "v3L_anch",
+    "judged_rank": 6.5,
+    "n": 192,
+    "mean": 2.538047903481221,
+    "worst10_mean": 1.6980899662920812,
+    "fatal_rate": 0.0
+   },
+   {
+    "variant": "v5",
+    "judged_rank": 6.5,
+    "n": 192,
+    "mean": 2.542200846964912,
+    "worst10_mean": 1.7001959952246097,
+    "fatal_rate": 0.0
+   }
+  ],
+  "spearman_mean_vs_ladder": 0.991031208965115,
+  "spearman_worst10_vs_ladder": 0.9549937104572924
+ },
+ "challenge2": {
+  "table": [
+   {
+    "variant": "base_chl2",
+    "judged_rank": 1,
+    "n": 300,
+    "mean": 1.7846448173028038,
+    "worst10_mean": 1.0,
+    "fatal_rate": 0.0
+   },
+   {
+    "variant": "bisect_chl2",
+    "judged_rank": 2,
+    "n": 300,
+    "mean": 1.9540856519768097,
+    "worst10_mean": 1.0,
+    "fatal_rate": 0.0
+   },
+   {
+    "variant": "bisect2_chl2",
+    "judged_rank": 3,
+    "n": 300,
+    "mean": 1.9778159591788969,
+    "worst10_mean": 1.012061907582279,
+    "fatal_rate": 0.0
+   },
+   {
+    "variant": "v3_chl2",
+    "judged_rank": 4,
+    "n": 300,
+    "mean": 2.017336423285883,
+    "worst10_mean": 1.0065456342531902,
+    "fatal_rate": 0.0
+   },
+   {
+    "variant": "v3L_chl2",
+    "judged_rank": 5,
+    "n": 300,
+    "mean": 2.1040664443395873,
+    "worst10_mean": 1.016353271833334,
+    "fatal_rate": 0.0
+   },
+   {
+    "variant": "v3L_anch_chl2",
+    "judged_rank": 6.5,
+    "n": 300,
+    "mean": 2.2052236235811113,
+    "worst10_mean": 1.0743325037713132,
+    "fatal_rate": 0.0
+   },
+   {
+    "variant": "v5_chl2",
+    "judged_rank": 6.5,
+    "n": 300,
+    "mean": 2.2048283603463976,
+    "worst10_mean": 1.0757144053331245,
+    "fatal_rate": 0.0
+   }
+  ],
+  "spearman_mean_vs_ladder": 0.991031208965115,
+  "spearman_worst10_vs_ladder": 0.9454545454545454
+ },
+ "challenge3": {
+  "base_chl3": {
+   "n": 624,
+   "unscored": 0,
+   "fatal_rate": 0.0,
+   "mean": 1.6995244664874853,
+   "worst10_mean": 1.0,
+   "seconds_per_cell": 0.6673958333333334,
+   "by_aspect": {
+    "landscape": {
+     "n": 43,
+     "mean": 2.094
+    },
+    "square": {
+     "n": 86,
+     "mean": 1.931
+    },
+    "strip": {
+     "n": 150,
+     "mean": 1.448
+    },
+    "tall": {
+     "n": 97,
+     "mean": 1.81
+    },
+    "very_tall": {
+     "n": 100,
+     "mean": 1.563
+    },
+    "wide": {
+     "n": 148,
+     "mean": 1.725
+    }
+   },
+   "by_difficulty": {
+    "1": {
+     "n": 58,
+     "mean": 2.395
+    },
+    "2": {
+     "n": 309,
+     "mean": 1.784
+    },
+    "3": {
+     "n": 257,
+     "mean": 1.441
+    }
+   },
+   "fatal_codes": {}
+  },
+  "v5_chl3": {
+   "n": 624,
+   "unscored": 0,
+   "fatal_rate": 0.0,
+   "mean": 2.1483169339014387,
+   "worst10_mean": 1.0570798953469251,
+   "seconds_per_cell": 1.227028846153846,
+   "by_aspect": {
+    "landscape": {
+     "n": 43,
+     "mean": 2.413
+    },
+    "square": {
+     "n": 86,
+     "mean": 2.283
+    },
+    "strip": {
+     "n": 150,
+     "mean": 1.927
+    },
+    "tall": {
+     "n": 97,
+     "mean": 2.316
+    },
+    "very_tall": {
+     "n": 100,
+     "mean": 1.963
+    },
+    "wide": {
+     "n": 148,
+     "mean": 2.232
+    }
+   },
+   "by_difficulty": {
+    "1": {
+     "n": 58,
+     "mean": 2.549
+    },
+    "2": {
+     "n": 309,
+     "mean": 2.26
+    },
+    "3": {
+     "n": 257,
+     "mean": 1.923
+    }
+   },
+   "fatal_codes": {}
+  },
+  "changed_cells": 554,
+  "scorer_cell_wins": {
+   "a": 115,
+   "b": 416
+  },
+  "claude_cell_wins": {
+   "a": 17,
+   "b": 70
+  },
+  "per_cell_agreement_on_judged": {
+   "agree": 69,
+   "n": 87
+  }
+ }
+}

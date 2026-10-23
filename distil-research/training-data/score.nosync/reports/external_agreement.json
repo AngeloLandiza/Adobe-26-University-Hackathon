@@ -1,0 +1,42 @@
+{
+ "v5__vs__ext_joonseomoon|strict=True": {
+  "agree": 36,
+  "n": 52
+ },
+ "v5__vs__ext_joonseomoon|strict=False": {
+  "agree": 36,
+  "n": 52
+ },
+ "v5__vs__ext_tailsgit|strict=True": {
+  "agree": 36,
+  "n": 50
+ },
+ "v5__vs__ext_tailsgit|strict=False": {
+  "agree": 35,
+  "n": 50
+ },
+ "v5_smp__vs__ext_fashton28_smp|strict=True": {
+  "agree": 15,
+  "n": 31
+ },
+ "v5_smp__vs__ext_fashton28_smp|strict=False": {
+  "agree": 16,
+  "n": 31
+ },
+ "v5_smp__vs__ext_joonseomoon_smp|strict=True": {
+  "agree": 16,
+  "n": 26
+ },
+ "v5_smp__vs__ext_joonseomoon_smp|strict=False": {
+  "agree": 16,
+  "n": 26
+ },
+ "v5_smp__vs__ext_tailsgit_smp|strict=True": {
+  "agree": 21,
+  "n": 30
+ },
+ "v5_smp__vs__ext_tailsgit_smp|strict=False": {
+  "agree": 21,
+  "n": 30
+ }
+}

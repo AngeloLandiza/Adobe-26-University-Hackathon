@@ -1,0 +1,131 @@
+{
+  "critiques": 1955,
+  "themes": {
+    "edge_margin": {
+      "count": 1388,
+      "share": 0.71,
+      "examples": [
+        "B is slightly worse: its headline runs almost to both canvas edges (about 25px margins) and the CTA is jammed into the top-left corner. (c01_square_golden_hour_v1@instagram_portrait)",
+        "A also jams the CTA about 12px from the top edge and packs the headline tight against the body, while B has slightly better margins and larger type. (c01_square_golden_hour_v2@half_page)",
+        "A puts the 'Taste the Glow' CTA in the top-left corner above the logo, product and headline, so the reading order is upside down. (c01_square_golden_hour_v2@instagram_portrait)"
+      ]
+    },
+    "text_too_small": {
+      "count": 1360,
+      "share": 0.696,
+      "examples": [
+        "The 'Taste the Glow' label and the 4-packs line are both tiny and hard to read. (c01_square_golden_hour@billboard)",
+        "B shrinks the CTA to an illegibly tiny pill dropped arbitrarily in the bottom-left, off any grid, which buries the action. (c01_square_golden_hour_v1@instagram_portrait)",
+        "A has the CTA detached at top-left above everything, a tiny can with an illegible label, and the text block pushed down into the bottom-left. (c01_square_golden_hour_v1@medium_rectangle)"
+      ]
+    },
+    "logo": {
+      "count": 1174,
+      "share": 0.601,
+      "examples": [
+        "In A, a bubble sits on the 'T' in the SOLSTICE logo. (c01_square_golden_hour@billboard)",
+        "B is just the square original shrunk into a strip: the logo, legal text and secondary line are unreadably small, and there are huge dead areas at the top and bottom, so it fails fit-to-format. (c01_square_golden_hour_v2@half_page)",
+        "A puts the 'Taste the Glow' CTA in the top-left corner above the logo, product and headline, so the reading order is upside down. (c01_square_golden_hour_v2@instagram_portrait)"
+      ]
+    },
+    "cramped": {
+      "count": 1129,
+      "share": 0.577,
+      "examples": [
+        "A bubble also touches 'singles', and the circle sits off-centre behind the can. (c01_square_golden_hour@billboard)",
+        "B is slightly worse: its headline runs almost to both canvas edges (about 25px margins) and the CTA is jammed into the top-left corner. (c01_square_golden_hour_v1@instagram_portrait)",
+        "B jams the CTA, headline, body and subline into the top band with almost no leading, then leaves the shrunken can floating alone in the lower half next to empty space, so it is top-heavy with dead space below. (c01_square_golden_hour_v1@medium_rectangle)"
+      ]
+    },
+    "separated": {
+      "count": 1041,
+      "share": 0.532,
+      "examples": [
+        "B drops the circle from behind the product and leaves a large empty decorative circle floating on the left, so the frame feels lopsided. (c01_square_golden_hour@billboard)",
+        "In both, the can floats off-centre from its backing circle and the bottom third is dead space. (c01_square_golden_hour_v1@instagram_portrait)",
+        "A has the CTA detached at top-left above everything, a tiny can with an illegible label, and the text block pushed down into the bottom-left. (c01_square_golden_hour_v1@medium_rectangle)"
+      ]
+    },
+    "dead_space": {
+      "count": 958,
+      "share": 0.49,
+      "examples": [
+        "B drops the circle from behind the product and leaves a large empty decorative circle floating on the left, so the frame feels lopsided. (c01_square_golden_hour@billboard)",
+        "In both, the can floats off-centre from its backing circle and the bottom third is dead space. (c01_square_golden_hour_v1@instagram_portrait)",
+        "B jams the CTA, headline, body and subline into the top band with almost no leading, then leaves the shrunken can floating alone in the lower half next to empty space, so it is top-heavy with dead space below. (c01_square_golden_hour_v1@medium_rectangle)"
+      ]
+    },
+    "looks_shrunk": {
+      "count": 884,
+      "share": 0.452,
+      "examples": [
+        "The can is shrunk to a small afterthought on the left. (c01_square_golden_hour@billboard)",
+        "B shrinks the CTA to an illegibly tiny pill dropped arbitrarily in the bottom-left, off any grid, which buries the action. (c01_square_golden_hour_v1@instagram_portrait)",
+        "B jams the CTA, headline, body and subline into the top band with almost no leading, then leaves the shrunken can floating alone in the lower half next to empty space, so it is top-heavy with dead space below. (c01_square_golden_hour_v1@medium_rectangle)"
+      ]
+    },
+    "hierarchy": {
+      "count": 707,
+      "share": 0.362,
+      "examples": [
+        "The '4-packs' fine print is larger than both the body copy and the tiny CTA, so the hierarchy is backwards. (c01_square_golden_hour@billboard)",
+        "Both put the CTA at the very top, ahead of the headline (reading order is wrong), and set 'Now in 4-packs and singles' larger than the body copy, which inverts the hierarchy. (c01_square_golden_hour_v2@half_page)",
+        "Its oversized box crowds the top, and the legal line is microscopic. (c01_square_golden_hour_v2@instagram_portrait)"
+      ]
+    },
+    "reading_order": {
+      "count": 671,
+      "share": 0.343,
+      "examples": [
+        "Both put the 'Taste the Glow' CTA at the very top, above the product and headline, so the reading order is reversed. (c01_square_golden_hour_v1@instagram_portrait)",
+        "A has the same flaws: the CTA is orphaned at top-left before the headline, the can is a thumbnail with an unreadable label, and the copy is pushed to the bottom. (c01_square_golden_hour_v1@medium_rectangle)",
+        "Both put the CTA at the very top, ahead of the headline (reading order is wrong), and set 'Now in 4-packs and singles' larger than the body copy, which inverts the hierarchy. (c01_square_golden_hour_v2@half_page)"
+      ]
+    },
+    "alignment": {
+      "count": 605,
+      "share": 0.309,
+      "examples": [
+        "A keeps the glow circle behind the can, but it sits off-centre and looks misregistered. (c01_square_golden_hour@billboard)",
+        "In both, the can floats off-centre from its backing circle and the bottom third is dead space. (c01_square_golden_hour_v1@instagram_portrait)",
+        "B keeps the original order and centred axis, but it's a shrunk copy floating mid-canvas with about 200px of dead space above and below. (c02_square_garden_fizz_v2@story)"
+      ]
+    },
+    "collision": {
+      "count": 582,
+      "share": 0.298,
+      "examples": [
+        "In A, a bubble dot collides with the end of 'singles' in the fine print. (c01_square_golden_hour@billboard)",
+        "A stacks the CTA above the headline (wrong order), the subtitle sits on the decorative circle, the can is detached from its circle and the bottom is empty. (c01_square_golden_hour_v1@instagram_portrait)",
+        "A opens with the CTA, wedges the headline right under it over the circle, and leaves a big empty band below the product. (c01_square_golden_hour_v2@half_page)"
+      ]
+    },
+    "image_small": {
+      "count": 409,
+      "share": 0.209,
+      "examples": [
+        "The can is shrunk to a small afterthought on the left. (c01_square_golden_hour@billboard)",
+        "The product bag is a tiny thumbnail at the far right. (c02_square_garden_fizz_v3@mobile_banner)",
+        "Both shrink the can to a small orphan in the middle, leave the bottom third empty, cut the logo off from the headline by putting it inside the circle, and let the subhead's end run into the circle's edge. (c24_cover_all_summer_v1@instagram_post)"
+      ]
+    },
+    "orphan_word": {
+      "count": 241,
+      "share": 0.123,
+      "examples": [
+        "Both share the same structural faults: the CTA is stranded top-left, CITRINE is oversized beneath the headline, and 'fizz' sits on its own line. (c02_square_garden_fizz_v3@half_page)",
+        "A breaks the headline as 'Sip at / sunset.', leaving 'sunset.' alone on the second line and splitting the gold phrase badly, and its oversized brand line runs nearly edge to edge. (c03_square_text_only_v1@facebook_cover)",
+        "The legal line is left-aligned while everything else is centered, and 'sunset.' is orphaned on its own line. (c03_square_text_only_v1@instagram_post)"
+      ]
+    },
+    "uneven_gaps": {
+      "count": 111,
+      "share": 0.057,
+      "examples": [
+        "B keeps the original structure and hierarchy but is basically a shrunk copy: tiny logo and legal text, with loose, uneven vertical spacing. (c01_square_golden_hour_v2@instagram_portrait)",
+        "Its flaws are a small bottle and undersized subtext, plus uneven gaps, the biggest between the bottle and the headline. (c02_square_garden_fizz_v2@story)",
+        "The headline also collides with the button, and SOLSTICE sits under the headline with an uneven gap. (c17_banner_summer_flavours@billboard)"
+      ]
+    }
+  }
+}

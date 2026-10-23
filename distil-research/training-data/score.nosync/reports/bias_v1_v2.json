@@ -1,0 +1,146 @@
+{
+ "v1|v5_smp__vs__ext_tailsgit_smp": {
+  "agree": 21,
+  "n": 30,
+  "claude": {
+   "v5": 13,
+   "other": 17
+  },
+  "scorer_on_claude_decided": {
+   "v5": 16,
+   "other": 14
+  }
+ },
+ "v1|v5_smp__vs__ext_joonseomoon_smp": {
+  "agree": 16,
+  "n": 26,
+  "claude": {
+   "v5": 10,
+   "other": 17
+  },
+  "scorer_on_claude_decided": {
+   "v5": 19,
+   "other": 7
+  }
+ },
+ "v1|v5_smp__vs__ext_fashton28_smp": {
+  "agree": 16,
+  "n": 31,
+  "claude": {
+   "v5": 14,
+   "other": 17
+  },
+  "scorer_on_claude_decided": {
+   "v5": 21,
+   "other": 10
+  }
+ },
+ "v1|v5__vs__ext_tailsgit": {
+  "agree": 35,
+  "n": 50,
+  "claude": {
+   "v5": 32,
+   "other": 18
+  },
+  "scorer_on_claude_decided": {
+   "v5": 37,
+   "other": 13
+  }
+ },
+ "v1|v5__vs__ext_joonseomoon": {
+  "agree": 36,
+  "n": 52,
+  "claude": {
+   "v5": 35,
+   "other": 17
+  },
+  "scorer_on_claude_decided": {
+   "v5": 35,
+   "other": 17
+  }
+ },
+ "v1|v5__vs__llm_hold": {
+  "agree": 9,
+  "n": 15,
+  "claude": {
+   "v5": 1,
+   "other": 14
+  },
+  "scorer_on_claude_decided": {
+   "v5": 7,
+   "other": 8
+  }
+ },
+ "v2|v5_smp__vs__ext_tailsgit_smp": {
+  "agree": 20,
+  "n": 30,
+  "claude": {
+   "v5": 13,
+   "other": 17
+  },
+  "scorer_on_claude_decided": {
+   "v5": 17,
+   "other": 13
+  }
+ },
+ "v2|v5_smp__vs__ext_joonseomoon_smp": {
+  "agree": 16,
+  "n": 27,
+  "claude": {
+   "v5": 10,
+   "other": 17
+  },
+  "scorer_on_claude_decided": {
+   "v5": 21,
+   "other": 6
+  }
+ },
+ "v2|v5_smp__vs__ext_fashton28_smp": {
+  "agree": 17,
+  "n": 31,
+  "claude": {
+   "v5": 14,
+   "other": 17
+  },
+  "scorer_on_claude_decided": {
+   "v5": 22,
+   "other": 9
+  }
+ },
+ "v2|v5__vs__ext_tailsgit": {
+  "agree": 34,
+  "n": 50,
+  "claude": {
+   "v5": 32,
+   "other": 18
+  },
+  "scorer_on_claude_decided": {
+   "v5": 36,
+   "other": 14
+  }
+ },
+ "v2|v5__vs__ext_joonseomoon": {
+  "agree": 35,
+  "n": 52,
+  "claude": {
+   "v5": 35,
+   "other": 17
+  },
+  "scorer_on_claude_decided": {
+   "v5": 36,
+   "other": 16
+  }
+ },
+ "v2|v5__vs__llm_hold": {
+  "agree": 9,
+  "n": 15,
+  "claude": {
+   "v5": 1,
+   "other": 14
+  },
+  "scorer_on_claude_decided": {
+   "v5": 7,
+   "other": 8
+  }
+ }
+}

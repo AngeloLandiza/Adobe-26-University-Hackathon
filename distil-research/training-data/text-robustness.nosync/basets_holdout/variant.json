@@ -1,0 +1,8 @@
+{
+  "name": "basets",
+  "split": "holdout",
+  "env": {
+    "CHAMELEON_TEXT_SLACK": "1"
+  },
+  "cells": 60
+}

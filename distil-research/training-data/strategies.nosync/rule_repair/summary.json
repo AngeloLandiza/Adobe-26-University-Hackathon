@@ -1,0 +1,85 @@
+{
+ "cells": 299,
+ "errors": 0,
+ "repaired": 254,
+ "gate_pass": 254,
+ "seconds_mean": 0.16,
+ "seconds_max": 1.588,
+ "penalty_drop_mean": 0.68,
+ "penalty_before_mean_repaired": 2.106,
+ "penalty_after_mean_repaired": 1.427,
+ "penalty_rel_drop_mean": 0.357,
+ "proxies": {
+  "text_at_floor": {
+   "winner_all": 0.8782,
+   "ours_all": 0.8894,
+   "winner_repaired": 0.8633,
+   "ours_repaired": 0.8765
+  },
+  "empty_share": {
+   "winner_all": 0.1794,
+   "ours_all": 0.1497,
+   "winner_repaired": 0.1816,
+   "ours_repaired": 0.1466
+  },
+  "edge_min": {
+   "winner_all": 0.0584,
+   "ours_all": 0.0615,
+   "winner_repaired": 0.058,
+   "ours_repaired": 0.0615
+  },
+  "logo_share": {
+   "winner_all": 0.0335,
+   "ours_all": 0.0339,
+   "winner_repaired": 0.0341,
+   "ours_repaired": 0.0346
+  },
+  "text_px_min": {
+   "winner_all": 9.8813,
+   "ours_all": 10.3801,
+   "winner_repaired": 9.5624,
+   "ours_repaired": 10.1495
+  },
+  "image_share": {
+   "winner_all": 0.147,
+   "ours_all": 0.1512,
+   "winner_repaired": 0.1377,
+   "ours_repaired": 0.1426
+  }
+ },
+ "rule_drop_mean": {
+  "R1_text_floor": 0.0848,
+  "R2_dead_space": 0.0522,
+  "R3_cramped": 0.2185,
+  "R4_edge_margin": 0.0122,
+  "R5_logo": 0.0019,
+  "R6_looks_shrunk": 0.0092,
+  "R7_uneven_gaps": 0.1884,
+  "R8_reading_order": 0.0579,
+  "R9_hierarchy": 0.0158,
+  "R10_collision": 0.0027,
+  "R11_orphan_word": 0.0,
+  "R12_alignment": 0.0168,
+  "R13_image_small": 0.0191
+ },
+ "repaired_by_target": {
+  "billboard": "21/23",
+  "facebook_cover": "21/23",
+  "half_page": "21/23",
+  "instagram_portrait": "17/23",
+  "instagram_post": "16/23",
+  "large_leaderboard": "21/23",
+  "leaderboard": "22/23",
+  "linkedin_banner": "19/23",
+  "medium_rectangle": "20/23",
+  "mobile_banner": "23/23",
+  "story": "17/23",
+  "wide_skyscraper": "22/23",
+  "youtube_thumbnail": "14/23"
+ },
+ "repaired_by_brand": {
+  "offbrand": "113/130",
+  "sample": "33/39",
+  "solstice": "108/130"
+ }
+}

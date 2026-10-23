@@ -1,0 +1,1 @@
+{"verdicts": [{"pair": 1, "winner": "b", "confidence": 1, "reason": "B reads in a natural order (logo, product, headline, CTA on the right), close to the original's hierarchy. A puts the CTA first and pushes the logo to the far right. B's headline crowds the CTA, though, and both have a broken sticker placeholder."}]}

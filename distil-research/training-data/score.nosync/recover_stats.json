@@ -1,0 +1,18 @@
+{
+  "labelled_layouts": 5444,
+  "recovered_layouts": 5444,
+  "label_rows_recovered": {
+    "ab": 9166,
+    "picker": 1348
+  },
+  "by_split": {
+    "challenge2": 1544,
+    "holdout": 1661,
+    "train": 684,
+    "challenge": 928,
+    "crello_dev": 417,
+    "challenge3": 200,
+    "samples": 10
+  },
+  "unrecovered_by_variant": {}
+}
