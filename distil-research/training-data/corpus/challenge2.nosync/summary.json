@@ -1,0 +1,99 @@
+{
+ "source": "cyberagent/crello rev 5.1.0, 4 test shards, ad formats (crello_stats.AD_FORMATS)",
+ "ad_templates_scanned": 1606,
+ "kept_by_gate": 327,
+ "skipped": 1279,
+ "skip_reasons": {
+  "gate_overlap": 604,
+  "gate_contrast": 251,
+  "font_substitution": 221,
+  "text_off_canvas": 68,
+  "gate_busy_backdrop": 61,
+  "unsupported_glyphs": 47,
+  "gate_off_canvas": 18,
+  "gate_image_aspect": 9
+ },
+ "scanned_by_class": {
+  "landscape": 400,
+  "square": 414,
+  "strip": 37,
+  "tall": 399,
+  "very_tall": 72,
+  "wide": 284
+ },
+ "kept_by_class": {
+  "landscape": 78,
+  "square": 95,
+  "strip": 7,
+  "tall": 66,
+  "very_tall": 15,
+  "wide": 66
+ },
+ "kept_by_class_photo": {
+  "landscape/photo": 69,
+  "landscape/text-only": 9,
+  "square/photo": 67,
+  "square/text-only": 28,
+  "strip/photo": 4,
+  "strip/text-only": 3,
+  "tall/photo": 41,
+  "tall/text-only": 25,
+  "very_tall/photo": 14,
+  "very_tall/text-only": 1,
+  "wide/photo": 55,
+  "wide/text-only": 11
+ },
+ "kept_share_photo": 0.765,
+ "scanned_share_photo": 0.852,
+ "selected": 50,
+ "selected_by_class": {
+  "landscape": 10,
+  "square": 10,
+  "strip": 5,
+  "tall": 10,
+  "very_tall": 6,
+  "wide": 9
+ },
+ "selected_by_photo": {
+  "photo": 29,
+  "text-only": 21
+ },
+ "selected_sizes": {
+  "1024x512": 1,
+  "1080x1080": 2,
+  "1128x191": 2,
+  "1190x1683": 1,
+  "1200x600": 1,
+  "1200x628": 2,
+  "1280x720": 1,
+  "1296x1728": 2,
+  "1500x500": 2,
+  "1600x400": 2,
+  "160x600": 3,
+  "1920x1080": 1,
+  "2560x1440": 3,
+  "3000x1055": 1,
+  "300x250": 4,
+  "336x280": 2,
+  "360x504": 2,
+  "420x654": 1,
+  "540x810": 2,
+  "560x315": 1,
+  "600x1200": 3,
+  "600x200": 2,
+  "728x90": 3,
+  "735x1102": 2,
+  "851x315": 2,
+  "940x788": 2
+ },
+ "selected_elements": {
+  "min": 2,
+  "median": 8,
+  "max": 19,
+  "by_type": {
+   "image": 189,
+   "text": 137,
+   "shape": 64
+  }
+ }
+}

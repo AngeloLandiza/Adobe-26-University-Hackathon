@@ -1,0 +1,121 @@
+{
+  "task_id": "cr3_07_1080x1080_txt",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (Instagram), converted; 8 elements.",
+  "features": [
+    "square",
+    "text-only"
+  ],
+  "crello_id": "58ada45395a7a863ddcc8287",
+  "crello_format": "Instagram",
+  "source": {
+    "canvas": {
+      "width": 1080,
+      "height": 1080
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 1080,
+        "height": 1080,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(35,31,32,1)"
+      },
+      {
+        "id": "deco_1",
+        "type": "shape",
+        "x": 153.0,
+        "y": 774.0,
+        "width": 617.0,
+        "height": 9.0,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(239,66,71,1)"
+      },
+      {
+        "id": "deco_2",
+        "type": "shape",
+        "x": 864.0,
+        "y": 306.0,
+        "width": 9.0,
+        "height": 774.0,
+        "z_index": 2,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(81,46,142,1)"
+      },
+      {
+        "id": "deco_3",
+        "type": "shape",
+        "x": 0.0,
+        "y": 535.0,
+        "width": 144.0,
+        "height": 9.0,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(64,184,112,1)"
+      },
+      {
+        "id": "deco_4",
+        "type": "image",
+        "x": 144.0,
+        "y": 0.0,
+        "width": 9.0,
+        "height": 1080.0,
+        "z_index": 4,
+        "asset_id": "cr3_07_1080x1080_txt_deco_4.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_5",
+        "type": "shape",
+        "x": 153.0,
+        "y": 297.0,
+        "width": 927.0,
+        "height": 9.0,
+        "z_index": 5,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(81,46,142,1)"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 865.2,
+        "y": 674.1,
+        "width": 214.7,
+        "height": 32,
+        "z_index": 6,
+        "content": "- KURT VONNEGUT",
+        "font_size": 22.9,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left",
+        "line_height": 1.0,
+        "rotation": 89.95
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 248.1,
+        "y": 419.1,
+        "width": 560,
+        "height": 231.2,
+        "z_index": 7,
+        "content": "To practice any art, no\nmatter how well or badly,\nis a way to make your soul\ngrow. So do it.",
+        "font_size": 41.2,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left",
+        "line_height": 1.22
+      }
+    ]
+  }
+}

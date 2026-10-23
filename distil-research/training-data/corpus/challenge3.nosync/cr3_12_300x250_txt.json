@@ -1,0 +1,82 @@
+{
+  "task_id": "cr3_12_300x250_txt",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (Medium Rectangle), converted; 4 elements.",
+  "features": [
+    "square",
+    "text-only"
+  ],
+  "crello_id": "59528c5995a7a863ddcdf9c2",
+  "crello_format": "Medium Rectangle",
+  "source": {
+    "canvas": {
+      "width": 300,
+      "height": 250
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 300.0,
+        "height": 250.0,
+        "z_index": 0,
+        "asset_id": "cr3_12_300x250_txt_bg.png",
+        "fit": "contain"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 73.2,
+        "y": 120.3,
+        "width": 154,
+        "height": 16,
+        "z_index": 1,
+        "content": "FREE ENTRY FOR KIDS UNDER 12",
+        "font_size": 10.0,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "line_height": 1.0
+      },
+      {
+        "id": "body_2",
+        "type": "text",
+        "x": 25.9,
+        "y": 57.3,
+        "width": 249.8,
+        "height": 48.9,
+        "z_index": 2,
+        "content": "When: Wednesday evenings throughout the year\nWhere: Astronomical Observatory, 655 Melm Street\nWest Warwick, Rhode Island, 02893",
+        "font_size": 8.9,
+        "font_family": "Solstice Sans",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "line_height": 1.62,
+        "letter_spacing": 0.47
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 1.1,
+        "y": 26.2,
+        "width": 298.8,
+        "height": 27,
+        "z_index": 3,
+        "content": "OPEN NIGHT IN OBSERVATORY",
+        "font_size": 18.1,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "line_height": 1.0,
+        "letter_spacing": 1.02
+      }
+    ]
+  }
+}

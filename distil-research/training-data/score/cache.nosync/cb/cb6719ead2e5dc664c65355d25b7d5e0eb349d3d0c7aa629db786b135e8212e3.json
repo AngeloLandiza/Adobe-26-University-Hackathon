@@ -1,0 +1,1 @@
+{"overall": 6, "collisions": 8, "readable": 6, "on_brand": 7, "intentional": 6, "adapts": 6, "fatal_issue": null, "reason": "Clean vertical stack, but eyebrow label is microscopic, logo tiny, footer small, stray dash at bottom; decent headline and CTA.", "model": "claude-sonnet-5-5", "effort": "low", "size": 512, "k": 6, "rubric_version": "abs1-ed20c072", "ts": 1792695241}

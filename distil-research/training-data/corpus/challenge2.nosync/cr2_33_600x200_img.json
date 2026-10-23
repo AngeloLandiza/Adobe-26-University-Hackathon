@@ -1,0 +1,60 @@
+{
+  "task_id": "cr2_33_600x200_img",
+  "split": "challenge2",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (Email header), converted; 3 elements.",
+  "features": [
+    "wide",
+    "photo"
+  ],
+  "crello_id": "58b0315395a7a863ddcc954d",
+  "crello_format": "Email header",
+  "source": {
+    "canvas": {
+      "width": 600,
+      "height": 200
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 600.0,
+        "height": 200.0,
+        "z_index": 0,
+        "asset_id": "cr2_33_600x200_img_bg.png",
+        "fit": "cover"
+      },
+      {
+        "id": "deco_1",
+        "type": "shape",
+        "x": 261.0,
+        "y": 33.0,
+        "width": 339.0,
+        "height": 135.0,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,255,255,1)"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 306.9,
+        "y": 62.7,
+        "width": 239,
+        "height": 89,
+        "z_index": 2,
+        "content": "BEING CREATIVE IS\nNOT A HOBBY, IT IS\nA WAY OF LIFE.",
+        "font_size": 25.4,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(10,2,3,1)",
+        "text_align": "left",
+        "line_height": 1.03
+      }
+    ]
+  }
+}

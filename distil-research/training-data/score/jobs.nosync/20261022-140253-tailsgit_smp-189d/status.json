@@ -1,0 +1,32 @@
+{
+ "state": "done",
+ "phase": "done",
+ "done": 25,
+ "total": 39,
+ "message": "learned model",
+ "started": 1792695773.644175,
+ "finished": 1792695795.849406,
+ "snapshot_before": {
+  "ok": false,
+  "age_s": 1340.8,
+  "five_hour": null,
+  "seven_day": null,
+  "model": null
+ },
+ "snapshot_after": {
+  "ok": false,
+  "age_s": 1363.0,
+  "five_hour": null,
+  "seven_day": null,
+  "model": null
+ },
+ "spend": {
+  "usd": 0.0,
+  "calls": 0,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "cache_read_tokens": 0,
+  "cache_creation_tokens": 0,
+  "layouts": 0
+ }
+}

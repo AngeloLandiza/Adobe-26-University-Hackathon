@@ -1,0 +1,83 @@
+{
+  "task_id": "crd_47_1500x500_img",
+  "split": "crello_dev",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (dev) (Twitter), converted; 5 elements.",
+  "features": [
+    "wide",
+    "photo"
+  ],
+  "crello_id": "5928015095a7a863ddcd8e38",
+  "crello_format": "Twitter",
+  "source": {
+    "canvas": {
+      "width": 1500,
+      "height": 500
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1500.0,
+        "height": 500.0,
+        "z_index": 0,
+        "asset_id": "crd_47_1500x500_img_bg.png",
+        "fit": "cover"
+      },
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 167.0,
+        "y": 56.0,
+        "width": 1165.0,
+        "height": 388.0,
+        "z_index": 1,
+        "asset_id": "crd_47_1500x500_img_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_2",
+        "type": "shape",
+        "x": 634.0,
+        "y": 396.0,
+        "width": 866.0,
+        "height": 48.0,
+        "z_index": 2,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,255,255,1)"
+      },
+      {
+        "id": "deco_3",
+        "type": "shape",
+        "x": 0.0,
+        "y": 55.0,
+        "width": 866.0,
+        "height": 48.0,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,255,255,1)"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 456.9,
+        "y": 117.0,
+        "width": 586,
+        "height": 290,
+        "z_index": 4,
+        "content": "Civic\nCrowdfunding\nPlatform",
+        "font_size": 75.0,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "line_height": 1.22,
+        "letter_spacing": 2.08
+      }
+    ]
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "task_id": "cr3_44_1500x500_img",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (Twitter), converted; 8 elements.",
+  "features": [
+    "wide",
+    "photo"
+  ],
+  "crello_id": "588991ea95a7a863ddcc3546",
+  "crello_format": "Twitter",
+  "source": {
+    "canvas": {
+      "width": 1500,
+      "height": 500
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1500.0,
+        "height": 500.0,
+        "z_index": 0,
+        "asset_id": "cr3_44_1500x500_img_bg.png",
+        "fit": "cover"
+      },
+      {
+        "id": "deco_1",
+        "type": "shape",
+        "x": 135.0,
+        "y": 0.0,
+        "width": 1230.0,
+        "height": 311.0,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,255,255,1)"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 187.0,
+        "y": 112.0,
+        "width": 65.0,
+        "height": 91.0,
+        "z_index": 2,
+        "asset_id": "cr3_44_1500x500_img_logo.png",
+        "fit": "contain"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 269.0,
+        "y": 149.0,
+        "width": 41,
+        "height": 27,
+        "z_index": 3,
+        "content": "2017",
+        "font_size": 18.0,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(10,2,3,1)",
+        "text_align": "left",
+        "line_height": 1.0
+      },
+      {
+        "id": "body_2",
+        "type": "text",
+        "x": 717.0,
+        "y": 172.0,
+        "width": 289,
+        "height": 73,
+        "z_index": 4,
+        "content": "WORKSHOP",
+        "font_size": 51.0,
+        "font_family": "Solstice Sans",
+        "color": "rgba(10,2,3,1)",
+        "text_align": "left",
+        "line_height": 1.0
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 716.9,
+        "y": 84.5,
+        "width": 340.8,
+        "height": 85,
+        "z_index": 5,
+        "content": "Calligraphy",
+        "font_size": 64.0,
+        "font_family": "Solstice Serif",
+        "font_style": "italic",
+        "color": "rgba(10,2,3,1)",
+        "text_align": "left",
+        "line_height": 1.0
+      },
+      {
+        "id": "deco_2",
+        "type": "shape",
+        "x": 1101.0,
+        "y": 154.0,
+        "width": 137.0,
+        "height": 4.0,
+        "z_index": 6,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(10,2,3,1)"
+      },
+      {
+        "id": "deco_3",
+        "type": "shape",
+        "x": 484.0,
+        "y": 154.0,
+        "width": 137.0,
+        "height": 4.0,
+        "z_index": 7,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(10,2,3,1)"
+      }
+    ]
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "task_id": "cr3_08_1080x1080_txt",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (Instagram), converted; 5 elements.",
+  "features": [
+    "square",
+    "text-only"
+  ],
+  "crello_id": "59158b7095a7a863ddcd869c",
+  "crello_format": "Instagram",
+  "source": {
+    "canvas": {
+      "width": 1080,
+      "height": 1080
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 1080,
+        "height": 1080,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(230,231,232,1)"
+      },
+      {
+        "id": "deco_bg_1",
+        "type": "shape",
+        "x": 43.0,
+        "y": 39.0,
+        "width": 994.0,
+        "height": 1001.0,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,255,255,1)"
+      },
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 491.0,
+        "y": 720.0,
+        "width": 99.0,
+        "height": 61.0,
+        "z_index": 2,
+        "asset_id": "cr3_08_1080x1080_txt_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_2",
+        "type": "image",
+        "x": 437.0,
+        "y": 267.0,
+        "width": 206.0,
+        "height": 165.0,
+        "z_index": 3,
+        "asset_id": "cr3_08_1080x1080_txt_deco_2.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 40.1,
+        "y": 482.9,
+        "width": 988,
+        "height": 208,
+        "z_index": 4,
+        "content": "THEY ARE NOT JUST FOR\nHOLIDAYS BUT FOR LIFE",
+        "font_size": 82.1,
+        "font_family": "Solstice Sans",
+        "color": "rgba(65,64,66,1)",
+        "text_align": "center",
+        "line_height": 1.12,
+        "letter_spacing": 2.0
+      }
+    ]
+  }
+}

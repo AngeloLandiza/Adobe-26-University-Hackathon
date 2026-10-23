@@ -1,0 +1,9 @@
+14:01:52 39 layouts
+14:01:52 [dataset] 1 of 15 wanted designs found in caches
+14:01:52 [dataset] round 0: 14 layouts, 14 jobs in 1 groups
+14:02:12 [dataset] engine group done (14 jobs); 14/14 jobs, 14 found, 20s
+14:02:12 [dataset] round 1: 0 layouts, 0 jobs in 0 groups
+14:02:12 designs for 39/39 layouts
+14:02:14 layer 1: 0 FATAL of 39
+14:02:21 learned model: 39 predictions
+14:02:42 claude: {"total": 8, "layer1_fatal": 0, "cache_hits": 1, "sent": 7, "answered": 7, "retried": 0, "calls": 7, "failed_calls": 0, "skipped_budget": 0, "usd": 0.2905307, "stopped": ""}

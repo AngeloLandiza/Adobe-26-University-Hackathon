@@ -1,0 +1,203 @@
+{
+  "task_id": "cr3_50_851x315_txt",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (Facebook cover), converted; 16 elements.",
+  "features": [
+    "wide",
+    "text-only"
+  ],
+  "crello_id": "5f842afba637ee11e3aa919e",
+  "crello_format": "Facebook cover",
+  "source": {
+    "canvas": {
+      "width": 851,
+      "height": 315
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 851,
+        "height": 315,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(233,247,254,1)"
+      },
+      {
+        "id": "deco_bg_1",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 851.0,
+        "height": 315.0,
+        "z_index": 1,
+        "asset_id": "cr3_50_851x315_txt_deco_bg_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 198.0,
+        "y": 0.0,
+        "width": 454.0,
+        "height": 287.0,
+        "z_index": 2,
+        "asset_id": "cr3_50_851x315_txt_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_2",
+        "type": "image",
+        "x": 241.0,
+        "y": 149.0,
+        "width": 77.0,
+        "height": 54.0,
+        "z_index": 3,
+        "asset_id": "cr3_50_851x315_txt_deco_2.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_3",
+        "type": "image",
+        "x": 533.0,
+        "y": 149.0,
+        "width": 77.0,
+        "height": 54.0,
+        "z_index": 4,
+        "asset_id": "cr3_50_851x315_txt_deco_3.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_4",
+        "type": "shape",
+        "x": 326.0,
+        "y": 244.0,
+        "width": 203.0,
+        "height": 1.0,
+        "z_index": 5,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(167,169,172,1)"
+      },
+      {
+        "id": "deco_5",
+        "type": "shape",
+        "x": 349.0,
+        "y": 248.0,
+        "width": 156.0,
+        "height": 1.0,
+        "z_index": 6,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(167,169,172,1)"
+      },
+      {
+        "id": "deco_6",
+        "type": "image",
+        "x": 405.0,
+        "y": 0.0,
+        "width": 270.0,
+        "height": 118.0,
+        "z_index": 7,
+        "asset_id": "cr3_50_851x315_txt_deco_6.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_7",
+        "type": "image",
+        "x": 381.0,
+        "y": 0.0,
+        "width": 185.0,
+        "height": 50.0,
+        "z_index": 8,
+        "asset_id": "cr3_50_851x315_txt_deco_7.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_8",
+        "type": "image",
+        "x": 225.0,
+        "y": 0.0,
+        "width": 215.0,
+        "height": 57.0,
+        "z_index": 9,
+        "asset_id": "cr3_50_851x315_txt_deco_8.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_9",
+        "type": "image",
+        "x": 229.0,
+        "y": 0.0,
+        "width": 122.0,
+        "height": 26.0,
+        "z_index": 10,
+        "asset_id": "cr3_50_851x315_txt_deco_9.png",
+        "fit": "contain"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 424.0,
+        "y": 0.0,
+        "width": 149.0,
+        "height": 84.0,
+        "z_index": 11,
+        "asset_id": "cr3_50_851x315_txt_logo.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_10",
+        "type": "image",
+        "x": 177.2,
+        "y": 0.0,
+        "width": 258.0,
+        "height": 129.0,
+        "z_index": 12,
+        "asset_id": "cr3_50_851x315_txt_deco_10.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_11",
+        "type": "image",
+        "x": 253.0,
+        "y": 0.0,
+        "width": 131.0,
+        "height": 95.0,
+        "z_index": 13,
+        "asset_id": "cr3_50_851x315_txt_deco_11.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_12",
+        "type": "image",
+        "x": 322.0,
+        "y": 0.0,
+        "width": 211.0,
+        "height": 138.5,
+        "z_index": 14,
+        "asset_id": "cr3_50_851x315_txt_deco_12.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 294.5,
+        "y": 143.0,
+        "width": 261,
+        "height": 94,
+        "z_index": 15,
+        "content": "Hydendria\nBeauty Studio",
+        "font_size": 41.0,
+        "font_family": "Solstice Serif",
+        "font_style": "italic",
+        "color": "rgba(113,83,162,1)",
+        "text_align": "center",
+        "line_height": 0.95
+      }
+    ]
+  }
+}

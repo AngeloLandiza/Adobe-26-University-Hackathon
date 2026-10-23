@@ -1,0 +1,59 @@
+{
+  "task_id": "cr2_30_1296x1728_txt",
+  "split": "challenge2",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (Poster US), converted; 3 elements.",
+  "features": [
+    "tall",
+    "text-only"
+  ],
+  "crello_id": "59535cfe95a7a863ddce1026",
+  "crello_format": "Poster US",
+  "source": {
+    "canvas": {
+      "width": 1296,
+      "height": 1728
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 1296,
+        "height": 1728,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(170,136,162,1)"
+      },
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 0.0,
+        "y": 658.0,
+        "width": 1296.0,
+        "height": 1070.0,
+        "z_index": 1,
+        "asset_id": "cr2_30_1296x1728_txt_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 43.3,
+        "y": 45.0,
+        "width": 1227.5,
+        "height": 584.4,
+        "z_index": 2,
+        "content": "KEEP CALM AND\nGET A CAT",
+        "font_size": 156.6,
+        "font_family": "Solstice Sans",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "letter_spacing": 3.35
+      }
+    ]
+  }
+}

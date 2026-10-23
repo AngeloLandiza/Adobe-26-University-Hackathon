@@ -1,0 +1,48 @@
+{
+  "task_id": "crd_59_1128x191_img",
+  "split": "crello_dev",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (dev) (LinkedIn Cover), converted; 2 elements.",
+  "features": [
+    "strip",
+    "photo"
+  ],
+  "crello_id": "5eec9b34499b85dcc7f66df4",
+  "crello_format": "LinkedIn Cover",
+  "source": {
+    "canvas": {
+      "width": 1128,
+      "height": 191
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1128.0,
+        "height": 191.0,
+        "z_index": 0,
+        "asset_id": "crd_59_1128x191_img_bg.png",
+        "fit": "cover"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 714.8,
+        "y": 48.4,
+        "width": 358,
+        "height": 140,
+        "z_index": 1,
+        "content": "Lima & Co\nGroup",
+        "font_size": 61.6,
+        "font_family": "Solstice Sans",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "line_height": 0.87
+      }
+    ]
+  }
+}

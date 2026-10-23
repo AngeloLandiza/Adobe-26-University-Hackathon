@@ -1,0 +1,116 @@
+{
+  "task_id": "cr2_27_735x1102_txt",
+  "split": "challenge2",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (Pinterest), converted; 7 elements.",
+  "features": [
+    "tall",
+    "text-only"
+  ],
+  "crello_id": "595287a895a7a863ddcdf636",
+  "crello_format": "Pinterest",
+  "source": {
+    "canvas": {
+      "width": 735,
+      "height": 1102
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 735.0,
+        "height": 1102.0,
+        "z_index": 0,
+        "asset_id": "cr2_27_735x1102_txt_bg.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_1",
+        "type": "shape",
+        "x": 111.0,
+        "y": 808.0,
+        "width": 517.0,
+        "height": 3.0,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(253,247,198,1)"
+      },
+      {
+        "id": "deco_2",
+        "type": "shape",
+        "x": 111.0,
+        "y": 715.0,
+        "width": 517.0,
+        "height": 3.0,
+        "z_index": 2,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(253,247,198,1)"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 75.7,
+        "y": 846.6,
+        "width": 581,
+        "height": 153,
+        "z_index": 3,
+        "content": "Investing in forests is an insurance policy for the\nplanet - Secretary-General Ban Ki-moon\n\nTo find out more about activities in your area visit\nwww.aughtlins.com/forestday",
+        "font_size": 24.9,
+        "font_family": "Solstice Serif",
+        "color": "rgba(255,255,254,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "body_2",
+        "type": "text",
+        "x": 79.5,
+        "y": 744.0,
+        "width": 575,
+        "height": 47,
+        "z_index": 4,
+        "content": "Joint celebration & Forest cleanup",
+        "font_size": 35.0,
+        "font_family": "Solstice Serif",
+        "font_weight": "bold",
+        "color": "rgba(255,255,254,1)",
+        "text_align": "center",
+        "line_height": 1.0
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 56.4,
+        "y": 463.6,
+        "width": 633,
+        "height": 224.9,
+        "z_index": 5,
+        "content": "Special Event Devoted\nto International Day\nof Forests",
+        "font_size": 59.2,
+        "font_family": "Solstice Serif",
+        "font_weight": "bold",
+        "color": "rgba(255,255,254,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "body_3",
+        "type": "text",
+        "x": 305.1,
+        "y": 424.7,
+        "width": 120,
+        "height": 37,
+        "z_index": 6,
+        "content": "March 21",
+        "font_size": 27.2,
+        "font_family": "Solstice Serif",
+        "font_weight": "bold",
+        "color": "rgba(253,247,198,1)",
+        "text_align": "center",
+        "line_height": 1.0
+      }
+    ]
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "task_id": "cr2_08_300x250_txt",
+  "split": "challenge2",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (Medium Rectangle), converted; 3 elements.",
+  "features": [
+    "square",
+    "text-only"
+  ],
+  "crello_id": "5888cded95a7a863ddcc2397",
+  "crello_format": "Medium Rectangle",
+  "source": {
+    "canvas": {
+      "width": 300,
+      "height": 250
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 300,
+        "height": 250,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(0,93,158,1)"
+      },
+      {
+        "id": "deco_bg_1",
+        "type": "image",
+        "x": 19.0,
+        "y": 12.0,
+        "width": 281.0,
+        "height": 238.0,
+        "z_index": 1,
+        "asset_id": "cr2_08_300x250_txt_deco_bg_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 26.0,
+        "y": 21.0,
+        "width": 266.4,
+        "height": 160.0,
+        "z_index": 2,
+        "content": "JOIN VOLUNTEERING NOW! \nLET'S FIGHT \nAGAINST CRUELTY \nTO ANIMALS \nTOGETHER!",
+        "font_size": 19.4,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left",
+        "line_height": 1.3
+      }
+    ]
+  }
+}

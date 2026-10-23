@@ -1,0 +1,1 @@
+{"overall": 4, "collisions": 6, "readable": 4, "on_brand": 5, "intentional": 5, "adapts": 6, "fatal_issue": null, "reason": "Logo is microscopic and illegible; CTA text is small and wraps to two lines; a dot sits beside the CTA; the left side is cramped.", "model": "claude-sonnet-5-5", "effort": "low", "size": 512, "k": 6, "rubric_version": "abs1-ed20c072", "ts": 1792695248}

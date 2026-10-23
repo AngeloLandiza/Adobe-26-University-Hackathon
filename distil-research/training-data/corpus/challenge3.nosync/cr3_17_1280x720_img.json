@@ -1,0 +1,61 @@
+{
+  "task_id": "cr3_17_1280x720_img",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (Youtube Thumbnail), converted; 3 elements.",
+  "features": [
+    "landscape",
+    "photo"
+  ],
+  "crello_id": "5aaa464ef07aee697730ccba",
+  "crello_format": "Youtube Thumbnail",
+  "source": {
+    "canvas": {
+      "width": 1280,
+      "height": 720
+    },
+    "elements": [
+      {
+        "id": "deco_backdrop",
+        "type": "image",
+        "x": 34.1,
+        "y": 35.4,
+        "width": 1213.6,
+        "height": 587.3,
+        "z_index": 0,
+        "asset_id": "cr3_17_1280x720_img_deco_backdrop.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 54.2,
+        "y": 573.0,
+        "width": 1168.0,
+        "height": 100.0,
+        "z_index": 1,
+        "asset_id": "cr3_17_1280x720_img_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 87.3,
+        "y": 599.0,
+        "width": 1071,
+        "height": 70,
+        "z_index": 2,
+        "content": "UNDERSTAND YOUR HOME PETS BETTER",
+        "font_size": 49.0,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left",
+        "line_height": 1.0,
+        "letter_spacing": 3.59
+      }
+    ]
+  }
+}

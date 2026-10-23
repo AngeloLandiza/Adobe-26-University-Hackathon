@@ -1,0 +1,121 @@
+{
+  "task_id": "cr3_39_1296x1728_txt",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (Poster US), converted; 7 elements.",
+  "features": [
+    "tall",
+    "text-only"
+  ],
+  "crello_id": "599ecac21350e832930076f1",
+  "crello_format": "Poster US",
+  "source": {
+    "canvas": {
+      "width": 1296,
+      "height": 1728
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 1296,
+        "height": 1728,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(81,46,142,1)"
+      },
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 80.0,
+        "y": 87.0,
+        "width": 1138.0,
+        "height": 1553.0,
+        "z_index": 1,
+        "asset_id": "cr3_39_1296x1728_txt_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_2",
+        "type": "image",
+        "x": 785.0,
+        "y": 971.0,
+        "width": 342.0,
+        "height": 661.0,
+        "z_index": 2,
+        "asset_id": "cr3_39_1296x1728_txt_deco_2.png",
+        "fit": "contain"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 181.3,
+        "y": 1268.6,
+        "width": 520,
+        "height": 228,
+        "z_index": 3,
+        "content": "950 FOUNTAINBLEAU DR\nFOR MORE INFORMATION,\nPLEASE CALL\n+83 038 398 1183",
+        "font_size": 40.7,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left",
+        "line_height": 1.4
+      },
+      {
+        "id": "body_2",
+        "type": "text",
+        "x": 513.3,
+        "y": 800.3,
+        "width": 376.0,
+        "height": 116.8,
+        "z_index": 4,
+        "content": "SUNDAY, SEP 8 5 PM",
+        "font_size": 37.5,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "right",
+        "line_height": 1.21,
+        "rotation": -90.14
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 83.1,
+        "y": 656.9,
+        "width": 540,
+        "height": 440,
+        "z_index": 5,
+        "content": "KENNER\nBAPTIST\nCHURCH",
+        "font_size": 115.6,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left",
+        "letter_spacing": 4.67
+      },
+      {
+        "id": "body_3",
+        "type": "text",
+        "x": 175.9,
+        "y": 279.3,
+        "width": 659,
+        "height": 205,
+        "z_index": 6,
+        "content": "JOIN US THIS WEEKEND\nFOR THE 60TH\nANNIVERSARY SERVICE",
+        "font_size": 53.0,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left",
+        "line_height": 1.22,
+        "letter_spacing": 2.34
+      }
+    ]
+  }
+}

@@ -1,0 +1,126 @@
+{
+  "task_id": "cr2_11_1280x720_img",
+  "split": "challenge2",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (Youtube Thumbnail), converted; 8 elements.",
+  "features": [
+    "landscape",
+    "photo"
+  ],
+  "crello_id": "5aba5a40f07aee6977608f0f",
+  "crello_format": "Youtube Thumbnail",
+  "source": {
+    "canvas": {
+      "width": 1280,
+      "height": 720
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1280.0,
+        "height": 720.0,
+        "z_index": 0,
+        "asset_id": "cr2_11_1280x720_img_bg.png",
+        "fit": "cover"
+      },
+      {
+        "id": "deco_bg_1",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1280.0,
+        "height": 720.0,
+        "z_index": 1,
+        "asset_id": "cr2_11_1280x720_img_deco_bg_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "cta_bg",
+        "type": "shape",
+        "x": 379.0,
+        "y": 171.0,
+        "width": 522.0,
+        "height": 108.0,
+        "z_index": 2,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,255,255,1)",
+        "group_id": "cta"
+      },
+      {
+        "id": "cta2_bg",
+        "type": "shape",
+        "x": 379.0,
+        "y": 323.0,
+        "width": 522.0,
+        "height": 108.0,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,255,255,1)",
+        "group_id": "cta2"
+      },
+      {
+        "id": "deco_1",
+        "type": "shape",
+        "x": 379.0,
+        "y": 477.0,
+        "width": 522.0,
+        "height": 108.0,
+        "z_index": 4,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,255,255,1)"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 498.4,
+        "y": 187.2,
+        "width": 283,
+        "height": 91,
+        "z_index": 5,
+        "content": "TRAVEL",
+        "font_size": 64.8,
+        "font_family": "Solstice Sans",
+        "color": "rgba(32,22,0,1)",
+        "text_align": "center",
+        "line_height": 1.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "cta2_label",
+        "type": "text",
+        "x": 478.6,
+        "y": 337.4,
+        "width": 320,
+        "height": 93,
+        "z_index": 6,
+        "content": "MAKEUP",
+        "font_size": 65.6,
+        "font_family": "Solstice Sans",
+        "color": "rgba(32,22,0,1)",
+        "text_align": "right",
+        "line_height": 1.0,
+        "group_id": "cta2"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 582.0,
+        "y": 491.4,
+        "width": 116,
+        "height": 115,
+        "z_index": 7,
+        "content": "KIT",
+        "font_size": 81.0,
+        "font_family": "Solstice Sans",
+        "color": "rgba(32,22,0,1)",
+        "text_align": "center",
+        "line_height": 1.0
+      }
+    ]
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "task_id": "crd_45_851x315_img",
+  "split": "crello_dev",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (dev) (Facebook cover), converted; 3 elements.",
+  "features": [
+    "wide",
+    "photo"
+  ],
+  "crello_id": "5f9917eaa637ee11e317522b",
+  "crello_format": "Facebook cover",
+  "source": {
+    "canvas": {
+      "width": 851,
+      "height": 315
+    },
+    "elements": [
+      {
+        "id": "deco_backdrop",
+        "type": "image",
+        "x": 162.0,
+        "y": -390.0,
+        "width": 862.0,
+        "height": 1291.0,
+        "z_index": 0,
+        "asset_id": "crd_45_851x315_img_deco_backdrop.png",
+        "fit": "contain",
+        "rotation": 90.0
+      },
+      {
+        "id": "deco_1",
+        "type": "shape",
+        "x": 0.0,
+        "y": 107.0,
+        "width": 851.0,
+        "height": 101.0,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(206,72,38,1)"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 280.5,
+        "y": 127.0,
+        "width": 290,
+        "height": 68,
+        "z_index": 2,
+        "content": "We deliver takeouts to\nyour doorstep",
+        "font_size": 25.0,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "line_height": 1.24
+      }
+    ]
+  }
+}

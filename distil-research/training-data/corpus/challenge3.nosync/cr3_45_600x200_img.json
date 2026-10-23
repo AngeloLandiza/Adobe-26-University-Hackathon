@@ -1,0 +1,83 @@
+{
+  "task_id": "cr3_45_600x200_img",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (Email header), converted; 5 elements.",
+  "features": [
+    "wide",
+    "photo"
+  ],
+  "crello_id": "5a219a5cd8141396fe9a3b97",
+  "crello_format": "Email header",
+  "source": {
+    "canvas": {
+      "width": 600,
+      "height": 200
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 600.0,
+        "height": 200.0,
+        "z_index": 0,
+        "asset_id": "cr3_45_600x200_img_bg.png",
+        "fit": "cover"
+      },
+      {
+        "id": "deco_bg_1",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 600.0,
+        "height": 200.0,
+        "z_index": 1,
+        "asset_id": "cr3_45_600x200_img_deco_bg_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 187.0,
+        "y": 29.0,
+        "width": 230.0,
+        "height": 144.0,
+        "z_index": 2,
+        "asset_id": "cr3_45_600x200_img_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_2",
+        "type": "image",
+        "x": 286.0,
+        "y": 46.0,
+        "width": 27.0,
+        "height": 27.0,
+        "z_index": 3,
+        "asset_id": "cr3_45_600x200_img_deco_2.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 206.0,
+        "y": 88.7,
+        "width": 196.6,
+        "height": 53.3,
+        "z_index": 4,
+        "content": "WOOD INDUSTRY CANADA",
+        "font_size": 13.6,
+        "font_family": "Solstice Serif",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "line_height": 1.48,
+        "letter_spacing": 0.75
+      }
+    ]
+  }
+}

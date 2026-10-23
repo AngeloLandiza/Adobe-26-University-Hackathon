@@ -1,0 +1,102 @@
+{
+  "task_id": "cr3_26_1920x1080_txt",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (FB event cover), converted; 6 elements.",
+  "features": [
+    "landscape",
+    "text-only"
+  ],
+  "crello_id": "5fb53967a637ee11e35aa465",
+  "crello_format": "FB event cover",
+  "source": {
+    "canvas": {
+      "width": 1920,
+      "height": 1080
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 1920,
+        "height": 1080,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(248,224,194,1)"
+      },
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 705.0,
+        "y": 134.0,
+        "width": 885.0,
+        "height": 829.0,
+        "z_index": 1,
+        "asset_id": "cr3_26_1920x1080_txt_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_2",
+        "type": "image",
+        "x": 544.0,
+        "y": 721.0,
+        "width": 296.0,
+        "height": 4.0,
+        "z_index": 2,
+        "asset_id": "cr3_26_1920x1080_txt_deco_2.png",
+        "fit": "contain"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 332.0,
+        "y": 694.0,
+        "width": 173.0,
+        "height": 63,
+        "z_index": 3,
+        "content": "March 1",
+        "font_size": 44.1,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(28,19,11,1)",
+        "text_align": "left",
+        "line_height": 1.0
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 332.0,
+        "y": 333.0,
+        "width": 535,
+        "height": 289,
+        "z_index": 4,
+        "content": "Dentistry Week",
+        "font_size": 115.0,
+        "font_family": "Solstice Serif",
+        "font_weight": "bold",
+        "color": "rgba(28,19,11,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "body_2",
+        "type": "text",
+        "x": 886.0,
+        "y": 694.0,
+        "width": 178.0,
+        "height": 60,
+        "z_index": 5,
+        "content": "March 6",
+        "font_size": 42.3,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(28,19,11,1)",
+        "text_align": "left",
+        "line_height": 1.0
+      }
+    ]
+  }
+}

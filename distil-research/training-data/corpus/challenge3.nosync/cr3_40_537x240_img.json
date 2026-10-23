@@ -1,0 +1,100 @@
+{
+  "task_id": "cr3_40_537x240_img",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (VK Post with Button), converted; 6 elements.",
+  "features": [
+    "wide",
+    "photo"
+  ],
+  "crello_id": "5d960598abc8ea6d1c34cc4a",
+  "crello_format": "VK Post with Button",
+  "source": {
+    "canvas": {
+      "width": 537,
+      "height": 240
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 537.0,
+        "height": 240.0,
+        "z_index": 0,
+        "asset_id": "cr3_40_537x240_img_bg.png",
+        "fit": "cover"
+      },
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 158.0,
+        "y": 35.0,
+        "width": 270.0,
+        "height": 137.0,
+        "z_index": 1,
+        "asset_id": "cr3_40_537x240_img_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 138.2,
+        "y": 30.4,
+        "width": 306,
+        "height": 144,
+        "z_index": 2,
+        "content": "Праздничные\nоткрытки\nсвоими руками",
+        "font_size": 41.8,
+        "font_family": "Solstice Serif",
+        "font_style": "italic",
+        "color": "rgba(26,67,120,1)",
+        "text_align": "center",
+        "line_height": 1.05,
+        "style_runs": [
+          {
+            "start": 21,
+            "end": 34,
+            "color": "rgba(202,21,94,1)"
+          }
+        ]
+      },
+      {
+        "id": "deco_2",
+        "type": "image",
+        "x": 414.0,
+        "y": 41.0,
+        "width": 20.0,
+        "height": 38.0,
+        "z_index": 3,
+        "asset_id": "cr3_40_537x240_img_deco_2.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_3",
+        "type": "image",
+        "x": 147.0,
+        "y": 68.0,
+        "width": 18.0,
+        "height": 26.0,
+        "z_index": 4,
+        "asset_id": "cr3_40_537x240_img_deco_3.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_4",
+        "type": "image",
+        "x": 213.0,
+        "y": 173.0,
+        "width": 40.0,
+        "height": 13.0,
+        "z_index": 5,
+        "asset_id": "cr3_40_537x240_img_deco_4.png",
+        "fit": "contain"
+      }
+    ]
+  }
+}

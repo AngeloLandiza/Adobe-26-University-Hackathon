@@ -1,0 +1,1 @@
+{"overall": 7, "collisions": 8, "readable": 6, "on_brand": 8, "intentional": 7, "adapts": 8, "fatal_issue": null, "reason": "Faithful banner layout; tagline very small and tight to the bottom, can icon close to the left edge, but otherwise clean and balanced.", "model": "claude-sonnet-5-5", "effort": "low", "size": 512, "k": 4, "rubric_version": "abs1-ed20c072", "ts": 1792695234}

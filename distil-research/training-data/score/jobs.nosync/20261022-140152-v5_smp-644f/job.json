@@ -1,0 +1,17 @@
+{
+ "mode": "standard",
+ "n": 8,
+ "test_set": "samples",
+ "max_usd": 0.4,
+ "max_5h_pct": 80.0,
+ "max_7d_pct": 95.0,
+ "recover_designs": true,
+ "triage": false,
+ "seed": 0,
+ "source": {
+  "kind": "variant",
+  "variant": "v5_smp"
+ },
+ "config": "opus-default-768-K1",
+ "name": null
+}

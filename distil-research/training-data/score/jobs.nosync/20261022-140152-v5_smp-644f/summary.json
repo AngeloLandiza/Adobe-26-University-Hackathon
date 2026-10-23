@@ -1,0 +1,215 @@
+{
+ "layouts": 39,
+ "fatal": 0,
+ "fatal_rate": 0.0,
+ "top_fatal": [],
+ "top_warn": [
+  [
+   "tiny_text",
+   8
+  ]
+ ],
+ "claude_scored": 8,
+ "mean": {
+  "overall": 5.0,
+  "collisions": 6.125,
+  "readable": 5.375,
+  "on_brand": 6.875,
+  "intentional": 4.75,
+  "adapts": 6.0
+ },
+ "by_difficulty": {
+  "level 1": {
+   "layouts": 13,
+   "fatal": 0,
+   "scored": 2,
+   "overall": 5.0,
+   "collisions": 6.5,
+   "readable": 6.0,
+   "on_brand": 6.5,
+   "intentional": 5.0,
+   "adapts": 6.0,
+   "pred": 5.296421175449736
+  },
+  "level 2": {
+   "layouts": 13,
+   "fatal": 0,
+   "scored": 3,
+   "overall": 5.666666666666667,
+   "collisions": 6.666666666666667,
+   "readable": 6.333333333333333,
+   "on_brand": 7.333333333333333,
+   "intentional": 5.0,
+   "adapts": 6.333333333333333,
+   "pred": 4.096117129448646
+  },
+  "level 3": {
+   "layouts": 13,
+   "fatal": 0,
+   "scored": 3,
+   "overall": 4.333333333333333,
+   "collisions": 5.333333333333333,
+   "readable": 4.0,
+   "on_brand": 6.666666666666667,
+   "intentional": 4.333333333333333,
+   "adapts": 5.666666666666667,
+   "pred": 3.3011811555548056
+  }
+ },
+ "worst10_mean": 4.0,
+ "engine_mean_overall": 5.0,
+ "seconds_per_cell": 1.3034871794871794,
+ "seconds_max": 7.233,
+ "pred_mean": 4.231239820151063,
+ "gallery": [
+  {
+   "id": "advanced_01@leaderboard#fe7c4df15ed1",
+   "cell": "advanced_01@leaderboard",
+   "variant": "v5_smp",
+   "overall": 4,
+   "scores": {
+    "collisions": 6,
+    "readable": 3,
+    "on_brand": 6,
+    "intentional": 4,
+    "adapts": 6
+   },
+   "reason": "Sunset Sale tag and badge chips are unreadably tiny; disclaimer is oversized under logo; stray red fragment beside can; cramped clusters around the CTA.",
+   "fatal_issue": null,
+   "source_png": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/training-data/ab/_sources.nosync/advanced_01/source.png",
+   "output_png": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/training-data/ab/v5_smp/renders.nosync/advanced_01/leaderboard.png"
+  },
+  {
+   "id": "advanced_01@linkedin_banner#ed2116029776",
+   "cell": "advanced_01@linkedin_banner",
+   "variant": "v5_smp",
+   "overall": 4,
+   "scores": {
+    "collisions": 6,
+    "readable": 4,
+    "on_brand": 7,
+    "intentional": 3,
+    "adapts": 5
+   },
+   "reason": "Left-side chips and Sunset Sale tag are scattered at random. Headline is cramped against the top edge. Body copy and disclaimer are tiny, and the missing-image placeholder is crammed in.",
+   "fatal_issue": null,
+   "source_png": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/training-data/ab/_sources.nosync/advanced_01/source.png",
+   "output_png": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/training-data/ab/v5_smp/renders.nosync/advanced_01/linkedin_banner.png"
+  },
+  {
+   "id": "advanced_01@instagram_post#87e9ba71f2ca",
+   "cell": "advanced_01@instagram_post",
+   "variant": "v5_smp",
+   "overall": 5,
+   "scores": {
+    "collisions": 4,
+    "readable": 5,
+    "on_brand": 7,
+    "intentional": 6,
+    "adapts": 6
+   },
+   "reason": "Missing-asset placeholder covers the disclaimer's end; a bokeh dot sits on the body copy; the disclaimer is tiny; the Award pill lost its background; mostly a re-centred copy of the original.",
+   "fatal_issue": null,
+   "source_png": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/training-data/ab/_sources.nosync/advanced_01/source.png",
+   "output_png": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/training-data/ab/v5_smp/renders.nosync/advanced_01/instagram_post.png"
+  },
+  {
+   "id": "core_01@instagram_post#4c3f4e941f7f",
+   "cell": "core_01@instagram_post",
+   "variant": "v5_smp",
+   "overall": 5,
+   "scores": {
+    "collisions": 5,
+    "readable": 7,
+    "on_brand": 8,
+    "intentional": 4,
+    "adapts": 5
+   },
+   "reason": "Near copy of original. Subtitle almost touches CTA top; CTA crowds bottom edge. Enlarged top-left circle nearly touches logo and runs behind can corner.",
+   "fatal_issue": null,
+   "source_png": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/training-data/ab/_sources.nosync/core_01/source.png",
+   "output_png": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/training-data/ab/v5_smp/renders.nosync/core_01/instagram_post.png"
+  },
+  {
+   "id": "warmup_01@leaderboard#458615af5ec5",
+   "cell": "warmup_01@leaderboard",
+   "variant": "v5_smp",
+   "overall": 5,
+   "scores": {
+    "collisions": 7,
+    "readable": 4,
+    "on_brand": 5,
+    "intentional": 6,
+    "adapts": 7
+   },
+   "reason": "SOLSTICE logo shrunk to an illegible speck at far left. CTA wraps awkwardly onto two lines, and a bokeh dot sits behind 'the'. Headline is strong.",
+   "fatal_issue": null,
+   "source_png": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/training-data/ab/_sources.nosync/warmup_01/source.png",
+   "output_png": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/training-data/ab/v5_smp/renders.nosync/warmup_01/leaderboard.png"
+  },
+  {
+   "id": "warmup_01@youtube_thumbnail#28d4b3d2780f",
+   "cell": "warmup_01@youtube_thumbnail",
+   "variant": "v5_smp",
+   "overall": 5,
+   "scores": {
+    "collisions": 6,
+    "readable": 8,
+    "on_brand": 8,
+    "intentional": 4,
+    "adapts": 5
+   },
+   "reason": "Centered stack is pushed into the left third and leaves the right half empty. A bokeh dot touches the end of the CTA 'Line', and the gap between headline and CTA is too wide.",
+   "fatal_issue": null,
+   "source_png": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/training-data/ab/_sources.nosync/warmup_01/source.png",
+   "output_png": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/training-data/ab/v5_smp/renders.nosync/warmup_01/youtube_thumbnail.png"
+  },
+  {
+   "id": "core_01@billboard#2df78b64bda9",
+   "cell": "core_01@billboard",
+   "variant": "v5_smp",
+   "overall": 6,
+   "scores": {
+    "collisions": 7,
+    "readable": 6,
+    "on_brand": 8,
+    "intentional": 5,
+    "adapts": 7
+   },
+   "reason": "Body copy squeezed into a narrow five-line column beside the CTA. Logo is small and stacked under an oversized NEW FLAVOR pill. Headline overlaps the decorative circle.",
+   "fatal_issue": null,
+   "source_png": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/training-data/ab/_sources.nosync/core_01/source.png",
+   "output_png": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/training-data/ab/v5_smp/renders.nosync/core_01/billboard.png"
+  },
+  {
+   "id": "core_01@medium_rectangle#b9adf957bd92",
+   "cell": "core_01@medium_rectangle",
+   "variant": "v5_smp",
+   "overall": 6,
+   "scores": {
+    "collisions": 8,
+    "readable": 6,
+    "on_brand": 6,
+    "intentional": 6,
+    "adapts": 7
+   },
+   "reason": "Sensible two-column split, but the SOLSTICE logo is tiny and hard to read, the can hero is shrunk, and the left column feels loosely spaced.",
+   "fatal_issue": null,
+   "source_png": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/training-data/ab/_sources.nosync/core_01/source.png",
+   "output_png": "/Users/angelolandiza/Documents/GitHub/Adobe-26-University-Hackathon/distil-research/training-data/ab/v5_smp/renders.nosync/core_01/medium_rectangle.png"
+  }
+ ],
+ "by": {
+  "claude": 7,
+  "cache": 1
+ },
+ "spend": {
+  "usd": 0.2905,
+  "calls": 7,
+  "input_tokens": 9078,
+  "output_tokens": 3273,
+  "cache_read_tokens": 12684,
+  "cache_creation_tokens": 28825,
+  "layouts": 7
+ }
+}

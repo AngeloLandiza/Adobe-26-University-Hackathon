@@ -1,0 +1,1 @@
+{"overall": 6, "collisions": 9, "readable": 8, "on_brand": 8, "intentional": 5, "adapts": 6, "fatal_issue": null, "reason": "Jar sits high in the circle, leaving its lower half empty; big gap between quote mark and quote; logo crammed beside attribution.", "model": "claude-opus-5-5", "effort": "default", "size": 768, "k": 1, "rubric_version": "abs1-ed20c072", "ts": 1792699773}

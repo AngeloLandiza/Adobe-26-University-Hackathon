@@ -1,0 +1,74 @@
+{
+  "task_id": "cr2_23_735x1102_img",
+  "split": "challenge2",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (Pinterest), converted; 4 elements.",
+  "features": [
+    "tall",
+    "photo"
+  ],
+  "crello_id": "5952a22e95a7a863ddce0a6c",
+  "crello_format": "Pinterest",
+  "source": {
+    "canvas": {
+      "width": 735,
+      "height": 1102
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 56.8,
+        "width": 735.0,
+        "height": 986.9,
+        "z_index": 0,
+        "asset_id": "cr2_23_735x1102_img_bg.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_1",
+        "type": "shape",
+        "x": 192.0,
+        "y": 376.0,
+        "width": 350.0,
+        "height": 350.0,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,255,255,1)"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 253.0,
+        "y": 686.1,
+        "width": 226,
+        "height": 33,
+        "z_index": 2,
+        "content": "CAROLYN MURPHY",
+        "font_size": 24.0,
+        "font_family": "Solstice Serif",
+        "color": "rgba(68,62,64,1)",
+        "text_align": "center",
+        "line_height": 1.0
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 169.5,
+        "y": 375.6,
+        "width": 396.9,
+        "height": 253.9,
+        "z_index": 3,
+        "content": "MEN ARE JUST\nJEALOUS BECAUSE\nTHEY CAN'T WEAR\nMAKEUP.",
+        "font_size": 43.4,
+        "font_family": "Solstice Serif",
+        "color": "rgba(68,62,64,1)",
+        "text_align": "center",
+        "line_height": 1.47
+      }
+    ]
+  }
+}

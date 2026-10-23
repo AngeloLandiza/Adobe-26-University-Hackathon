@@ -1,0 +1,82 @@
+{
+  "task_id": "cr3_11_336x280_txt",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (Large Rectangle), converted; 5 elements.",
+  "features": [
+    "square",
+    "text-only"
+  ],
+  "crello_id": "58ab1aaa95a7a863ddcc78d8",
+  "crello_format": "Large Rectangle",
+  "source": {
+    "canvas": {
+      "width": 336,
+      "height": 280
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 336,
+        "height": 280,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(0,0,0,1)"
+      },
+      {
+        "id": "deco_bg_1",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 335.0,
+        "height": 279.8,
+        "z_index": 1,
+        "asset_id": "cr3_11_336x280_txt_deco_bg_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_1",
+        "type": "shape",
+        "x": 82.0,
+        "y": 54.0,
+        "width": 171.0,
+        "height": 171.0,
+        "z_index": 2,
+        "shape_type": "ellipse",
+        "fill_color": "rgba(255,255,255,1)"
+      },
+      {
+        "id": "deco_2",
+        "type": "image",
+        "x": 38.0,
+        "y": 24.0,
+        "width": 259.0,
+        "height": 232.0,
+        "z_index": 3,
+        "asset_id": "cr3_11_336x280_txt_deco_2.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 94.5,
+        "y": 104.0,
+        "width": 146,
+        "height": 73,
+        "z_index": 4,
+        "content": "COME AND PICK\nTHE PERFECT\nBIRTHDAY GIFT",
+        "font_size": 18.0,
+        "font_family": "Solstice Serif",
+        "font_style": "italic",
+        "color": "rgba(0,93,158,1)",
+        "text_align": "center",
+        "line_height": 1.34
+      }
+    ]
+  }
+}

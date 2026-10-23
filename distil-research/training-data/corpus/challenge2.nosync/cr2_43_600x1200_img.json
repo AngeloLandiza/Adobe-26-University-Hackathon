@@ -1,0 +1,122 @@
+{
+  "task_id": "cr2_43_600x1200_img",
+  "split": "challenge2",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (Graphic), converted; 8 elements.",
+  "features": [
+    "very_tall",
+    "photo"
+  ],
+  "crello_id": "59b287a31350e8329300dd42",
+  "crello_format": "Graphic",
+  "source": {
+    "canvas": {
+      "width": 600,
+      "height": 1200
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 1.9,
+        "y": 0.0,
+        "width": 598.1,
+        "height": 1103.7,
+        "z_index": 0,
+        "asset_id": "cr2_43_600x1200_img_bg.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_1",
+        "type": "shape",
+        "x": 0.0,
+        "y": 865.0,
+        "width": 600.0,
+        "height": 335.0,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,255,255,1)"
+      },
+      {
+        "id": "deco_2",
+        "type": "image",
+        "x": 0.0,
+        "y": 683.0,
+        "width": 600.0,
+        "height": 372.0,
+        "z_index": 2,
+        "asset_id": "cr2_43_600x1200_img_deco_2.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_3",
+        "type": "image",
+        "x": 277.0,
+        "y": 636.0,
+        "width": 47.0,
+        "height": 47.0,
+        "z_index": 3,
+        "asset_id": "cr2_43_600x1200_img_deco_3.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_4",
+        "type": "image",
+        "x": 291.0,
+        "y": 772.0,
+        "width": 20.0,
+        "height": 20.0,
+        "z_index": 4,
+        "asset_id": "cr2_43_600x1200_img_deco_4.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_5",
+        "type": "image",
+        "x": 287.0,
+        "y": 721.0,
+        "width": 29.0,
+        "height": 29.0,
+        "z_index": 5,
+        "asset_id": "cr2_43_600x1200_img_deco_5.png",
+        "fit": "contain"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 104.9,
+        "y": 1090.9,
+        "width": 397,
+        "height": 41,
+        "z_index": 6,
+        "content": "MAHATMA GANDHI",
+        "font_size": 28.6,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(35,31,32,1)",
+        "text_align": "center",
+        "line_height": 1.0,
+        "letter_spacing": 8.0
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 13.8,
+        "y": 893.6,
+        "width": 581.4,
+        "height": 177.1,
+        "z_index": 7,
+        "content": "PRAYER IS THE KEY\nOF THE MORNING AND THE\nBOLT OF THE EVENING",
+        "font_size": 36.6,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(35,31,32,1)",
+        "text_align": "center",
+        "line_height": 1.49,
+        "letter_spacing": 4.6
+      }
+    ]
+  }
+}

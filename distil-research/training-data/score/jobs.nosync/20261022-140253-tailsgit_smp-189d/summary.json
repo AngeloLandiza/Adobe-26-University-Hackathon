@@ -1,0 +1,86 @@
+{
+ "layouts": 39,
+ "fatal": 1,
+ "fatal_rate": 0.02564102564102564,
+ "top_fatal": [
+  [
+   "text_overflow",
+   1
+  ]
+ ],
+ "top_warn": [
+  [
+   "tiny_text",
+   15
+  ],
+  [
+   "frozen_changed",
+   2
+  ]
+ ],
+ "claude_scored": 0,
+ "mean": {
+  "overall": null,
+  "collisions": null,
+  "readable": null,
+  "on_brand": null,
+  "intentional": null,
+  "adapts": null
+ },
+ "by_difficulty": {
+  "level 1": {
+   "layouts": 13,
+   "fatal": 0,
+   "scored": 0,
+   "overall": null,
+   "collisions": null,
+   "readable": null,
+   "on_brand": null,
+   "intentional": null,
+   "adapts": null,
+   "pred": 4.394680441990615
+  },
+  "level 2": {
+   "layouts": 13,
+   "fatal": 1,
+   "scored": 0,
+   "overall": null,
+   "collisions": null,
+   "readable": null,
+   "on_brand": null,
+   "intentional": null,
+   "adapts": null,
+   "pred": 4.286208437695254
+  },
+  "level 3": {
+   "layouts": 13,
+   "fatal": 0,
+   "scored": 0,
+   "overall": null,
+   "collisions": null,
+   "readable": null,
+   "on_brand": null,
+   "intentional": null,
+   "adapts": null,
+   "pred": 3.1411896065820804
+  }
+ },
+ "worst10_mean": null,
+ "engine_mean_overall": null,
+ "seconds_per_cell": null,
+ "seconds_max": null,
+ "pred_mean": 3.9316003127312658,
+ "gallery": [],
+ "by": {
+  "layer1": 1
+ },
+ "spend": {
+  "usd": 0.0,
+  "calls": 0,
+  "input_tokens": 0,
+  "output_tokens": 0,
+  "cache_read_tokens": 0,
+  "cache_creation_tokens": 0,
+  "layouts": 0
+ }
+}

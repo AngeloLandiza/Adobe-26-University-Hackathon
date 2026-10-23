@@ -1,0 +1,76 @@
+{
+  "task_id": "cr3_42_851x315_img",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (Facebook cover), converted; 4 elements.",
+  "features": [
+    "wide",
+    "photo"
+  ],
+  "crello_id": "5ea2a28b499b85dcc726d7d6",
+  "crello_format": "Facebook cover",
+  "source": {
+    "canvas": {
+      "width": 851,
+      "height": 315
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 851.0,
+        "height": 315.0,
+        "z_index": 0,
+        "asset_id": "cr3_42_851x315_img_bg.png",
+        "fit": "cover"
+      },
+      {
+        "id": "deco_1",
+        "type": "shape",
+        "x": 412.0,
+        "y": 70.0,
+        "width": 329.0,
+        "height": 210.0,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(237,237,237,1)"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 342.0,
+        "y": 112.5,
+        "width": 220,
+        "height": 88,
+        "z_index": 2,
+        "content": "VIRGO.",
+        "font_size": 62.0,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(25,25,25,1)",
+        "text_align": "left",
+        "line_height": 1.0
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 544.8,
+        "y": 207.4,
+        "width": 161.2,
+        "height": 48.0,
+        "z_index": 3,
+        "content": "ALL-SEASON\nSTYLE ESSENTIALS",
+        "font_size": 15.7,
+        "font_family": "Solstice Serif",
+        "color": "rgba(25,25,25,1)",
+        "text_align": "right",
+        "line_height": 1.44,
+        "letter_spacing": 0.98
+      }
+    ]
+  }
+}

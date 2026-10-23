@@ -1,0 +1,1 @@
+{"overall": 6, "collisions": 8, "readable": 7, "on_brand": 6, "intentional": 6, "adapts": 6, "fatal_issue": null, "reason": "Headline strong and CTA legible, but logo tiny with dot replacing the sun icon; CTA nearly edge to edge, tight margins.", "model": "claude-sonnet-5-5", "effort": "low", "size": 512, "k": 4, "rubric_version": "abs1-ed20c072", "ts": 1792694983}

@@ -1,0 +1,61 @@
+{
+ "n": 37,
+ "sent": 20,
+ "share_sent": 0.5405405405405406,
+ "saving": 0.45945945945945943,
+ "spearman": 0.8262125266856714,
+ "criteria_spearman": 0.7319713585668606,
+ "worst_q": 0.8,
+ "model_only_spearman": 0.760898563867114,
+ "group_means": {
+  "holdout:base": {
+   "n": 7,
+   "all_claude": 4.14,
+   "triage": 4.48,
+   "change": 0.34
+  },
+  "holdout:bisect": {
+   "n": 6,
+   "all_claude": 4.17,
+   "triage": 4.77,
+   "change": 0.6
+  },
+  "holdout:llm": {
+   "n": 9,
+   "all_claude": 4.22,
+   "triage": 4.05,
+   "change": -0.17
+  },
+  "holdout:v5": {
+   "n": 6,
+   "all_claude": 4.5,
+   "triage": 4.53,
+   "change": 0.03
+  },
+  "samples:base": {
+   "n": 2,
+   "all_claude": 4.0,
+   "triage": 3.93,
+   "change": -0.07
+  },
+  "samples:v3L": {
+   "n": 1,
+   "all_claude": 4.0,
+   "triage": 6.45,
+   "change": 2.45
+  },
+  "samples:v5": {
+   "n": 3,
+   "all_claude": 4.67,
+   "triage": 5.21,
+   "change": 0.55
+  },
+  "samples:v5t": {
+   "n": 3,
+   "all_claude": 4.33,
+   "triage": 5.09,
+   "change": 0.75
+  }
+ },
+ "max_abs_mean_change": 2.45
+}

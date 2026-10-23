@@ -1,0 +1,121 @@
+{
+  "task_id": "crd_33_1080x1920_img",
+  "split": "crello_dev",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (dev) (Instagram Story), converted; 8 elements.",
+  "features": [
+    "tall",
+    "photo"
+  ],
+  "crello_id": "5f475449a637ee11e33aabb9",
+  "crello_format": "Instagram Story",
+  "source": {
+    "canvas": {
+      "width": 1080,
+      "height": 1920
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1080.0,
+        "height": 1920.0,
+        "z_index": 0,
+        "asset_id": "crd_33_1080x1920_img_bg.png",
+        "fit": "cover"
+      },
+      {
+        "id": "logo",
+        "type": "shape",
+        "x": 241.0,
+        "y": 1588.0,
+        "width": 598.0,
+        "height": 149.0,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(223,239,250,1)"
+      },
+      {
+        "id": "deco_1",
+        "type": "shape",
+        "x": 241.0,
+        "y": 180.0,
+        "width": 598.0,
+        "height": 1018.0,
+        "z_index": 2,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(223,239,250,1)"
+      },
+      {
+        "id": "deco_2",
+        "type": "image",
+        "x": 343.0,
+        "y": 34.0,
+        "width": 138.0,
+        "height": 340.0,
+        "z_index": 3,
+        "asset_id": "crd_33_1080x1920_img_deco_2.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_3",
+        "type": "shape",
+        "x": 344.0,
+        "y": 857.0,
+        "width": 107.0,
+        "height": 4.0,
+        "z_index": 4,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(16,9,10,1)"
+      },
+      {
+        "id": "deco_4",
+        "type": "image",
+        "x": 488.0,
+        "y": 1620.0,
+        "width": 103.0,
+        "height": 88.0,
+        "z_index": 5,
+        "asset_id": "crd_33_1080x1920_img_deco_4.png",
+        "fit": "contain"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 340.0,
+        "y": 932.4,
+        "width": 424.0,
+        "height": 129.0,
+        "z_index": 6,
+        "content": "NOT FOR THE\nONE YOU HAVE.",
+        "font_size": 49.0,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(16,9,10,1)",
+        "text_align": "left",
+        "letter_spacing": 3.56
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 340.0,
+        "y": 488.6,
+        "width": 518.0,
+        "height": 403.0,
+        "z_index": 7,
+        "content": "DRESS FOR\nTHE JOB\nYOU WANT",
+        "font_size": 88.0,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(16,9,10,1)",
+        "text_align": "left",
+        "line_height": 1.08,
+        "letter_spacing": 4.4
+      }
+    ]
+  }
+}

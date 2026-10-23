@@ -1,0 +1,129 @@
+{
+  "task_id": "crd_39_1080x1920_txt",
+  "split": "crello_dev",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (dev) (Instagram Story), converted; 8 elements.",
+  "features": [
+    "tall",
+    "text-only"
+  ],
+  "crello_id": "5e8d96cb4b3890eb071c683d",
+  "crello_format": "Instagram Story",
+  "source": {
+    "canvas": {
+      "width": 1080,
+      "height": 1920
+    },
+    "elements": [
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 0.0,
+        "y": 755.0,
+        "width": 286.0,
+        "height": 1071.8,
+        "z_index": 0,
+        "asset_id": "crd_39_1080x1920_txt_deco_1.png",
+        "fit": "contain",
+        "opacity": 0.4
+      },
+      {
+        "id": "deco_2",
+        "type": "image",
+        "x": 773.0,
+        "y": 902.9,
+        "width": 307.0,
+        "height": 1017.1,
+        "z_index": 1,
+        "asset_id": "crd_39_1080x1920_txt_deco_2.png",
+        "fit": "contain",
+        "opacity": 0.4
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 349.5,
+        "y": 1547.3,
+        "width": 381,
+        "height": 108.0,
+        "z_index": 2,
+        "content": "#FlattenTheCurve\n#StayAtHome",
+        "font_size": 34.2,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(0,0,1,1)",
+        "text_align": "center",
+        "line_height": 1.6,
+        "letter_spacing": 3.11
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 150.8,
+        "y": 491.3,
+        "width": 779,
+        "height": 269,
+        "z_index": 3,
+        "content": "even though\nwe are apart",
+        "font_size": 119.0,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(37,32,179,1)",
+        "text_align": "center",
+        "line_height": 0.85
+      },
+      {
+        "id": "body_2",
+        "type": "text",
+        "x": 337.3,
+        "y": 293.2,
+        "width": 406,
+        "height": 102.0,
+        "z_index": 4,
+        "content": "WE'LL GET THROUGH\nTHIS TOGETHER",
+        "font_size": 33.0,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(0,0,1,1)",
+        "text_align": "center",
+        "line_height": 1.55,
+        "letter_spacing": 4.0
+      },
+      {
+        "id": "deco_3",
+        "type": "image",
+        "x": 237.0,
+        "y": 1116.0,
+        "width": 506.0,
+        "height": 217.0,
+        "z_index": 5,
+        "asset_id": "crd_39_1080x1920_txt_deco_3.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_4",
+        "type": "image",
+        "x": 552.3,
+        "y": 858.0,
+        "width": 464.0,
+        "height": 573.0,
+        "z_index": 6,
+        "asset_id": "crd_39_1080x1920_txt_deco_4.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_5",
+        "type": "image",
+        "x": 67.0,
+        "y": 867.0,
+        "width": 508.0,
+        "height": 556.0,
+        "z_index": 7,
+        "asset_id": "crd_39_1080x1920_txt_deco_5.png",
+        "fit": "contain"
+      }
+    ]
+  }
+}

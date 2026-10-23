@@ -1,0 +1,122 @@
+{
+  "task_id": "cr2_26_540x810_txt",
+  "split": "challenge2",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (Tumblr), converted; 7 elements.",
+  "features": [
+    "tall",
+    "text-only"
+  ],
+  "crello_id": "59b280711350e8329300dbaf",
+  "crello_format": "Tumblr",
+  "source": {
+    "canvas": {
+      "width": 540,
+      "height": 810
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 540,
+        "height": 810,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(35,31,32,1)"
+      },
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 59.0,
+        "y": 143.0,
+        "width": 421.0,
+        "height": 99.0,
+        "z_index": 1,
+        "asset_id": "cr2_26_540x810_txt_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 55.0,
+        "y": 692.8,
+        "width": 272,
+        "height": 21,
+        "z_index": 2,
+        "content": "WWW.XHKHFUSHFH.COM/VIDEOGAMES",
+        "font_size": 14.3,
+        "font_family": "Solstice Sans",
+        "color": "rgba(163,221,242,1)",
+        "text_align": "left",
+        "line_height": 1.0
+      },
+      {
+        "id": "body_2",
+        "type": "text",
+        "x": 55.0,
+        "y": 633.7,
+        "width": 426,
+        "height": 46.9,
+        "z_index": 3,
+        "content": "THE 3-DAY EVENT WILL START MAY,14TH AND TAKE PLACE IN NY.\nTO CHECK IF YOUR GAME IS IN THE LIST FOLLOW THE LINK:",
+        "font_size": 14.2,
+        "font_family": "Solstice Sans",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left",
+        "line_height": 1.69
+      },
+      {
+        "id": "body_3",
+        "type": "text",
+        "x": 55.0,
+        "y": 482.6,
+        "width": 441,
+        "height": 87.9,
+        "z_index": 4,
+        "content": "GAMING IS YOUR PASSION AND YOU CANNOT\nIMAGINE YOUR LIFE WITHOUT VIRTUAL\nCHALLENGES?",
+        "font_size": 20.3,
+        "font_family": "Solstice Sans",
+        "color": "rgba(248,176,181,1)",
+        "text_align": "left",
+        "line_height": 1.21
+      },
+      {
+        "id": "body_4",
+        "type": "text",
+        "x": 56.1,
+        "y": 588.4,
+        "width": 440,
+        "height": 34,
+        "z_index": 5,
+        "content": "IT'S TIME FOR THEM TO BECOME REAL.",
+        "font_size": 23.8,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left",
+        "line_height": 1.0
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 55.0,
+        "y": 381.6,
+        "width": 440,
+        "height": 96,
+        "z_index": 6,
+        "content": "THE US VIDEO GAMES\nCHAMPIONSHIP",
+        "font_size": 40.2,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left",
+        "line_height": 0.95,
+        "letter_spacing": 0.86
+      }
+    ]
+  }
+}

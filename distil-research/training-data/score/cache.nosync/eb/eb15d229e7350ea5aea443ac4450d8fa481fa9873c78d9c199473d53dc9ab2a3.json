@@ -1,0 +1,1 @@
+{"overall": 6, "collisions": 8, "readable": 5, "on_brand": 8, "intentional": 6, "adapts": 6, "fatal_issue": null, "reason": "Structure holds, but body and disclaimer text are very small, headline is dense, and spacing is cramped at the bottom.", "model": "claude-sonnet-5-5", "effort": "low", "size": 512, "k": 6, "rubric_version": "abs1-ed20c072", "ts": 1792695248}

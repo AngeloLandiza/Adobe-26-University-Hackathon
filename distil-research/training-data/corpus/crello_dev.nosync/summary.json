@@ -1,0 +1,30 @@
+{
+ "source": "cyberagent/crello rev 5.1.0, gate-passing ad templates of challenge2's scan, challenge2's design families excluded",
+ "pool_families": 214,
+ "selected": 60,
+ "selected_by_class": {
+  "landscape": 17,
+  "square": 12,
+  "strip": 2,
+  "tall": 12,
+  "very_tall": 5,
+  "wide": 12
+ },
+ "selected_by_photo": {
+  "photo": 54,
+  "text-only": 6
+ },
+ "layered": 42,
+ "simple": 18,
+ "with_groups": 34,
+ "with_background_image": 29,
+ "with_two_or_more_background_layers": 6,
+ "groups": 44,
+ "nested_groups": 9,
+ "stretch_groups": 8,
+ "fixed_aspect_groups": 36,
+ "image_containers": 44,
+ "units_held": 131,
+ "content_units": 422,
+ "pool_layered_share": 0.864
+}

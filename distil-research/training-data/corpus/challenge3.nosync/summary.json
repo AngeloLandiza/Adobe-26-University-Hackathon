@@ -1,0 +1,73 @@
+{
+ "source": "cyberagent/crello rev 5.1.0, gate-passing ad templates of challenge2's scan, challenge2's and crello_dev's design families excluded",
+ "excluded_ads": 110,
+ "pool_templates": 177,
+ "pool_families": 154,
+ "pool_families_by_class_photo": {
+  "landscape/photo": 38,
+  "landscape/text-only": 3,
+  "square/photo": 39,
+  "square/text-only": 10,
+  "tall/photo": 15,
+  "tall/text-only": 12,
+  "wide/photo": 32,
+  "wide/text-only": 5
+ },
+ "selected": 50,
+ "selected_by_class": {
+  "landscape": 13,
+  "square": 13,
+  "tall": 13,
+  "wide": 11
+ },
+ "selected_by_class_photo": {
+  "landscape/photo": 10,
+  "landscape/text-only": 3,
+  "square/photo": 5,
+  "square/text-only": 8,
+  "tall/photo": 5,
+  "tall/text-only": 8,
+  "wide/photo": 7,
+  "wide/text-only": 4
+ },
+ "selected_by_photo": {
+  "photo": 27,
+  "text-only": 23
+ },
+ "selected_sizes": {
+  "1024x512": 1,
+  "1080x1080": 4,
+  "1080x1920": 3,
+  "1190x1683": 1,
+  "1200x480": 1,
+  "1200x600": 2,
+  "1200x628": 3,
+  "1280x720": 1,
+  "1296x1728": 2,
+  "1500x500": 1,
+  "1590x400": 1,
+  "1920x1080": 4,
+  "2560x1440": 1,
+  "3000x1055": 1,
+  "300x250": 4,
+  "336x280": 2,
+  "360x504": 3,
+  "537x240": 1,
+  "540x810": 3,
+  "560x315": 1,
+  "600x200": 1,
+  "735x1102": 1,
+  "851x315": 5,
+  "940x788": 3
+ },
+ "selected_elements": {
+  "min": 3,
+  "median": 7,
+  "max": 27,
+  "by_type": {
+   "shape": 74,
+   "text": 153,
+   "image": 230
+  }
+ }
+}

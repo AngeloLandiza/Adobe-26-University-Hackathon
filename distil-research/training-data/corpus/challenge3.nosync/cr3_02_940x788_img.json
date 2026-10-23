@@ -1,0 +1,120 @@
+{
+  "task_id": "cr3_02_940x788_img",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (Facebook), converted; 8 elements.",
+  "features": [
+    "square",
+    "photo"
+  ],
+  "crello_id": "5bb5d02b78e1194aa6de26dd",
+  "crello_format": "Facebook",
+  "source": {
+    "canvas": {
+      "width": 940,
+      "height": 788
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 940.0,
+        "height": 788.0,
+        "z_index": 0,
+        "asset_id": "cr3_02_940x788_img_bg.png",
+        "fit": "cover"
+      },
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 474.1,
+        "y": 0.0,
+        "width": 465.9,
+        "height": 788.0,
+        "z_index": 1,
+        "asset_id": "cr3_02_940x788_img_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_2",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 78.0,
+        "height": 788.0,
+        "z_index": 2,
+        "asset_id": "cr3_02_940x788_img_deco_2.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_3",
+        "type": "image",
+        "x": 29.0,
+        "y": 0.0,
+        "width": 136.0,
+        "height": 788.0,
+        "z_index": 3,
+        "asset_id": "cr3_02_940x788_img_deco_3.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 637.3,
+        "y": 371.0,
+        "width": 235.3,
+        "height": 169,
+        "z_index": 4,
+        "content": "YOUR\nSPACE",
+        "font_size": 72.8,
+        "font_family": "Solstice Serif",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "right",
+        "line_height": 1.0
+      },
+      {
+        "id": "deco_4",
+        "type": "image",
+        "x": 745.0,
+        "y": 588.0,
+        "width": 192.0,
+        "height": 23.0,
+        "z_index": 5,
+        "asset_id": "cr3_02_940x788_img_deco_4.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_5",
+        "type": "image",
+        "x": 601.0,
+        "y": 250.0,
+        "width": 192.0,
+        "height": 23.0,
+        "z_index": 6,
+        "asset_id": "cr3_02_940x788_img_deco_5.png",
+        "fit": "contain"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 659.6,
+        "y": 325.0,
+        "width": 223.0,
+        "height": 44,
+        "z_index": 7,
+        "content": "EXPAND",
+        "font_size": 33.0,
+        "font_family": "Solstice Serif",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "right",
+        "line_height": 1.0,
+        "letter_spacing": 13.0
+      }
+    ]
+  }
+}

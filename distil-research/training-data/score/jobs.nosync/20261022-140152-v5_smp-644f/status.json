@@ -1,0 +1,46 @@
+{
+ "state": "done",
+ "phase": "done",
+ "done": 8,
+ "total": 8,
+ "message": "Claude on 8 layouts (opus-default-768-K1)",
+ "started": 1792695712.333525,
+ "finished": 1792695762.787625,
+ "snapshot_before": {
+  "ok": false,
+  "age_s": 1279.5,
+  "five_hour": null,
+  "seven_day": null,
+  "model": null
+ },
+ "usd": 0.2905,
+ "claude_stats": {
+  "total": 8,
+  "layer1_fatal": 0,
+  "cache_hits": 1,
+  "sent": 7,
+  "answered": 7,
+  "retried": 0,
+  "calls": 7,
+  "failed_calls": 0,
+  "skipped_budget": 0,
+  "usd": 0.2905307,
+  "stopped": ""
+ },
+ "snapshot_after": {
+  "ok": false,
+  "age_s": 1329.9,
+  "five_hour": null,
+  "seven_day": null,
+  "model": null
+ },
+ "spend": {
+  "usd": 0.2905,
+  "calls": 7,
+  "input_tokens": 9078,
+  "output_tokens": 3273,
+  "cache_read_tokens": 12684,
+  "cache_creation_tokens": 28825,
+  "layouts": 7
+ }
+}

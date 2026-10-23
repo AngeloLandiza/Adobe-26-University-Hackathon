@@ -1,0 +1,11 @@
+c01_square_golden_hour_v2 attempt 0 DROPPED [add:deco; palette:bloom(inverted)]: cta_label: contrast 2.37 < 3.00
+c03_square_text_only_v2 attempt 0 DROPPED [add:deco; type:tagline-spacing; palette:glacier; canvas:1080x1080->1200x1200]: tagline: contrast 2.07 < 3.00
+c04_square_five_badges_v2 attempt 0 DROPPED [add:badge(SUMMER ONLY); copy:legal=long,headline=short; palette:glacier(inverted)]: cta_label: contrast 2.64 < 3.00; badge_new_label: contrast 1.81 < 3.00
+c06_portrait_lineup_v3 attempt 0 DROPPED [add:legal; copy:headline=short; palette:citrine(inverted)]: delivery: contrast 1.25 < 3.00
+c10_story_ritual_steps_v2 attempt 0 DROPPED [palette:glacier(inverted); jitter:8-units; remove:wordmark]: step1_num: contrast 2.64 < 2.84; step2_num: contrast 2.64 < 2.84; step3_num: contrast 2.64 < 2.84
+c10_story_ritual_steps_v3 attempt 0 DROPPED [add:deco; copy:headline=long]: step1_num: contrast 2.57 < 2.84; step2_num: contrast 2.57 < 2.84
+c10_story_ritual_steps_v3 attempt 1 DROPPED [canvas:1080x1920->1080x1350; add:deco; copy:headline=short; palette:bloom(inverted)]: step1_num: contrast 2.37 < 2.84; step2_num: contrast 2.37 < 2.84; step3_num: contrast 2.37 < 2.84
+c19_mrec_weekend_sale_v2 attempt 0 DROPPED [canvas:300x250->300x300; remove:deco_sun; add:deco; palette:slate]: legal: contrast 2.97 < 3.00
+c20_leaderboard_dark_v2 attempt 0 DROPPED [remove:subhead; palette:slate(inverted)]: cta_label: contrast 2.01 < 3.00
+c26_portrait_sunset_sessions_v3 attempt 0 DROPPED [canvas:1080x1350->1200x1500; image:logo->syn_logo_blocks_light.png,background->syn_bg_roast_ember.png; type:subhead-upright; palette:harbor(inverted)]: kicker: contrast 1.29 < 3.00; badge3_label: contrast 1.87 < 3.00
+c27_square_tasting_note_v2 attempt 0 DROPPED [remove:deco_sun; add:deco; palette:slate(inverted)]: quote_mark: contrast 1.35 < 3.00; attribution: contrast 1.35 < 3.00

@@ -1,0 +1,1 @@
+{"overall": 5, "collisions": 6, "readable": 5, "on_brand": 6, "intentional": 4, "adapts": 5, "fatal_issue": null, "reason": "Headline sits over green circle edge; SOLSTICE below headline weakens hierarchy; small can with big dead gaps; small body text.", "model": "claude-sonnet-5-5", "effort": "medium", "size": 512, "k": 4, "rubric_version": "abs1-ed20c072", "ts": 1792695335}

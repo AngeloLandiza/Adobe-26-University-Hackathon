@@ -1,0 +1,19 @@
+{
+ "mode": "free",
+ "n": 60,
+ "test_set": "samples",
+ "max_usd": 3.0,
+ "max_5h_pct": 80.0,
+ "max_7d_pct": 95.0,
+ "recover_designs": true,
+ "triage": false,
+ "seed": 0,
+ "source": {
+  "kind": "folder",
+  "outputs": "/Users/angelolandiza/Documents/GitHub/chameleon-other-teams.nosync/_runs/tailsgit/samples/output",
+  "tasks": "/Users/angelolandiza/Documents/GitHub/chameleon-other-teams.nosync/_tasks/samples",
+  "name": "tailsgit_smp"
+ },
+ "config": "opus-default-768-K1",
+ "name": "tailsgit_smp"
+}

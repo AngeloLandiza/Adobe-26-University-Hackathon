@@ -1,0 +1,115 @@
+{
+  "task_id": "crd_28_1200x600_img",
+  "split": "crello_dev",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (dev) (Image), converted; 8 elements.",
+  "features": [
+    "landscape",
+    "photo"
+  ],
+  "crello_id": "589b418a95a7a863ddcc5079",
+  "crello_format": "Image",
+  "source": {
+    "canvas": {
+      "width": 1200,
+      "height": 600
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1200.0,
+        "height": 600.0,
+        "z_index": 0,
+        "asset_id": "crd_28_1200x600_img_bg.png",
+        "fit": "cover"
+      },
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 0.0,
+        "y": 169.0,
+        "width": 1200.0,
+        "height": 262.0,
+        "z_index": 1,
+        "asset_id": "crd_28_1200x600_img_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_2",
+        "type": "image",
+        "x": 260.7,
+        "y": 169.0,
+        "width": 679.1,
+        "height": 262.8,
+        "z_index": 2,
+        "asset_id": "crd_28_1200x600_img_deco_2.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_3",
+        "type": "image",
+        "x": 812.0,
+        "y": 233.0,
+        "width": 56.0,
+        "height": 106.0,
+        "z_index": 3,
+        "asset_id": "crd_28_1200x600_img_deco_3.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_4",
+        "type": "image",
+        "x": 332.0,
+        "y": 233.0,
+        "width": 56.0,
+        "height": 106.0,
+        "z_index": 4,
+        "asset_id": "crd_28_1200x600_img_deco_4.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_5",
+        "type": "image",
+        "x": 0.0,
+        "y": 169.0,
+        "width": 262.0,
+        "height": 262.0,
+        "z_index": 5,
+        "asset_id": "crd_28_1200x600_img_deco_5.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_6",
+        "type": "image",
+        "x": 939.8,
+        "y": 169.3,
+        "width": 260.2,
+        "height": 261.4,
+        "z_index": 6,
+        "asset_id": "crd_28_1200x600_img_deco_6.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 428.5,
+        "y": 192.3,
+        "width": 353,
+        "height": 212,
+        "z_index": 7,
+        "content": "JUICY \nSUMMER",
+        "font_size": 80.4,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "line_height": 1.22
+      }
+    ]
+  }
+}

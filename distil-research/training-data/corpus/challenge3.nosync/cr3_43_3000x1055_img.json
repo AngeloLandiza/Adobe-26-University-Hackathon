@@ -1,0 +1,97 @@
+{
+  "task_id": "cr3_43_3000x1055_img",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (Tumblr), converted; 6 elements.",
+  "features": [
+    "wide",
+    "photo"
+  ],
+  "crello_id": "59532cac95a7a863ddce0cb8",
+  "crello_format": "Tumblr",
+  "source": {
+    "canvas": {
+      "width": 3000,
+      "height": 1055
+    },
+    "elements": [
+      {
+        "id": "deco_backdrop",
+        "type": "image",
+        "x": 1004.2,
+        "y": 0.0,
+        "width": 1892.5,
+        "height": 1055.0,
+        "z_index": 0,
+        "asset_id": "cr3_43_3000x1055_img_deco_backdrop.png",
+        "fit": "contain"
+      },
+      {
+        "id": "logo",
+        "type": "shape",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 170.0,
+        "height": 122.0,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(211,237,237,1)"
+      },
+      {
+        "id": "deco_1",
+        "type": "shape",
+        "x": 169.0,
+        "y": 0.0,
+        "width": 838.0,
+        "height": 1055.0,
+        "z_index": 2,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(253,241,150,1)"
+      },
+      {
+        "id": "deco_2",
+        "type": "shape",
+        "x": 2437.0,
+        "y": 554.0,
+        "width": 563.0,
+        "height": 501.0,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(253,241,150,1)"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 76.9,
+        "y": 180.5,
+        "width": 1399,
+        "height": 660,
+        "z_index": 4,
+        "content": "My Morning\nSkincare &\nBeauty Routine",
+        "font_size": 189.1,
+        "font_family": "Solstice Serif",
+        "font_weight": "bold",
+        "color": "rgba(65,64,66,1)",
+        "text_align": "left",
+        "line_height": 1.09
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 2487.9,
+        "y": 627.8,
+        "width": 426,
+        "height": 391,
+        "z_index": 5,
+        "content": "Make sure\nyou've\nsubscribed to\nmy YouTube\nchannel!",
+        "font_size": 62.0,
+        "font_family": "Solstice Sans",
+        "color": "rgba(65,64,66,1)",
+        "text_align": "left",
+        "line_height": 1.22
+      }
+    ]
+  }
+}

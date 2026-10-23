@@ -1,0 +1,1 @@
+{"overall": 8, "collisions": 10, "readable": 10, "on_brand": 10, "intentional": 7, "adapts": 8, "fatal_issue": null, "reason": "Headline reflows well into four lines, but the group sits low: large top margin and a cramped bottom margin under the CTA pill.", "model": "claude-opus-5-5", "effort": "default", "size": 768, "k": 1, "rubric_version": "abs1-ed20c072", "ts": 1792698772}

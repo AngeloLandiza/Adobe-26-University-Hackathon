@@ -1,0 +1,1 @@
+{"overall": 5, "collisions": 6, "readable": 5, "on_brand": 6, "intentional": 4, "adapts": 5, "fatal_issue": null, "reason": "Sale ribbon shrunk to tiny and tucked in corner; legal text small; can cropped at left; cramped crowd around headline, weak hierarchy.", "model": "claude-sonnet-5-5", "effort": "low", "size": 512, "k": 6, "rubric_version": "abs1-ed20c072", "ts": 1792695247}

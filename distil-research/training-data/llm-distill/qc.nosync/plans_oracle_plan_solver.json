@@ -1,0 +1,5490 @@
+{
+ "c02_square_garden_fizz@instagram_portrait": {
+  "grid": [
+   3,
+   3
+  ],
+  "tree": [
+   "y",
+   [
+    "wordmark",
+    "product",
+    "headline",
+    "subhead",
+    "cta_bg"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "product": {
+    "uid": "product",
+    "rows": [
+     0,
+     1
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "box",
+    "bucket": 9,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "wordmark": {
+    "uid": "wordmark",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta_bg": {
+    "uid": "cta_bg",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 3,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "subhead": {
+    "uid": "subhead",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c02_square_garden_fizz@medium_rectangle": {
+  "grid": [
+   3,
+   3
+  ],
+  "tree": [
+   "y",
+   [
+    "wordmark",
+    [
+     "x",
+     [
+      "product",
+      [
+       "y",
+       [
+        "headline",
+        "subhead"
+       ]
+      ]
+     ]
+    ],
+    "cta_bg"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     2
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "end",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 8,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "product": {
+    "uid": "product",
+    "rows": [
+     0,
+     1
+    ],
+    "cols": [
+     0,
+     1
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "start",
+     "y": "none"
+    },
+    "kind": "box",
+    "bucket": 8,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "wordmark": {
+    "uid": "wordmark",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta_bg": {
+    "uid": "cta_bg",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "subhead": {
+    "uid": "subhead",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     1,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "end",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 6,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 3,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c02_square_garden_fizz@story": {
+  "grid": [
+   3,
+   3
+  ],
+  "tree": [
+   "y",
+   [
+    "wordmark",
+    "product",
+    "headline",
+    "subhead",
+    "cta_bg"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 8,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "product": {
+    "uid": "product",
+    "rows": [
+     0,
+     1
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "box",
+    "bucket": 9,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "wordmark": {
+    "uid": "wordmark",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta_bg": {
+    "uid": "cta_bg",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "subhead": {
+    "uid": "subhead",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c02_square_garden_fizz@wide_skyscraper": {
+  "grid": [
+   5,
+   1
+  ],
+  "tree": [
+   "y",
+   [
+    "wordmark",
+    "product",
+    "headline",
+    "subhead",
+    "cta_bg"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 10,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "product": {
+    "uid": "product",
+    "rows": [
+     0,
+     1
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "box",
+    "bucket": 8,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "wordmark": {
+    "uid": "wordmark",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 9,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta_bg": {
+    "uid": "cta_bg",
+    "rows": [
+     4,
+     4
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 8,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "subhead": {
+    "uid": "subhead",
+    "rows": [
+     3,
+     3
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 8,
+    "group": 4,
+    "demoted": false,
+    "stack": null,
+    "lines": 4,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c02_square_garden_fizz_v1@facebook_cover": {
+  "grid": [
+   1,
+   5
+  ],
+  "tree": [
+   "x",
+   [
+    "product",
+    [
+     "y",
+     [
+      "wordmark",
+      "headline",
+      "cta_bg",
+      "legal"
+     ]
+    ]
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     2,
+     4
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "end",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 10,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "product": {
+    "uid": "product",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     1
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "start",
+     "y": "centre"
+    },
+    "kind": "box",
+    "bucket": 9,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "wordmark": {
+    "uid": "wordmark",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     3,
+     3
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "none",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 8,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta_bg": {
+    "uid": "cta_bg",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     3,
+     4
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "end",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "legal": {
+    "uid": "legal",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     2,
+     4
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "end",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 5,
+    "group": 4,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c02_square_garden_fizz_v1@instagram_portrait": {
+  "grid": [
+   3,
+   3
+  ],
+  "tree": [
+   "y",
+   [
+    "wordmark",
+    "product",
+    "headline",
+    "cta_bg",
+    "legal"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "product": {
+    "uid": "product",
+    "rows": [
+     0,
+     1
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "box",
+    "bucket": 9,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "wordmark": {
+    "uid": "wordmark",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta_bg": {
+    "uid": "cta_bg",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 3,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "legal": {
+    "uid": "legal",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 1,
+    "group": 4,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c02_square_garden_fizz_v1@medium_rectangle": {
+  "grid": [
+   3,
+   3
+  ],
+  "tree": [
+   "y",
+   [
+    "wordmark",
+    "product",
+    "headline",
+    "cta_bg",
+    "legal"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 9,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "product": {
+    "uid": "product",
+    "rows": [
+     0,
+     1
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "box",
+    "bucket": 8,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "wordmark": {
+    "uid": "wordmark",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta_bg": {
+    "uid": "cta_bg",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "legal": {
+    "uid": "legal",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 0,
+    "demoted": true,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c02_square_garden_fizz_v1@mobile_banner": {
+  "grid": [
+   1,
+   5
+  ],
+  "tree": [
+   "x",
+   [
+    "product",
+    [
+     "y",
+     [
+      [
+       "x",
+       [
+        [
+         "y",
+         [
+          "headline",
+          "wordmark"
+         ]
+        ],
+        "cta_bg"
+       ]
+      ],
+      "legal"
+     ]
+    ]
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     2
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "none",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 13,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "product": {
+    "uid": "product",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "start",
+     "y": "centre"
+    },
+    "kind": "box",
+    "bucket": 7,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "wordmark": {
+    "uid": "wordmark",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "none",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 11,
+    "group": 2,
+    "demoted": true,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta_bg": {
+    "uid": "cta_bg",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     3,
+     4
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "end",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 12,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "legal": {
+    "uid": "legal",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     4
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "end",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 9,
+    "group": 4,
+    "demoted": true,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c02_square_garden_fizz_v2@facebook_cover": {
+  "grid": [
+   1,
+   5
+  ],
+  "tree": [
+   "x",
+   [
+    "product",
+    [
+     "y",
+     [
+      "wordmark",
+      "headline",
+      "subhead",
+      "cta_bg"
+     ]
+    ]
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     3
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 10,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "product": {
+    "uid": "product",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "start",
+     "y": "centre"
+    },
+    "kind": "box",
+    "bucket": 7,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "wordmark": {
+    "uid": "wordmark",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     2,
+     2
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta_bg": {
+    "uid": "cta_bg",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "none",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "subhead": {
+    "uid": "subhead",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     3
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 4,
+    "demoted": false,
+    "stack": "y",
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c02_square_garden_fizz_v2@linkedin_banner": {
+  "grid": [
+   1,
+   5
+  ],
+  "tree": [
+   "x",
+   [
+    "product",
+    [
+     "y",
+     [
+      "wordmark",
+      "headline",
+      "subhead"
+     ]
+    ],
+    "cta_bg"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     2
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "none",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 10,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "product": {
+    "uid": "product",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "start",
+     "y": "centre"
+    },
+    "kind": "box",
+    "bucket": 6,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "wordmark": {
+    "uid": "wordmark",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     2,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "none",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta_bg": {
+    "uid": "cta_bg",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     4,
+     4
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "end",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "subhead": {
+    "uid": "subhead",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     3
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "none",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 4,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c02_square_garden_fizz_v2@medium_rectangle": {
+  "grid": [
+   3,
+   3
+  ],
+  "tree": [
+   "x",
+   [
+    "product",
+    [
+     "y",
+     [
+      "wordmark",
+      "headline",
+      "subhead",
+      "cta_bg"
+     ]
+    ]
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     2
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "end",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 9,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "product": {
+    "uid": "product",
+    "rows": [
+     0,
+     2
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "start",
+     "y": "centre"
+    },
+    "kind": "box",
+    "bucket": 8,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "wordmark": {
+    "uid": "wordmark",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     2
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "none",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta_bg": {
+    "uid": "cta_bg",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     1,
+     2
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "end",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "subhead": {
+    "uid": "subhead",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     1,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "end",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 6,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 3,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c02_square_garden_fizz_v2@story": {
+  "grid": [
+   3,
+   3
+  ],
+  "tree": [
+   "y",
+   [
+    "wordmark",
+    "product",
+    "headline",
+    "subhead",
+    "cta_bg"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 8,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "product": {
+    "uid": "product",
+    "rows": [
+     0,
+     1
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "box",
+    "bucket": 8,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "wordmark": {
+    "uid": "wordmark",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 5,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta_bg": {
+    "uid": "cta_bg",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "subhead": {
+    "uid": "subhead",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c02_square_garden_fizz_v3@billboard": {
+  "grid": [
+   1,
+   5
+  ],
+  "tree": [
+   "x",
+   [
+    "product",
+    [
+     "y",
+     [
+      "wordmark",
+      "headline"
+     ]
+    ],
+    "cta_bg"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     3
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 11,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "product": {
+    "uid": "product",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "start",
+     "y": "centre"
+    },
+    "kind": "box",
+    "bucket": 8,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "wordmark": {
+    "uid": "wordmark",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     2,
+     2
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 9,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta_bg": {
+    "uid": "cta_bg",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     4,
+     4
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "end",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 8,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c02_square_garden_fizz_v3@half_page": {
+  "grid": [
+   3,
+   3
+  ],
+  "tree": [
+   "y",
+   [
+    "wordmark",
+    "product",
+    "headline",
+    "cta_bg"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 9,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "product": {
+    "uid": "product",
+    "rows": [
+     0,
+     1
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "box",
+    "bucket": 9,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "wordmark": {
+    "uid": "wordmark",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 8,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta_bg": {
+    "uid": "cta_bg",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 3,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c02_square_garden_fizz_v3@mobile_banner": {
+  "grid": [
+   1,
+   5
+  ],
+  "tree": [
+   "x",
+   [
+    "product",
+    [
+     "free-x",
+     [
+      "wordmark",
+      "headline"
+     ]
+    ],
+    "cta_bg"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     2
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "none",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 13,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "product": {
+    "uid": "product",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "start",
+     "y": "centre"
+    },
+    "kind": "box",
+    "bucket": 6,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "wordmark": {
+    "uid": "wordmark",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     1
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "none",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 12,
+    "group": 2,
+    "demoted": true,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta_bg": {
+    "uid": "cta_bg",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     3,
+     4
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "end",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 12,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c02_square_garden_fizz_v3@story": {
+  "grid": [
+   3,
+   3
+  ],
+  "tree": [
+   "y",
+   [
+    "wordmark",
+    "product",
+    "headline",
+    "cta_bg"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 8,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "product": {
+    "uid": "product",
+    "rows": [
+     0,
+     1
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "box",
+    "bucket": 9,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "wordmark": {
+    "uid": "wordmark",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta_bg": {
+    "uid": "cta_bg",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c07_portrait_long_copy@large_leaderboard": {
+  "grid": [
+   1,
+   5
+  ],
+  "tree": [
+   "x",
+   [
+    "layers:band",
+    [
+     "y",
+     [
+      "kicker",
+      "headline"
+     ]
+    ],
+    [
+     "free-y",
+     [
+      "body",
+      "legal"
+     ]
+    ],
+    [
+     "y",
+     [
+      "cta",
+      "ships"
+     ]
+    ]
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     2
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "none",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 10,
+    "group": 0,
+    "demoted": true,
+    "stack": "y",
+    "lines": 3,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "layers:band": {
+    "uid": "layers:band",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "start",
+     "y": "centre"
+    },
+    "kind": "box",
+    "bucket": 8,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     true,
+     true,
+     false,
+     true
+    ]
+   },
+   "body": {
+    "uid": "body",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     3,
+     3
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "none",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 9,
+    "group": 2,
+    "demoted": true,
+    "stack": null,
+    "lines": 4,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta": {
+    "uid": "cta",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     4,
+     4
+    ],
+    "order": 5,
+    "anchor": {
+     "x": "end",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 10,
+    "group": 3,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "kicker": {
+    "uid": "kicker",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     2
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "none",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 9,
+    "group": 0,
+    "demoted": true,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "ships": {
+    "uid": "ships",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     4,
+     4
+    ],
+    "order": 6,
+    "anchor": {
+     "x": "end",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 10,
+    "group": 4,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "legal": {
+    "uid": "legal",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     3,
+     4
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "none",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 2,
+    "demoted": true,
+    "stack": null,
+    "lines": 4,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c07_portrait_long_copy@medium_rectangle": {
+  "grid": [
+   3,
+   3
+  ],
+  "tree": [
+   "y",
+   [
+    "layers:band",
+    "kicker",
+    [
+     "free-y",
+     [
+      "headline",
+      "body"
+     ]
+    ],
+    [
+     "x",
+     [
+      "cta",
+      "ships"
+     ]
+    ],
+    "legal"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 6,
+    "group": 0,
+    "demoted": true,
+    "stack": "y",
+    "lines": 5,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "layers:band": {
+    "uid": "layers:band",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "box",
+    "bucket": 8,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     true,
+     true,
+     true,
+     false
+    ]
+   },
+   "body": {
+    "uid": "body",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 5,
+    "group": 0,
+    "demoted": true,
+    "stack": "y",
+    "lines": 3,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta": {
+    "uid": "cta",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     1
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "start",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 6,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "kicker": {
+    "uid": "kicker",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 5,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "ships": {
+    "uid": "ships",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     2,
+     2
+    ],
+    "order": 6,
+    "anchor": {
+     "x": "end",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 6,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "legal": {
+    "uid": "legal",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 5,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 0,
+    "demoted": true,
+    "stack": null,
+    "lines": 4,
+    "bleed": [
+     false,
+     false,
+     false,
+     true
+    ]
+   }
+  }
+ },
+ "c07_portrait_long_copy@story": {
+  "grid": [
+   3,
+   3
+  ],
+  "tree": [
+   "y",
+   [
+    "layers:band",
+    "kicker",
+    "headline",
+    "body",
+    "cta",
+    "ships",
+    "legal"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 6,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 6,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "layers:band": {
+    "uid": "layers:band",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "box",
+    "bucket": 7,
+    "group": 1,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     true,
+     true,
+     true,
+     false
+    ]
+   },
+   "body": {
+    "uid": "body",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "centre",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 3,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta": {
+    "uid": "cta",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "kicker": {
+    "uid": "kicker",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 3,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "ships": {
+    "uid": "ships",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 6,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 3,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "legal": {
+    "uid": "legal",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 5,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 2,
+    "group": 4,
+    "demoted": false,
+    "stack": null,
+    "lines": 3,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c07_portrait_long_copy@youtube_thumbnail": {
+  "grid": [
+   3,
+   3
+  ],
+  "tree": [
+   "y",
+   [
+    "layers:band",
+    "kicker",
+    [
+     "x",
+     [
+      "headline",
+      [
+       "y",
+       [
+        "body",
+        "cta"
+       ]
+      ]
+     ]
+    ],
+    "ships",
+    "legal"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     1
+    ],
+    "cols": [
+     0,
+     1
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "start",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 6,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 5,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "layers:band": {
+    "uid": "layers:band",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "box",
+    "bucket": 8,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     true,
+     true,
+     true,
+     false
+    ]
+   },
+   "body": {
+    "uid": "body",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     2,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "end",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 4,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta": {
+    "uid": "cta",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     2,
+     2
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "end",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 5,
+    "group": 3,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "kicker": {
+    "uid": "kicker",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     1
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "none",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "ships": {
+    "uid": "ships",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     2,
+     2
+    ],
+    "order": 5,
+    "anchor": {
+     "x": "end",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 4,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "legal": {
+    "uid": "legal",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 6,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 2,
+    "group": 5,
+    "demoted": false,
+    "stack": null,
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c07_portrait_long_copy_v1@linkedin_banner": {
+  "grid": [
+   1,
+   5
+  ],
+  "tree": [
+   "x",
+   [
+    "layers:band",
+    [
+     "y",
+     [
+      "headline",
+      "body",
+      [
+       "x",
+       [
+        "cta",
+        "ships"
+       ]
+      ],
+      "legal"
+     ]
+    ]
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     4
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "end",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 8,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 3,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "layers:band": {
+    "uid": "layers:band",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "start",
+     "y": "centre"
+    },
+    "kind": "box",
+    "bucket": 8,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     true,
+     true,
+     false,
+     true
+    ]
+   },
+   "body": {
+    "uid": "body",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     4
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "end",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 6,
+    "group": 2,
+    "demoted": false,
+    "stack": "y",
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta": {
+    "uid": "cta",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "none",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 6,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "ships": {
+    "uid": "ships",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     2,
+     2
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 6,
+    "group": 4,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "legal": {
+    "uid": "legal",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     2,
+     3
+    ],
+    "order": 5,
+    "anchor": {
+     "x": "none",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 5,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c07_portrait_long_copy_v1@medium_rectangle": {
+  "grid": [
+   3,
+   3
+  ],
+  "tree": [
+   "y",
+   [
+    "layers:band",
+    "headline",
+    "body",
+    "cta",
+    "ships",
+    "legal"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 6,
+    "group": 0,
+    "demoted": true,
+    "stack": "y",
+    "lines": 4,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "layers:band": {
+    "uid": "layers:band",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "box",
+    "bucket": 8,
+    "group": 1,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     true,
+     true,
+     true,
+     false
+    ]
+   },
+   "body": {
+    "uid": "body",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 5,
+    "group": 2,
+    "demoted": true,
+    "stack": null,
+    "lines": 3,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta": {
+    "uid": "cta",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 6,
+    "group": 3,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "ships": {
+    "uid": "ships",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 5,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 5,
+    "group": 3,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "legal": {
+    "uid": "legal",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 4,
+    "demoted": false,
+    "stack": null,
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c07_portrait_long_copy_v1@mobile_banner": {
+  "grid": [
+   1,
+   5
+  ],
+  "tree": [
+   "x",
+   [
+    "layers:band",
+    [
+     "y",
+     [
+      "headline",
+      [
+       "free-y",
+       [
+        "body",
+        "legal"
+       ]
+      ]
+     ]
+    ],
+    [
+     "y",
+     [
+      "cta",
+      "ships"
+     ]
+    ]
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     3
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "none",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 9,
+    "group": 0,
+    "demoted": true,
+    "stack": "y",
+    "lines": 3,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "layers:band": {
+    "uid": "layers:band",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "start",
+     "y": "centre"
+    },
+    "kind": "box",
+    "bucket": 8,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     true,
+     true,
+     false,
+     true
+    ]
+   },
+   "body": {
+    "uid": "body",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     3
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "none",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 9,
+    "group": 0,
+    "demoted": true,
+    "stack": "y",
+    "lines": 3,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta": {
+    "uid": "cta",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     3,
+     4
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "end",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 11,
+    "group": 2,
+    "demoted": true,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "ships": {
+    "uid": "ships",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     4,
+     4
+    ],
+    "order": 5,
+    "anchor": {
+     "x": "end",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 11,
+    "group": 3,
+    "demoted": true,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "legal": {
+    "uid": "legal",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     3
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "none",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 8,
+    "group": 0,
+    "demoted": true,
+    "stack": "y",
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     true
+    ]
+   }
+  }
+ },
+ "c07_portrait_long_copy_v1@youtube_thumbnail": {
+  "grid": [
+   3,
+   3
+  ],
+  "tree": [
+   "y",
+   [
+    "layers:band",
+    "headline",
+    "body",
+    "cta",
+    "ships",
+    "legal"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 6,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 3,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "layers:band": {
+    "uid": "layers:band",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "box",
+    "bucket": 7,
+    "group": 1,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     true,
+     true,
+     true,
+     false
+    ]
+   },
+   "body": {
+    "uid": "body",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 5,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta": {
+    "uid": "cta",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "ships": {
+    "uid": "ships",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 3,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "legal": {
+    "uid": "legal",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 5,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 2,
+    "group": 4,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c07_portrait_long_copy_v2@half_page": {
+  "grid": [
+   3,
+   3
+  ],
+  "tree": [
+   "y",
+   [
+    "layers:band",
+    "kicker",
+    "headline",
+    "body",
+    "cta",
+    "ships"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     1
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 8,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "layers:band": {
+    "uid": "layers:band",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "box",
+    "bucket": 8,
+    "group": 1,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     true,
+     true,
+     true,
+     false
+    ]
+   },
+   "body": {
+    "uid": "body",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 6,
+    "group": 2,
+    "demoted": false,
+    "stack": "y",
+    "lines": 4,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta": {
+    "uid": "cta",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 6,
+    "group": 3,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "kicker": {
+    "uid": "kicker",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 5,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "ships": {
+    "uid": "ships",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 5,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 5,
+    "group": 4,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c07_portrait_long_copy_v2@large_leaderboard": {
+  "grid": [
+   1,
+   5
+  ],
+  "tree": [
+   "x",
+   [
+    "layers:band",
+    [
+     "y",
+     [
+      "kicker",
+      "headline",
+      "body"
+     ]
+    ],
+    [
+     "y",
+     [
+      "cta",
+      "ships"
+     ]
+    ]
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     3
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 10,
+    "group": 0,
+    "demoted": true,
+    "stack": "y",
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "layers:band": {
+    "uid": "layers:band",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "start",
+     "y": "centre"
+    },
+    "kind": "box",
+    "bucket": 8,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     true,
+     true,
+     false,
+     true
+    ]
+   },
+   "body": {
+    "uid": "body",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     3
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 9,
+    "group": 2,
+    "demoted": true,
+    "stack": "y",
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta": {
+    "uid": "cta",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     4,
+     4
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "end",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 10,
+    "group": 3,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "kicker": {
+    "uid": "kicker",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     2,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 9,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "ships": {
+    "uid": "ships",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     4,
+     4
+    ],
+    "order": 5,
+    "anchor": {
+     "x": "end",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 10,
+    "group": 4,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c07_portrait_long_copy_v2@mobile_banner": {
+  "grid": [
+   1,
+   5
+  ],
+  "tree": [
+   "x",
+   [
+    "layers:band",
+    [
+     "y",
+     [
+      [
+       "free-y",
+       [
+        "kicker",
+        "headline"
+       ]
+      ],
+      "body"
+     ]
+    ],
+    [
+     "y",
+     [
+      "cta",
+      "ships"
+     ]
+    ]
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     3
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 9,
+    "group": 0,
+    "demoted": true,
+    "stack": "y",
+    "lines": 4,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "layers:band": {
+    "uid": "layers:band",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "start",
+     "y": "centre"
+    },
+    "kind": "box",
+    "bucket": 9,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     true,
+     true,
+     false,
+     true
+    ]
+   },
+   "body": {
+    "uid": "body",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     3
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 9,
+    "group": 2,
+    "demoted": true,
+    "stack": "y",
+    "lines": 3,
+    "bleed": [
+     false,
+     false,
+     false,
+     true
+    ]
+   },
+   "cta": {
+    "uid": "cta",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     4,
+     4
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "end",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 11,
+    "group": 3,
+    "demoted": true,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "kicker": {
+    "uid": "kicker",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     3
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 9,
+    "group": 0,
+    "demoted": true,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "ships": {
+    "uid": "ships",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     4,
+     4
+    ],
+    "order": 5,
+    "anchor": {
+     "x": "end",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 10,
+    "group": 4,
+    "demoted": true,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c07_portrait_long_copy_v2@youtube_thumbnail": {
+  "grid": [
+   3,
+   3
+  ],
+  "tree": [
+   "y",
+   [
+    "layers:band",
+    "kicker",
+    [
+     "x",
+     [
+      "headline",
+      [
+       "y",
+       [
+        "cta",
+        "ships"
+       ]
+      ]
+     ]
+    ],
+    "body"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     1
+    ],
+    "cols": [
+     0,
+     1
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "start",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 5,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "layers:band": {
+    "uid": "layers:band",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "box",
+    "bucket": 8,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     true,
+     true,
+     true,
+     false
+    ]
+   },
+   "body": {
+    "uid": "body",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     1
+    ],
+    "order": 5,
+    "anchor": {
+     "x": "start",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 5,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 3,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta": {
+    "uid": "cta",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     2,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "end",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 5,
+    "group": 3,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "kicker": {
+    "uid": "kicker",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     1
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "none",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "ships": {
+    "uid": "ships",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     2,
+     2
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "end",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 3,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c07_portrait_long_copy_v3@billboard": {
+  "grid": [
+   1,
+   5
+  ],
+  "tree": [
+   "x",
+   [
+    "layers:band",
+    [
+     "y",
+     [
+      "kicker",
+      "headline",
+      "body",
+      "cta",
+      "legal"
+     ]
+    ]
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     2,
+     4
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "end",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 10,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "layers:band": {
+    "uid": "layers:band",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "start",
+     "y": "centre"
+    },
+    "kind": "box",
+    "bucket": 9,
+    "group": 1,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     true,
+     true,
+     false,
+     true
+    ]
+   },
+   "body": {
+    "uid": "body",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     4
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "end",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 2,
+    "demoted": false,
+    "stack": "y",
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta": {
+    "uid": "cta",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     2,
+     3
+    ],
+    "order": 5,
+    "anchor": {
+     "x": "none",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 3,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "kicker": {
+    "uid": "kicker",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     2,
+     3
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "none",
+     "y": "start"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "legal": {
+    "uid": "legal",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     4
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "end",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 5,
+    "group": 4,
+    "demoted": false,
+    "stack": "y",
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c07_portrait_long_copy_v3@story": {
+  "grid": [
+   3,
+   3
+  ],
+  "tree": [
+   "y",
+   [
+    "layers:band",
+    "kicker",
+    "headline",
+    "body",
+    "cta",
+    "legal"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 6,
+    "group": 0,
+    "demoted": false,
+    "stack": "y",
+    "lines": 2,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "layers:band": {
+    "uid": "layers:band",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "box",
+    "bucket": 7,
+    "group": 1,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     true,
+     true,
+     true,
+     false
+    ]
+   },
+   "body": {
+    "uid": "body",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 2,
+    "demoted": false,
+    "stack": null,
+    "lines": 3,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta": {
+    "uid": "cta",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "centre",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 4,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "kicker": {
+    "uid": "kicker",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     1,
+     1
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 3,
+    "group": 4,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "legal": {
+    "uid": "legal",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     2
+    ],
+    "order": 5,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 1,
+    "group": 5,
+    "demoted": false,
+    "stack": null,
+    "lines": 3,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ },
+ "c07_portrait_long_copy_v3@wide_skyscraper": {
+  "grid": [
+   5,
+   1
+  ],
+  "tree": [
+   "y",
+   [
+    "layers:band",
+    "kicker",
+    "headline",
+    "body",
+    "cta",
+    "legal"
+   ]
+  ],
+  "units": {
+   "headline": {
+    "uid": "headline",
+    "rows": [
+     1,
+     1
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 2,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 10,
+    "group": 0,
+    "demoted": false,
+    "stack": null,
+    "lines": 3,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "layers:band": {
+    "uid": "layers:band",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 0,
+    "anchor": {
+     "x": "centre",
+     "y": "start"
+    },
+    "kind": "box",
+    "bucket": 8,
+    "group": 1,
+    "demoted": false,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     true,
+     true,
+     true,
+     false
+    ]
+   },
+   "body": {
+    "uid": "body",
+    "rows": [
+     2,
+     2
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 3,
+    "anchor": {
+     "x": "centre",
+     "y": "centre"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 2,
+    "demoted": true,
+    "stack": null,
+    "lines": 6,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "cta": {
+    "uid": "cta",
+    "rows": [
+     3,
+     3
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 4,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 8,
+    "group": 3,
+    "demoted": false,
+    "stack": null,
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "kicker": {
+    "uid": "kicker",
+    "rows": [
+     0,
+     0
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 1,
+    "anchor": {
+     "x": "centre",
+     "y": "none"
+    },
+    "kind": "text",
+    "bucket": 7,
+    "group": 4,
+    "demoted": true,
+    "stack": "y",
+    "lines": 1,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   },
+   "legal": {
+    "uid": "legal",
+    "rows": [
+     4,
+     4
+    ],
+    "cols": [
+     0,
+     0
+    ],
+    "order": 5,
+    "anchor": {
+     "x": "centre",
+     "y": "end"
+    },
+    "kind": "text",
+    "bucket": 6,
+    "group": 5,
+    "demoted": false,
+    "stack": null,
+    "lines": 8,
+    "bleed": [
+     false,
+     false,
+     false,
+     false
+    ]
+   }
+  }
+ }
+}

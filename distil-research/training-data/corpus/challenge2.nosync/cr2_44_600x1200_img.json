@@ -1,0 +1,126 @@
+{
+  "task_id": "cr2_44_600x1200_img",
+  "split": "challenge2",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (Graphic), converted; 8 elements.",
+  "features": [
+    "very_tall",
+    "photo"
+  ],
+  "crello_id": "5b979c2a18654940f75b8ac9",
+  "crello_format": "Graphic",
+  "source": {
+    "canvas": {
+      "width": 600,
+      "height": 1200
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 600.0,
+        "height": 1200.0,
+        "z_index": 0,
+        "asset_id": "cr2_44_600x1200_img_bg.png",
+        "fit": "cover"
+      },
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 0.0,
+        "y": 617.0,
+        "width": 600.0,
+        "height": 583.0,
+        "z_index": 1,
+        "asset_id": "cr2_44_600x1200_img_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_2",
+        "type": "image",
+        "x": 40.0,
+        "y": 35.0,
+        "width": 371.0,
+        "height": 1121.0,
+        "z_index": 2,
+        "asset_id": "cr2_44_600x1200_img_deco_2.png",
+        "fit": "contain"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 203.9,
+        "y": 899.7,
+        "width": 317.3,
+        "height": 60,
+        "z_index": 3,
+        "content": "Smart Home",
+        "font_size": 42.6,
+        "font_family": "Solstice Sans",
+        "color": "rgba(237,237,237,1)",
+        "text_align": "left",
+        "line_height": 1.0
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 205.1,
+        "y": 961.4,
+        "width": 327,
+        "height": 118.0,
+        "z_index": 4,
+        "content": "GADGETS",
+        "font_size": 68.4,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(237,237,237,1)",
+        "text_align": "left",
+        "line_height": 1.0,
+        "style_runs": [
+          {
+            "start": 0,
+            "end": 1,
+            "font_weight": "bold"
+          }
+        ]
+      },
+      {
+        "id": "deco_3",
+        "type": "image",
+        "x": 449.0,
+        "y": 1109.0,
+        "width": 67.0,
+        "height": 45.0,
+        "z_index": 5,
+        "asset_id": "cr2_44_600x1200_img_deco_3.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_4",
+        "type": "image",
+        "x": 451.0,
+        "y": 287.0,
+        "width": 67.0,
+        "height": 564.0,
+        "z_index": 6,
+        "asset_id": "cr2_44_600x1200_img_deco_4.png",
+        "fit": "contain"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 451.0,
+        "y": 36.0,
+        "width": 67.0,
+        "height": 228.0,
+        "z_index": 7,
+        "asset_id": "cr2_44_600x1200_img_logo.png",
+        "fit": "contain"
+      }
+    ]
+  }
+}

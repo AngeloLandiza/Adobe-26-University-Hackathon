@@ -1,0 +1,111 @@
+{
+  "task_id": "crd_51_600x200_img",
+  "split": "crello_dev",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (dev) (Email header), converted; 7 elements.",
+  "features": [
+    "wide",
+    "photo"
+  ],
+  "crello_id": "5b97a74218654940f77b1b74",
+  "crello_format": "Email header",
+  "source": {
+    "canvas": {
+      "width": 600,
+      "height": 200
+    },
+    "elements": [
+      {
+        "id": "deco_1",
+        "type": "shape",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 9.0,
+        "height": 200.0,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(180,224,245,1)"
+      },
+      {
+        "id": "deco_2",
+        "type": "shape",
+        "x": 244.0,
+        "y": 0.0,
+        "width": 324.0,
+        "height": 200.0,
+        "z_index": 1,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(180,224,245,1)"
+      },
+      {
+        "id": "deco_backdrop",
+        "type": "image",
+        "x": 244.2,
+        "y": 11.9,
+        "width": 355.8,
+        "height": 188.1,
+        "z_index": 2,
+        "asset_id": "crd_51_600x200_img_deco_backdrop.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_3",
+        "type": "image",
+        "x": 187.0,
+        "y": 60.0,
+        "width": 9.0,
+        "height": 6.0,
+        "z_index": 3,
+        "asset_id": "crd_51_600x200_img_deco_3.png",
+        "fit": "contain"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 52.0,
+        "y": 60.0,
+        "width": 9.0,
+        "height": 6.0,
+        "z_index": 4,
+        "asset_id": "crd_51_600x200_img_logo.png",
+        "fit": "contain"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 71.7,
+        "y": 56.9,
+        "width": 113.8,
+        "height": 28,
+        "z_index": 5,
+        "content": "YOUR EFFICIENT",
+        "font_size": 12.1,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(135,135,135,1)",
+        "text_align": "left",
+        "line_height": 1.0,
+        "letter_spacing": 1.35
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 43.8,
+        "y": 88.5,
+        "width": 165.0,
+        "height": 84,
+        "z_index": 6,
+        "content": "ENERGY\nUSE",
+        "font_size": 36.4,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(0,158,147,1)",
+        "text_align": "center",
+        "line_height": 0.88,
+        "letter_spacing": 3.64
+      }
+    ]
+  }
+}

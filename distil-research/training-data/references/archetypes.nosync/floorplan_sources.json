@@ -1,0 +1,243 @@
+{
+ "arch_instagram_post_1": {
+  "pool": "size:instagram_post",
+  "sizes": [
+   "instagram_post"
+  ],
+  "share": 0.554,
+  "n": 128,
+  "notes": ""
+ },
+ "arch_instagram_post_2": {
+  "pool": "size:instagram_post",
+  "sizes": [
+   "instagram_post"
+  ],
+  "share": 0.446,
+  "n": 103,
+  "notes": "text band reserved (top); minor carved from text bottom"
+ },
+ "arch_instagram_portrait_1": {
+  "pool": "class:tall:instagram_portrait",
+  "sizes": [
+   "instagram_portrait"
+  ],
+  "share": 0.6,
+  "n": 60,
+  "notes": ""
+ },
+ "arch_instagram_portrait_2": {
+  "pool": "class:tall:instagram_portrait",
+  "sizes": [
+   "instagram_portrait"
+  ],
+  "share": 0.29,
+  "n": 29,
+  "notes": "text band reserved (bottom)"
+ },
+ "arch_instagram_portrait_3": {
+  "pool": "class:tall:instagram_portrait",
+  "sizes": [
+   "instagram_portrait"
+  ],
+  "share": 0.11,
+  "n": 11,
+  "notes": "text band reserved (bottom)"
+ },
+ "arch_story_1": {
+  "pool": "size:story",
+  "sizes": [
+   "story"
+  ],
+  "share": 0.586,
+  "n": 95,
+  "notes": "text band reserved (top)"
+ },
+ "arch_story_2": {
+  "pool": "size:story",
+  "sizes": [
+   "story"
+  ],
+  "share": 0.259,
+  "n": 42,
+  "notes": ""
+ },
+ "arch_story_3": {
+  "pool": "size:story",
+  "sizes": [
+   "story"
+  ],
+  "share": 0.154,
+  "n": 25,
+  "notes": ""
+ },
+ "arch_youtube_thumbnail_1": {
+  "pool": "size:youtube_thumbnail",
+  "sizes": [
+   "youtube_thumbnail"
+  ],
+  "share": 0.556,
+  "n": 85,
+  "notes": ""
+ },
+ "arch_youtube_thumbnail_2": {
+  "pool": "size:youtube_thumbnail",
+  "sizes": [
+   "youtube_thumbnail"
+  ],
+  "share": 0.444,
+  "n": 68,
+  "notes": "text band reserved (left column); cta dropped (overlapped text); logo dropped (overlapped text); minor carved from text bottom"
+ },
+ "arch_wide_1": {
+  "pool": "class:wide",
+  "sizes": [
+   "linkedin_banner",
+   "billboard"
+  ],
+  "share": 0.43,
+  "n": 43,
+  "notes": ""
+ },
+ "arch_wide_2": {
+  "pool": "class:wide",
+  "sizes": [
+   "linkedin_banner",
+   "billboard"
+  ],
+  "share": 0.34,
+  "n": 34,
+  "notes": "text band reserved (right column); logo dropped (overlapped hero)"
+ },
+ "arch_wide_3": {
+  "pool": "class:wide",
+  "sizes": [
+   "linkedin_banner",
+   "billboard"
+  ],
+  "share": 0.23,
+  "n": 23,
+  "notes": ""
+ },
+ "arch_facebook_cover_1": {
+  "pool": "size:facebook_cover",
+  "sizes": [
+   "facebook_cover"
+  ],
+  "share": 0.559,
+  "n": 71,
+  "notes": ""
+ },
+ "arch_facebook_cover_2": {
+  "pool": "size:facebook_cover",
+  "sizes": [
+   "facebook_cover"
+  ],
+  "share": 0.268,
+  "n": 34,
+  "notes": "text band reserved (right column); minor carved from text bottom"
+ },
+ "arch_facebook_cover_3": {
+  "pool": "size:facebook_cover",
+  "sizes": [
+   "facebook_cover"
+  ],
+  "share": 0.173,
+  "n": 22,
+  "notes": "text band reserved (left column); cta cut to 68% (overlapped hero); cta dropped (overlapped text)"
+ },
+ "arch_strip_1": {
+  "pool": "class:strip",
+  "sizes": [
+   "leaderboard",
+   "mobile_banner",
+   "large_leaderboard"
+  ],
+  "share": 0.568,
+  "n": 21,
+  "notes": "text band reserved (right column); minor cut to 20% (overlapped hero); minor dropped (overlapped text)"
+ },
+ "arch_strip_2": {
+  "pool": "class:strip",
+  "sizes": [
+   "leaderboard",
+   "mobile_banner",
+   "large_leaderboard"
+  ],
+  "share": 0.432,
+  "n": 16,
+  "notes": ""
+ },
+ "arch_medium_rectangle_1": {
+  "pool": "size:medium_rectangle",
+  "sizes": [
+   "medium_rectangle"
+  ],
+  "share": 0.514,
+  "n": 94,
+  "notes": ""
+ },
+ "arch_medium_rectangle_2": {
+  "pool": "size:medium_rectangle",
+  "sizes": [
+   "medium_rectangle"
+  ],
+  "share": 0.361,
+  "n": 66,
+  "notes": "text band reserved (right column)"
+ },
+ "arch_medium_rectangle_3": {
+  "pool": "size:medium_rectangle",
+  "sizes": [
+   "medium_rectangle"
+  ],
+  "share": 0.126,
+  "n": 23,
+  "notes": ""
+ },
+ "arch_very_tall_1": {
+  "pool": "class:very_tall",
+  "sizes": [
+   "wide_skyscraper"
+  ],
+  "share": 0.472,
+  "n": 34,
+  "notes": ""
+ },
+ "arch_very_tall_2": {
+  "pool": "class:very_tall",
+  "sizes": [
+   "wide_skyscraper"
+  ],
+  "share": 0.431,
+  "n": 31,
+  "notes": "text band reserved (top); cta dropped (overlapped hero); logo dropped (overlapped hero)"
+ },
+ "arch_very_tall_3": {
+  "pool": "class:very_tall",
+  "sizes": [
+   "wide_skyscraper"
+  ],
+  "share": 0.097,
+  "n": 7,
+  "notes": ""
+ },
+ "arch_half_page_1": {
+  "pool": "size:half_page",
+  "sizes": [
+   "half_page"
+  ],
+  "share": 0.512,
+  "n": 22,
+  "notes": ""
+ },
+ "arch_half_page_2": {
+  "pool": "size:half_page",
+  "sizes": [
+   "half_page"
+  ],
+  "share": 0.395,
+  "n": 17,
+  "notes": "text band reserved (top); cta dropped (overlapped hero); logo dropped (overlapped hero)"
+ }
+}

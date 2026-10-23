@@ -1,0 +1,1 @@
+{"overall": 8, "collisions": 9, "readable": 8, "on_brand": 9, "intentional": 8, "adapts": 7, "fatal_issue": null, "reason": "Clean portrait adaptation; subtitle wraps with orphan 'sweet.' and a slight gap above the can; otherwise faithful and well spaced.", "model": "claude-sonnet-5-5", "effort": "medium", "size": 512, "k": 4, "rubric_version": "abs1-ed20c072", "ts": 1792695335}

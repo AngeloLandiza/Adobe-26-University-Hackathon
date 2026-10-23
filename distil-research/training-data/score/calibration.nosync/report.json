@@ -1,0 +1,319 @@
+{
+ "n_layouts": 40,
+ "retest": {
+  "overall_spearman": 0.9405594992022706,
+  "overall_mae": 0.2,
+  "overall_bias": 0.0,
+  "criteria_spearman": 0.9058024710126119,
+  "per_criterion": {
+   "collisions": 0.85,
+   "readable": 0.948,
+   "on_brand": 0.91,
+   "intentional": 0.931,
+   "adapts": 0.889
+  },
+  "per_criterion_mae": {
+   "collisions": 0.47,
+   "readable": 0.33,
+   "on_brand": 0.47,
+   "intentional": 0.25,
+   "adapts": 0.33
+  },
+  "worst_q": 0.9
+ },
+ "retest_lower": {
+  "spearman": 0.9057616229432425,
+  "criteria": 0.8707477244876409,
+  "worst_q": 0.7,
+  "mae": 0.275
+ },
+ "rows": [
+  {
+   "config": "opus-default-768-K1 (rep0 vs rep1)",
+   "overall_spearman": 0.9405594992022706,
+   "overall_mae": 0.2,
+   "overall_bias": 0.0,
+   "criteria_spearman": 0.9058024710126119,
+   "per_criterion": {
+    "collisions": 0.85,
+    "readable": 0.948,
+    "on_brand": 0.91,
+    "intentional": 0.931,
+    "adapts": 0.889
+   },
+   "per_criterion_mae": {
+    "collisions": 0.47,
+    "readable": 0.33,
+    "on_brand": 0.47,
+    "intentional": 0.25,
+    "adapts": 0.33
+   },
+   "worst_q": 0.9,
+   "cost": {
+    "usd": 3.4021083,
+    "layouts": 82,
+    "per_layout": 0.0414891256097561,
+    "sec_per_call": 5.122880952380952
+   },
+   "qualifies": null
+  },
+  {
+   "config": "sonnet-low-512-K4",
+   "overall_spearman": 0.8154874303137212,
+   "overall_mae": 0.7,
+   "overall_bias": 0.075,
+   "criteria_spearman": 0.7287328071803227,
+   "per_criterion": {
+    "collisions": 0.564,
+    "readable": 0.764,
+    "on_brand": 0.844,
+    "intentional": 0.746,
+    "adapts": 0.726
+   },
+   "per_criterion_mae": {
+    "collisions": 1.16,
+    "readable": 0.91,
+    "on_brand": 0.66,
+    "intentional": 0.9,
+    "adapts": 0.81
+   },
+   "worst_q": 0.7,
+   "cost": {
+    "usd": 0.3100454,
+    "layouts": 46,
+    "per_layout": 0.006740117391304349,
+    "calls": 12,
+    "sec_per_call": 4.589333333333333,
+    "input_tokens": 8338.583333333334,
+    "output_tokens": 771.4166666666666
+   },
+   "qualifies": false
+  },
+  {
+   "config": "sonnet-low-512-K6",
+   "overall_spearman": 0.7623174425647619,
+   "overall_mae": 0.85,
+   "overall_bias": -0.05,
+   "criteria_spearman": 0.7478087187394511,
+   "per_criterion": {
+    "collisions": 0.713,
+    "readable": 0.712,
+    "on_brand": 0.775,
+    "intentional": 0.802,
+    "adapts": 0.737
+   },
+   "per_criterion_mae": {
+    "collisions": 0.96,
+    "readable": 1.04,
+    "on_brand": 0.89,
+    "intentional": 0.7,
+    "adapts": 0.84
+   },
+   "worst_q": 0.75,
+   "cost": {
+    "usd": 0.2068589,
+    "layouts": 40,
+    "per_layout": 0.0051714725000000005,
+    "calls": 7,
+    "sec_per_call": 5.791428571428571,
+    "input_tokens": 8937.0,
+    "output_tokens": 926.0
+   },
+   "qualifies": false
+  },
+  {
+   "config": "sonnet-low-512-K1",
+   "overall_spearman": 0.8629039105940723,
+   "overall_mae": 0.5,
+   "overall_bias": -0.3,
+   "criteria_spearman": 0.771608393157808,
+   "per_criterion": {
+    "collisions": 0.67,
+    "readable": 0.766,
+    "on_brand": 0.883,
+    "intentional": 0.824,
+    "adapts": 0.715
+   },
+   "per_criterion_mae": {
+    "collisions": 0.94,
+    "readable": 1.16,
+    "on_brand": 0.61,
+    "intentional": 0.55,
+    "adapts": 0.81
+   },
+   "worst_q": 0.8500000000000001,
+   "cost": {
+    "usd": 0.661688,
+    "layouts": 40,
+    "per_layout": 0.0165422,
+    "calls": 40,
+    "sec_per_call": 2.03065,
+    "input_tokens": 6725.65,
+    "output_tokens": 253.5
+   },
+   "qualifies": false
+  },
+  {
+   "config": "sonnet-low-768-K4",
+   "overall_spearman": 0.8257011011806483,
+   "overall_mae": 0.7,
+   "overall_bias": -0.25,
+   "criteria_spearman": 0.7537605690117919,
+   "per_criterion": {
+    "collisions": 0.664,
+    "readable": 0.737,
+    "on_brand": 0.819,
+    "intentional": 0.795,
+    "adapts": 0.754
+   },
+   "per_criterion_mae": {
+    "collisions": 1.21,
+    "readable": 0.91,
+    "on_brand": 0.84,
+    "intentional": 0.7,
+    "adapts": 0.86
+   },
+   "worst_q": 0.8,
+   "cost": {
+    "usd": 0.2698468,
+    "layouts": 40,
+    "per_layout": 0.00674617,
+    "calls": 10,
+    "sec_per_call": 4.6831000000000005,
+    "input_tokens": 8524.7,
+    "output_tokens": 684.1
+   },
+   "qualifies": false
+  },
+  {
+   "config": "sonnet-medium-512-K4",
+   "overall_spearman": 0.8284115372706768,
+   "overall_mae": 0.625,
+   "overall_bias": 0.0,
+   "criteria_spearman": 0.7550065792197782,
+   "per_criterion": {
+    "collisions": 0.614,
+    "readable": 0.748,
+    "on_brand": 0.846,
+    "intentional": 0.793,
+    "adapts": 0.773
+   },
+   "per_criterion_mae": {
+    "collisions": 1.09,
+    "readable": 0.84,
+    "on_brand": 0.64,
+    "intentional": 0.73,
+    "adapts": 0.76
+   },
+   "worst_q": 0.7,
+   "cost": {
+    "usd": 0.2381998,
+    "layouts": 40,
+    "per_layout": 0.005954994999999999,
+    "calls": 10,
+    "sec_per_call": 4.6103000000000005,
+    "input_tokens": 7693.4,
+    "output_tokens": 672.6
+   },
+   "qualifies": false
+  },
+  {
+   "config": "sonnet-low-768-K1",
+   "overall_spearman": 0.8371302861484756,
+   "overall_mae": 0.675,
+   "overall_bias": -0.475,
+   "criteria_spearman": 0.7538469399600185,
+   "per_criterion": {
+    "collisions": 0.683,
+    "readable": 0.782,
+    "on_brand": 0.86,
+    "intentional": 0.755,
+    "adapts": 0.689
+   },
+   "per_criterion_mae": {
+    "collisions": 1.04,
+    "readable": 1.11,
+    "on_brand": 0.66,
+    "intentional": 0.68,
+    "adapts": 0.94
+   },
+   "worst_q": 0.75,
+   "cost": {
+    "usd": 0.7347559,
+    "layouts": 40,
+    "per_layout": 0.018368897500000002,
+    "calls": 40,
+    "sec_per_call": 2.161775,
+    "input_tokens": 7401.975,
+    "output_tokens": 254.425
+   },
+   "qualifies": false
+  },
+  {
+   "config": "opus-default-512-K4",
+   "overall_spearman": 0.7999984396175409,
+   "overall_mae": 0.75,
+   "overall_bias": 0.25,
+   "criteria_spearman": 0.801773075570789,
+   "per_criterion": {
+    "collisions": 0.781,
+    "readable": 0.854,
+    "on_brand": 0.802,
+    "intentional": 0.815,
+    "adapts": 0.757
+   },
+   "per_criterion_mae": {
+    "collisions": 0.61,
+    "readable": 0.69,
+    "on_brand": 0.76,
+    "intentional": 0.72,
+    "adapts": 0.74
+   },
+   "worst_q": 0.7,
+   "cost": {
+    "usd": 0.5805579,
+    "layouts": 40,
+    "per_layout": 0.014513947499999999,
+    "calls": 10,
+    "sec_per_call": 11.269,
+    "input_tokens": 8416.2,
+    "output_tokens": 1309.9
+   },
+   "qualifies": false
+  },
+  {
+   "config": "opus-default-768-K4",
+   "overall_spearman": 0.8227643276664321,
+   "overall_mae": 0.5,
+   "overall_bias": 0.075,
+   "criteria_spearman": 0.8431817795310572,
+   "per_criterion": {
+    "collisions": 0.762,
+    "readable": 0.888,
+    "on_brand": 0.879,
+    "intentional": 0.827,
+    "adapts": 0.86
+   },
+   "per_criterion_mae": {
+    "collisions": 0.64,
+    "readable": 0.61,
+    "on_brand": 0.54,
+    "intentional": 0.62,
+    "adapts": 0.59
+   },
+   "worst_q": 0.9,
+   "cost": {
+    "usd": 0.6160668,
+    "layouts": 40,
+    "per_layout": 0.015401670000000001,
+    "calls": 10,
+    "sec_per_call": 9.6434,
+    "input_tokens": 8520.7,
+    "output_tokens": 1136.9
+   },
+   "qualifies": false
+  }
+ ],
+ "rule": "cheapest candidate whose mean agreement with the two gold runs (Spearman on overall, mean per-criterion Spearman, worst-quartile overlap) is at least the 10th percentile of the gold run-vs-run agreement over 500 bootstrap resamples of the layouts",
+ "chosen": null
+}

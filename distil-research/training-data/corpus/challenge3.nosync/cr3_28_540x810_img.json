@@ -1,0 +1,134 @@
+{
+  "task_id": "cr3_28_540x810_img",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (Tumblr), converted; 8 elements.",
+  "features": [
+    "tall",
+    "photo"
+  ],
+  "crello_id": "5dc1670eabc8ea6d1c24d441",
+  "crello_format": "Tumblr",
+  "source": {
+    "canvas": {
+      "width": 540,
+      "height": 810
+    },
+    "elements": [
+      {
+        "id": "deco_backdrop",
+        "type": "image",
+        "x": 0.0,
+        "y": 173.8,
+        "width": 540.0,
+        "height": 444.4,
+        "z_index": 0,
+        "asset_id": "cr3_28_540x810_img_deco_backdrop.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 540.0,
+        "height": 204.0,
+        "z_index": 1,
+        "asset_id": "cr3_28_540x810_img_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_2",
+        "type": "image",
+        "x": 91.0,
+        "y": 725.0,
+        "width": 358.0,
+        "height": 85.0,
+        "z_index": 2,
+        "asset_id": "cr3_28_540x810_img_deco_2.png",
+        "fit": "contain"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 194.0,
+        "y": 752.2,
+        "width": 153.0,
+        "height": 41,
+        "z_index": 3,
+        "content": "veatal.org",
+        "font_size": 28.4,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "line_height": 1.0
+      },
+      {
+        "id": "body_2",
+        "type": "text",
+        "x": 69.9,
+        "y": 534.5,
+        "width": 399,
+        "height": 169,
+        "z_index": 4,
+        "content": "appreciate\nyourself",
+        "font_size": 78.0,
+        "font_family": "Solstice Serif",
+        "font_style": "italic",
+        "font_weight": "bold",
+        "color": "rgba(167,26,23,1)",
+        "text_align": "center",
+        "line_height": 0.85
+      },
+      {
+        "id": "cta_bg",
+        "type": "image",
+        "x": 91.0,
+        "y": 160.0,
+        "width": 358.0,
+        "height": 67.0,
+        "z_index": 5,
+        "asset_id": "cr3_28_540x810_img_cta_bg.png",
+        "fit": "contain",
+        "group_id": "cta"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 145.6,
+        "y": 181.6,
+        "width": 248,
+        "height": 45,
+        "z_index": 6,
+        "content": "WHEN YOU CAN",
+        "font_size": 31.0,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "line_height": 1.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 57.8,
+        "y": 53.2,
+        "width": 420,
+        "height": 105,
+        "z_index": 7,
+        "content": "Beauty is",
+        "font_size": 79.8,
+        "font_family": "Solstice Serif",
+        "font_style": "italic",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "line_height": 1.0
+      }
+    ]
+  }
+}

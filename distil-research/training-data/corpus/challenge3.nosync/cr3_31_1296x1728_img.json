@@ -1,0 +1,145 @@
+{
+  "task_id": "cr3_31_1296x1728_img",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (Poster US), converted; 9 elements.",
+  "features": [
+    "tall",
+    "photo"
+  ],
+  "crello_id": "58ac67fc95a7a863ddcc7e70",
+  "crello_format": "Poster US",
+  "source": {
+    "canvas": {
+      "width": 1296,
+      "height": 1728
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1296.0,
+        "height": 1728.0,
+        "z_index": 0,
+        "asset_id": "cr3_31_1296x1728_img_bg.png",
+        "fit": "cover"
+      },
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 159.0,
+        "y": 151.0,
+        "width": 979.0,
+        "height": 1324.0,
+        "z_index": 1,
+        "asset_id": "cr3_31_1296x1728_img_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 556.0,
+        "y": 277.0,
+        "width": 184.0,
+        "height": 61.0,
+        "z_index": 2,
+        "asset_id": "cr3_31_1296x1728_img_logo.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_2",
+        "type": "image",
+        "x": 556.0,
+        "y": 1285.0,
+        "width": 184.0,
+        "height": 61.0,
+        "z_index": 3,
+        "asset_id": "cr3_31_1296x1728_img_deco_2.png",
+        "fit": "contain"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 449.5,
+        "y": 388.1,
+        "width": 397,
+        "height": 108,
+        "z_index": 4,
+        "content": "Beautyhub",
+        "font_size": 82.0,
+        "font_family": "Solstice Serif",
+        "font_style": "italic",
+        "color": "rgba(0,0,1,1)",
+        "text_align": "center",
+        "line_height": 1.0
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 328.8,
+        "y": 657.2,
+        "width": 638,
+        "height": 344,
+        "z_index": 5,
+        "content": "BEAUTY\nTALKS",
+        "font_size": 149.0,
+        "font_family": "Solstice Serif",
+        "color": "rgba(0,0,1,1)",
+        "text_align": "center",
+        "line_height": 1.0
+      },
+      {
+        "id": "body_2",
+        "type": "text",
+        "x": 431.8,
+        "y": 512.6,
+        "width": 435,
+        "height": 93.4,
+        "z_index": 6,
+        "content": "Dear Gloria\nyou are invited to",
+        "font_size": 32.0,
+        "font_family": "Solstice Serif",
+        "color": "rgba(0,0,1,1)",
+        "text_align": "center",
+        "line_height": 1.46,
+        "letter_spacing": 9.0
+      },
+      {
+        "id": "body_3",
+        "type": "text",
+        "x": 412.3,
+        "y": 1134.6,
+        "width": 480,
+        "height": 93.4,
+        "z_index": 7,
+        "content": "June 11th, 2017\n806 Broad St, Selma",
+        "font_size": 32.0,
+        "font_family": "Solstice Serif",
+        "color": "rgba(0,0,1,1)",
+        "text_align": "center",
+        "line_height": 1.46,
+        "letter_spacing": 9.0
+      },
+      {
+        "id": "body_4",
+        "type": "text",
+        "x": 340.0,
+        "y": 1005.0,
+        "width": 616,
+        "height": 95,
+        "z_index": 8,
+        "content": "beauty is skin deep",
+        "font_size": 72.0,
+        "font_family": "Solstice Serif",
+        "font_style": "italic",
+        "color": "rgba(0,0,1,1)",
+        "text_align": "center",
+        "line_height": 1.0
+      }
+    ]
+  }
+}

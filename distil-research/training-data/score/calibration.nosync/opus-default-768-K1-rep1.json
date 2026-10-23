@@ -1,0 +1,420 @@
+{
+ "scores": {
+  "c07_portrait_long_copy_v3@story#c1eb960aac4a": {
+   "overall": 4,
+   "collisions": 5,
+   "readable": 5,
+   "on_brand": 5,
+   "intentional": 4,
+   "adapts": 5,
+   "fatal_issue": "SOLSTICE wordmark clipped by header edge",
+   "reason": "Logo wordmark cut off at the header's bottom edge; divider now sits above the headline; big empty gaps between headline, body and CTA; disclaimer too small to read."
+  },
+  "c07_portrait_long_copy_v3@billboard#7402868deb6d": {
+   "overall": 3,
+   "collisions": 6,
+   "readable": 3,
+   "on_brand": 3,
+   "intentional": 3,
+   "adapts": 4,
+   "fatal_issue": "logo wordmark white on cream, illegible",
+   "reason": "White SOLSTICE wordmark vanishes on cream; dark header reduced to orphan corner block; divider stranded right; eyebrow moved below body; tiny legal beside CTA."
+  },
+  "c07_portrait_long_copy_v3@wide_skyscraper#f326f0ed6b41": {
+   "overall": 5,
+   "collisions": 8,
+   "readable": 4,
+   "on_brand": 6,
+   "intentional": 5,
+   "adapts": 7,
+   "fatal_issue": null,
+   "reason": "Eyebrow is tiny, unreadable and moved below the headline; SOLSTICE wordmark is shrunk to illegible; orange divider is stranded at the bottom under the legal text."
+  },
+  "c07_portrait_long_copy_v3@mobile_banner#74662fa20aea": {
+   "overall": 2,
+   "collisions": 5,
+   "readable": 2,
+   "on_brand": 3,
+   "intentional": 3,
+   "adapts": 3,
+   "fatal_issue": "Solstice logo missing; body, CTA and legal text unreadably tiny",
+   "reason": "Logo and eyebrow dropped; headline crammed into four lines; body copy, legal text and CTA micro-sized and illegible; cluttered right cluster, no breathing room."
+  },
+  "c26_portrait_sunset_sessions_v2@wide_skyscraper#fce3459c12e5": {
+   "overall": 5,
+   "collisions": 7,
+   "readable": 6,
+   "on_brand": 7,
+   "intentional": 4,
+   "adapts": 6,
+   "fatal_issue": null,
+   "reason": "RSVP CTA shrunk to tag-pill size beside FREE ENTRY, losing hierarchy; logo crammed beside SOLSTICE PRESENTS; partner placeholder text clipped, tight at bottom edge."
+  },
+  "c26_portrait_sunset_sessions_v2@mobile_banner#07dd97bd1f93": {
+   "overall": 2,
+   "collisions": 5,
+   "readable": 2,
+   "on_brand": 4,
+   "intentional": 3,
+   "adapts": 4,
+   "fatal_issue": "Body copy and CTA text unreadably tiny",
+   "reason": "Three-line description and RSVP text are microscopic. The logo and illustration are missing, the CTA has no button, and chips are crammed against the body text."
+  },
+  "c26_portrait_sunset_sessions_v2@large_leaderboard#88fb7a44add2": {
+   "overall": 3,
+   "collisions": 4,
+   "readable": 3,
+   "on_brand": 5,
+   "intentional": 3,
+   "adapts": 4,
+   "fatal_issue": "placeholder box garbled over text at right",
+   "reason": "Bottom-right placeholder box overlaps garbled text; RSVP CTA shrunk to tiny pill; 'Solstice Presents' split from headline; 'Pier 9' orphaned; tagline and URL tiny."
+  },
+  "c26_portrait_sunset_sessions_v2@leaderboard#aa62145602d4": {
+   "overall": 3,
+   "collisions": 3,
+   "readable": 3,
+   "on_brand": 5,
+   "intentional": 3,
+   "adapts": 4,
+   "fatal_issue": "Logo clipped at left edge; pills crammed and touching",
+   "reason": "Logo circle cut off left edge; pills abut, the RSVP CTA is lost among tags, and a stray placeholder overlaps TASTINGS; tiny side text; scattered clusters."
+  },
+  "core_01@leaderboard#2e3650cf93e7": {
+   "overall": 5,
+   "collisions": 5,
+   "readable": 5,
+   "on_brand": 7,
+   "intentional": 5,
+   "adapts": 6,
+   "fatal_issue": null,
+   "reason": "SOLSTICE logo wordmark is tiny and illegible; subtitle nearly touches the CTA pill; NEW FLAVOR badge is awkwardly stuck under the subtitle; the left side feels sparse."
+  },
+  "core_01@instagram_post#4c3f4e941f7f": {
+   "overall": 5,
+   "collisions": 5,
+   "readable": 7,
+   "on_brand": 8,
+   "intentional": 4,
+   "adapts": 6,
+   "fatal_issue": null,
+   "reason": "Near-copy of the original; the enlarged top-left circle now dominates behind the NEW FLAVOR pill. The subtitle almost touches the CTA and runs over the bottom-right circle."
+  },
+  "core_01@instagram_portrait#7128120f5118": {
+   "overall": 5,
+   "collisions": 5,
+   "readable": 6,
+   "on_brand": 8,
+   "intentional": 4,
+   "adapts": 4,
+   "fatal_issue": null,
+   "reason": "Subtitle nearly touches CTA pill; large dead gap between headline and subtitle; small can floats in empty space; subtitle undersized; bubbles crowd logo and headline."
+  },
+  "core_01@youtube_thumbnail#cb64af0834e1": {
+   "overall": 5,
+   "collisions": 6,
+   "readable": 5,
+   "on_brand": 7,
+   "intentional": 4,
+   "adapts": 6,
+   "fatal_issue": null,
+   "reason": "NEW FLAVOR badge shrunk to an unreadable size and stuck under the CTA on a background circle. The CTA pill is oversized and the headline wraps awkwardly."
+  },
+  "advanced_01@instagram_post#f4656fe35495": {
+   "overall": 3,
+   "collisions": 5,
+   "readable": 7,
+   "on_brand": 4,
+   "intentional": 3,
+   "adapts": 5,
+   "fatal_issue": "Large grey missing-asset placeholder box dominates left column",
+   "reason": "Missing-asset placeholder enlarged into a prominent grey box. SUNSET SALE tag is wedged between pills. Pills are staggered unevenly, logo is demoted to the bottom, and the can floats."
+  },
+  "advanced_01@half_page#83ec16482fc8": {
+   "overall": 4,
+   "collisions": 4,
+   "readable": 6,
+   "on_brand": 5,
+   "intentional": 3,
+   "adapts": 5,
+   "fatal_issue": null,
+   "reason": "Hero can shrunk to a corner thumbnail; oversized pills and the rotated SUNSET SALE tag crowd each other mid-canvas; the large missing-asset placeholder clips its text."
+  },
+  "advanced_01@billboard#d92b59a4357c": {
+   "overall": 4,
+   "collisions": 4,
+   "readable": 4,
+   "on_brand": 6,
+   "intentional": 4,
+   "adapts": 5,
+   "fatal_issue": null,
+   "reason": "Pill column is cramped, with the SUNSET SALE ribbon wedged between pills. Body copy is tiny, and a dot sits on it. Disclaimer is unreadable. Placeholder asset is stranded far right."
+  },
+  "advanced_01@story#20e8805c3320": {
+   "overall": 5,
+   "collisions": 7,
+   "readable": 7,
+   "on_brand": 8,
+   "intentional": 4,
+   "adapts": 5,
+   "fatal_issue": null,
+   "reason": "Hero can sits off-centre to the left, away from the centred axis. Badges are stacked at mismatched widths. Lower block is cramped, with empty space at the bottom and a leftover placeholder box."
+  },
+  "c11_story_longest_day_v2@large_leaderboard#1b30f72f087b": {
+   "overall": 5,
+   "collisions": 6,
+   "readable": 5,
+   "on_brand": 7,
+   "intentional": 4,
+   "adapts": 6,
+   "fatal_issue": null,
+   "reason": "Left zone crams logo, tilted ribbon and tiny can together. The disclaimer wraps into three tiny lines under the CTA, and the hero can is too small."
+  },
+  "c11_story_longest_day_v2@billboard#c7a50c65b0c0": {
+   "overall": 6,
+   "collisions": 7,
+   "readable": 7,
+   "on_brand": 7,
+   "intentional": 5,
+   "adapts": 7,
+   "fatal_issue": null,
+   "reason": "Headline nearly touches the CTA pill. The sale ribbon is shrunk to a tiny tag and loses prominence. Fine print is very small. The can sits in a cramped corner."
+  },
+  "c11_story_longest_day_v2@instagram_post#bd6316edef77": {
+   "overall": 5,
+   "collisions": 5,
+   "readable": 7,
+   "on_brand": 8,
+   "intentional": 4,
+   "adapts": 6,
+   "fatal_issue": null,
+   "reason": "Disclaimer is enlarged, wraps awkwardly and is jammed between headline and CTA. Banner and logo are poorly balanced across the top, and the bottom is empty."
+  },
+  "c11_story_longest_day_v2@large_leaderboard#f5dfbc58b034": {
+   "overall": 6,
+   "collisions": 7,
+   "readable": 5,
+   "on_brand": 7,
+   "intentional": 6,
+   "adapts": 7,
+   "fatal_issue": null,
+   "reason": "SOLSTICE logo is tiny and hard to read inside the dark circle. The disclaimer is minuscule and crammed under the headline. The can is very small, and a bokeh dot sits beside the headline."
+  },
+  "c02_square_garden_fizz@wide_skyscraper#9f989d1d4ad3": {
+   "overall": 6,
+   "collisions": 7,
+   "readable": 8,
+   "on_brand": 6,
+   "intentional": 5,
+   "adapts": 7,
+   "fatal_issue": null,
+   "reason": "SOLSTICE wordmark sits below the headline, which reverses the brand hierarchy. Headline nearly touches the green circle. Big empty gap above a small can."
+  },
+  "c02_square_garden_fizz@medium_rectangle#7c2fe2e5da61": {
+   "overall": 4,
+   "collisions": 6,
+   "readable": 5,
+   "on_brand": 5,
+   "intentional": 3,
+   "adapts": 4,
+   "fatal_issue": null,
+   "reason": "Reading order is scrambled: the CTA sits above the headline and the SOLSTICE wordmark below it. The top text block is cramped, the can is tiny with empty space around it, and the subtext is tiny and nearly touches the edges."
+  },
+  "c02_square_garden_fizz@wide_skyscraper#94717b3ffd85": {
+   "overall": 6,
+   "collisions": 8,
+   "readable": 7,
+   "on_brand": 6,
+   "intentional": 5,
+   "adapts": 7,
+   "fatal_issue": null,
+   "reason": "SOLSTICE wordmark demoted below the headline; the can is undersized; uneven gaps around the can; headline sits on the edge of the green circle; body copy is small."
+  },
+  "c02_square_garden_fizz@instagram_portrait#4d46a08ae05d": {
+   "overall": 6,
+   "collisions": 9,
+   "readable": 8,
+   "on_brand": 8,
+   "intentional": 5,
+   "adapts": 6,
+   "fatal_issue": null,
+   "reason": "Subhead wraps leaving orphan 'sweet.'; decorative circles shrunk into timid corner blobs; can undersized with empty band below CTA."
+  },
+  "warmup_01@linkedin_banner#9eeba113a3f7": {
+   "overall": 4,
+   "collisions": 5,
+   "readable": 6,
+   "on_brand": 7,
+   "intentional": 4,
+   "adapts": 4,
+   "fatal_issue": null,
+   "reason": "CTA awkwardly wraps to two lines, jammed against headline; bokeh dot behind 'Summer Line'; logo floats separately; wide empty side areas."
+  },
+  "warmup_01@large_leaderboard#baaa35a2ade2": {
+   "overall": 4,
+   "collisions": 5,
+   "readable": 4,
+   "on_brand": 4,
+   "intentional": 5,
+   "adapts": 6,
+   "fatal_issue": "logo shrunk to illegible size",
+   "reason": "SOLSTICE logo and sun are tiny and illegible. CTA wraps awkwardly onto two lines and fills the full height. A particle dot touches 'Line'. Headline is fine."
+  },
+  "warmup_01@medium_rectangle#fa317c6351af": {
+   "overall": 5,
+   "collisions": 8,
+   "readable": 5,
+   "on_brand": 5,
+   "intentional": 6,
+   "adapts": 6,
+   "fatal_issue": null,
+   "reason": "SOLSTICE wordmark is tiny and barely legible, and the sun icon shrinks to a dot without rays. Oversized headline and CTA crowd the canvas, leaving thin bottom margin."
+  },
+  "warmup_01@instagram_portrait#ba3ab378bef7": {
+   "overall": 7,
+   "collisions": 7,
+   "readable": 8,
+   "on_brand": 9,
+   "intentional": 7,
+   "adapts": 7,
+   "fatal_issue": null,
+   "reason": "Faithful centred stack, but a bokeh dot sits right against the CTA's 'Line', the headline is small for the taller canvas, and the bottom third is empty."
+  },
+  "c07_portrait_long_copy_v1@youtube_thumbnail#8474a77ab023": {
+   "overall": 3,
+   "collisions": 6,
+   "readable": 3,
+   "on_brand": 5,
+   "intentional": 2,
+   "adapts": 4,
+   "fatal_issue": "CTA button shrunk to unreadable size",
+   "reason": "CTA is a tiny, unreadable pill at the bottom; the disclaimer is too small and sits beside it. The oversized logo dominates, the dark bar is a stray top-right fragment, and 'Ships late June' is set larger than the body copy."
+  },
+  "c07_portrait_long_copy_v1@linkedin_banner#1d5471ab2237": {
+   "overall": 3,
+   "collisions": 2,
+   "readable": 4,
+   "on_brand": 5,
+   "intentional": 3,
+   "adapts": 5,
+   "fatal_issue": "body text collides with dark header bar fragment",
+   "reason": "Body copy's first line runs under the stray dark header block top-right; CTA and its label are tiny; legal text unreadable; right column is cramped."
+  },
+  "c07_portrait_long_copy_v1@mobile_banner#e5cb7ebc66ab": {
+   "overall": 1,
+   "collisions": 6,
+   "readable": 1,
+   "on_brand": 3,
+   "intentional": 2,
+   "adapts": 1,
+   "fatal_issue": "Whole portrait design shrunk into banner; all text unreadable",
+   "reason": "The full portrait design is shrunk into the middle of the banner, leaving empty cream space on both sides. The headline, body text, CTA and logo are microscopic and illegible."
+  },
+  "c07_portrait_long_copy_v1@medium_rectangle#f24f2d11ec60": {
+   "overall": 6,
+   "collisions": 8,
+   "readable": 6,
+   "on_brand": 8,
+   "intentional": 6,
+   "adapts": 6,
+   "fatal_issue": null,
+   "reason": "Dense stack: tiny headline and body text, the logo is shrunk to a speck, the disclaimer is cramped against the bottom edge and there are tight gaps around the CTA."
+  },
+  "c21_leaderboard_new_flavor@youtube_thumbnail#18a7d5012c98": {
+   "overall": 2,
+   "collisions": 5,
+   "readable": 3,
+   "on_brand": 6,
+   "intentional": 2,
+   "adapts": 2,
+   "fatal_issue": "Try It CTA clipped off right edge",
+   "reason": "Try It button runs off the right edge; NEW pill crammed against headline; content packed into top third, bottom 60% empty orange."
+  },
+  "c21_leaderboard_new_flavor@mobile_banner#52effff261bd": {
+   "overall": 6,
+   "collisions": 8,
+   "readable": 5,
+   "on_brand": 7,
+   "intentional": 6,
+   "adapts": 6,
+   "fatal_issue": null,
+   "reason": "Product circle is cropped at the canvas edges, losing the bottle cap. The tagline is tiny, about 7px. It is a straight shrink with a cramped NEW pill and Try It button."
+  },
+  "c21_leaderboard_new_flavor@youtube_thumbnail#d6633617ec6b": {
+   "overall": 5,
+   "collisions": 9,
+   "readable": 8,
+   "on_brand": 8,
+   "intentional": 4,
+   "adapts": 5,
+   "fatal_issue": null,
+   "reason": "Everything sits in the top 60% and leaves the bottom third empty. There is a big gap between headline and subhead, the buttons are crowded under the subhead, and the button labels sit low."
+  },
+  "c21_leaderboard_new_flavor@story#e038189f5bbb": {
+   "overall": 2,
+   "collisions": 5,
+   "readable": 3,
+   "on_brand": 3,
+   "intentional": 2,
+   "adapts": 3,
+   "fatal_issue": "Product illustration broken apart; cream circle cut off at the bottom-left corner",
+   "reason": "The cream circle sits apart from the can, cut off at the bottom-left. The can is just an outline with floating sun and dots. Headline and subtitle are tiny, with large dead gaps."
+  },
+  "c19_mrec_weekend_sale_v3@billboard#b35df1203d36": {
+   "overall": 5,
+   "collisions": 8,
+   "readable": 7,
+   "on_brand": 8,
+   "intentional": 4,
+   "adapts": 6,
+   "fatal_issue": null,
+   "reason": "Body copy floats high, misaligned with the lower-sitting '20% off' headline; large gap separates eyebrow from headline; circle shoved behind CTA, uneven horizontal spacing."
+  },
+  "c19_mrec_weekend_sale_v3@half_page#b318c1fd0e64": {
+   "overall": 4,
+   "collisions": 7,
+   "readable": 6,
+   "on_brand": 7,
+   "intentional": 3,
+   "adapts": 3,
+   "fatal_issue": null,
+   "reason": "Everything crammed into the top 250px with a huge empty middle; button stranded at bottom; headline and bottle undersized; body text runs onto circle edge."
+  },
+  "c19_mrec_weekend_sale_v3@story#9a67163973f0": {
+   "overall": 7,
+   "collisions": 8,
+   "readable": 9,
+   "on_brand": 9,
+   "intentional": 6,
+   "adapts": 7,
+   "fatal_issue": null,
+   "reason": "Bottle sits off-centre and doesn't line up with the left-aligned text; tight gap between CTA and bottle cap; circle crammed into bottom-left; bottle nearly touches the bottom edge."
+  },
+  "c19_mrec_weekend_sale_v3@medium_rectangle#e469890adc85": {
+   "overall": 4,
+   "collisions": 7,
+   "readable": 6,
+   "on_brand": 6,
+   "intentional": 4,
+   "adapts": 4,
+   "fatal_issue": null,
+   "reason": "Headline shrunk; WEEKEND ONLY eyebrow moved below subhead; subhead runs edge-to-edge over circle; left-aligned text clashes with centred small bottle and CTA; empty side areas."
+  }
+ },
+ "runs": [
+  {
+   "total": 40,
+   "layer1_fatal": 0,
+   "cache_hits": 0,
+   "sent": 40,
+   "answered": 40,
+   "retried": 0,
+   "calls": 40,
+   "failed_calls": 0,
+   "skipped_budget": 0,
+   "usd": 1.6089608000000006,
+   "stopped": "",
+   "seconds": 89.2
+  }
+ ]
+}

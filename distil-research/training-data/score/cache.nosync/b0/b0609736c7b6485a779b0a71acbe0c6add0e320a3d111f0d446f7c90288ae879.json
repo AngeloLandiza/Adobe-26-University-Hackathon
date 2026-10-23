@@ -1,0 +1,1 @@
+{"overall": 6, "collisions": 8, "readable": 7, "on_brand": 6, "intentional": 5, "adapts": 6, "fatal_issue": null, "reason": "Logo tiny and sun icon reduced to a dot; headline huge and CTA nearly edge to edge with tight margins; vertical spacing cramped.", "model": "claude-sonnet-5-5", "effort": "medium", "size": 512, "k": 4, "rubric_version": "abs1-ed20c072", "ts": 1792695340}

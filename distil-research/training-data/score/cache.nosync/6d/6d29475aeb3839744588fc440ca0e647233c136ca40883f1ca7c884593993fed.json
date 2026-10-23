@@ -1,0 +1,1 @@
+{"overall": 3, "collisions": 3, "readable": 6, "on_brand": 6, "intentional": 3, "adapts": 3, "fatal_issue": null, "reason": "NEW pill and Try It button crowd and nearly touch at right edge; content packed in top half with large empty bottom; weak CTA.", "model": "claude-sonnet-5-5", "effort": "low", "size": 512, "k": 6, "rubric_version": "abs1-ed20c072", "ts": 1792695249}

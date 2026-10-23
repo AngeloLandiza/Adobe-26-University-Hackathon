@@ -1,0 +1,123 @@
+{
+  "task_id": "cr3_22_1200x600_img",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (Image), converted; 8 elements.",
+  "features": [
+    "landscape",
+    "photo"
+  ],
+  "crello_id": "5952924a95a7a863ddcdfe3a",
+  "crello_format": "Image",
+  "source": {
+    "canvas": {
+      "width": 1200,
+      "height": 600
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 1200.0,
+        "height": 600.0,
+        "z_index": 0,
+        "asset_id": "cr3_22_1200x600_img_bg.png",
+        "fit": "cover"
+      },
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 446.0,
+        "y": 40.0,
+        "width": 308.0,
+        "height": 519.0,
+        "z_index": 1,
+        "asset_id": "cr3_22_1200x600_img_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_2",
+        "type": "image",
+        "x": 570.0,
+        "y": 107.0,
+        "width": 59.0,
+        "height": 59.0,
+        "z_index": 2,
+        "asset_id": "cr3_22_1200x600_img_deco_2.png",
+        "fit": "contain"
+      },
+      {
+        "id": "deco_3",
+        "type": "shape",
+        "x": 540.0,
+        "y": 411.0,
+        "width": 119.0,
+        "height": 1.0,
+        "z_index": 3,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(209,211,212,1)"
+      },
+      {
+        "id": "deco_4",
+        "type": "shape",
+        "x": 494.0,
+        "y": 295.0,
+        "width": 213.0,
+        "height": 1.0,
+        "z_index": 4,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(209,211,212,1)"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 529.2,
+        "y": 425.2,
+        "width": 141,
+        "height": 55.5,
+        "z_index": 5,
+        "content": "LIVINGSTON EVANGELIST\nCATHOLIC CHURCH\n14550 FLORIDA BLVD",
+        "font_size": 11.9,
+        "font_family": "Solstice Sans",
+        "color": "rgba(10,2,3,1)",
+        "text_align": "center",
+        "line_height": 1.6
+      },
+      {
+        "id": "body_2",
+        "type": "text",
+        "x": 461.7,
+        "y": 310.8,
+        "width": 277.1,
+        "height": 82.8,
+        "z_index": 6,
+        "content": "For I know the plans I have for you,” declares\nthe LORD, “plans to prosper you and not to\nharm you, plans to give you hope and a\nfuture. Jeremiah 29:11",
+        "font_size": 13.6,
+        "font_family": "Solstice Serif",
+        "color": "rgba(10,2,3,1)",
+        "text_align": "center",
+        "font_style": "italic",
+        "line_height": 1.5
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 458.4,
+        "y": 185.9,
+        "width": 283.6,
+        "height": 94.7,
+        "z_index": 7,
+        "content": "BECOME AN IMPORTANT\nPART OF OUR CHURCH\nFAMILY!",
+        "font_size": 23.1,
+        "font_family": "Solstice Serif",
+        "color": "rgba(10,2,3,1)",
+        "text_align": "center",
+        "line_height": 1.22
+      }
+    ]
+  }
+}

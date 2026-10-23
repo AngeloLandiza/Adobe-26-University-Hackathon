@@ -1,0 +1,1 @@
+{"overall": 7, "collisions": 8, "readable": 8, "on_brand": 7, "intentional": 7, "adapts": 7, "fatal_issue": null, "reason": "Strong headline and CTA hierarchy, but the logo is tiny, the CTA is near the edges, and the headline wraps tightly.", "model": "claude-sonnet-5-5", "effort": "low", "size": 512, "k": 6, "rubric_version": "abs1-ed20c072", "ts": 1792695248}

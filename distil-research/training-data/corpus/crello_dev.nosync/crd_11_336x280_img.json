@@ -1,0 +1,65 @@
+{
+  "task_id": "crd_11_336x280_img",
+  "split": "crello_dev",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (dev) (Large Rectangle), converted; 3 elements.",
+  "features": [
+    "square",
+    "photo"
+  ],
+  "crello_id": "5947c49295a7a863ddcddb38",
+  "crello_format": "Large Rectangle",
+  "source": {
+    "canvas": {
+      "width": 336,
+      "height": 280
+    },
+    "elements": [
+      {
+        "id": "product",
+        "type": "image",
+        "x": 157.6,
+        "y": 11.9,
+        "width": 178.3,
+        "height": 256.7,
+        "z_index": 0,
+        "asset_id": "crd_11_336x280_img_product.png",
+        "fit": "contain"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 22.0,
+        "y": 225.9,
+        "width": 82,
+        "height": 24,
+        "z_index": 1,
+        "content": "Jan 6\n6211 Oakwood Ave",
+        "font_size": 8.6,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(10,2,3,1)",
+        "text_align": "left",
+        "line_height": 1.33
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 21.4,
+        "y": 31.7,
+        "width": 109,
+        "height": 92,
+        "z_index": 2,
+        "content": "Composers\nForum\nin Clayton\nResidence",
+        "font_size": 18.0,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(241,88,92,1)",
+        "text_align": "left",
+        "line_height": 1.21
+      }
+    ]
+  }
+}

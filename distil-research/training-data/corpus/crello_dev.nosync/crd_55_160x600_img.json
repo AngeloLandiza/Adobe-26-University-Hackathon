@@ -1,0 +1,125 @@
+{
+  "task_id": "crd_55_160x600_img",
+  "split": "crello_dev",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (dev) (Skyscraper), converted; 7 elements.",
+  "features": [
+    "very_tall",
+    "photo"
+  ],
+  "crello_id": "59b26b751350e8329300d4e1",
+  "crello_format": "Skyscraper",
+  "source": {
+    "canvas": {
+      "width": 160,
+      "height": 600
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "shape",
+        "x": 0,
+        "y": 0,
+        "width": 160,
+        "height": 600,
+        "z_index": 0,
+        "shape_type": "rectangle",
+        "fill_color": "rgba(255,255,255,1)"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 39.3,
+        "y": 501.7,
+        "width": 80,
+        "height": 26.6,
+        "z_index": 1,
+        "content": "CINEMATIC.US\n5801 W JUNO ST, WICHITA",
+        "font_size": 4.7,
+        "font_family": "Solstice Sans",
+        "color": "rgba(147,149,152,1)",
+        "text_align": "center",
+        "line_height": 2.9,
+        "letter_spacing": 0.78
+      },
+      {
+        "id": "body_2",
+        "type": "text",
+        "x": 41.4,
+        "y": 425.7,
+        "width": 81,
+        "height": 10,
+        "z_index": 2,
+        "content": "DRESSCODE: BLACK DRESS",
+        "font_size": 6.2,
+        "font_family": "Solstice Sans",
+        "color": "rgba(147,149,152,1)",
+        "text_align": "left",
+        "line_height": 1.0
+      },
+      {
+        "id": "deco_backdrop",
+        "type": "image",
+        "x": 13.8,
+        "y": 13.5,
+        "width": 132.3,
+        "height": 386.6,
+        "z_index": 3,
+        "asset_id": "crd_55_160x600_img_deco_backdrop.png",
+        "fit": "contain"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 22.6,
+        "y": 337.1,
+        "width": 118,
+        "height": 41.4,
+        "z_index": 4,
+        "content": "SPARKLING\nNIGHT",
+        "font_size": 13.1,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "line_height": 1.6,
+        "letter_spacing": 4.19
+      },
+      {
+        "id": "body_3",
+        "type": "text",
+        "x": 64.6,
+        "y": 180.0,
+        "width": 31,
+        "height": 9,
+        "z_index": 5,
+        "content": "12.11.2017",
+        "font_size": 5.5,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "center",
+        "line_height": 1.0,
+        "letter_spacing": 0.39
+      },
+      {
+        "id": "logo",
+        "type": "text",
+        "x": 23.9,
+        "y": 27.0,
+        "width": 129.0,
+        "height": 6,
+        "z_index": 6,
+        "content": "premiere",
+        "font_size": 3.0,
+        "font_family": "Solstice Sans",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left",
+        "line_height": 1.0,
+        "letter_spacing": 14.19
+      }
+    ]
+  }
+}

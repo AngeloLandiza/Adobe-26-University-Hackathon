@@ -1,0 +1,118 @@
+{
+  "task_id": "crd_54_160x600_img",
+  "split": "crello_dev",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (dev) (Skyscraper), converted; 7 elements.",
+  "features": [
+    "very_tall",
+    "photo"
+  ],
+  "crello_id": "58e264ae95a7a863ddcd0528",
+  "crello_format": "Skyscraper",
+  "source": {
+    "canvas": {
+      "width": 160,
+      "height": 600
+    },
+    "elements": [
+      {
+        "id": "bg",
+        "type": "image",
+        "x": 0.0,
+        "y": 0.0,
+        "width": 160.0,
+        "height": 600.0,
+        "z_index": 0,
+        "asset_id": "crd_54_160x600_img_bg.png",
+        "fit": "cover"
+      },
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 10.0,
+        "y": 121.0,
+        "width": 140.0,
+        "height": 459.0,
+        "z_index": 1,
+        "asset_id": "crd_54_160x600_img_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "logo",
+        "type": "image",
+        "x": 19.0,
+        "y": 24.0,
+        "width": 24.0,
+        "height": 23.0,
+        "z_index": 2,
+        "asset_id": "crd_54_160x600_img_logo.png",
+        "fit": "contain"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 18.9,
+        "y": 129.2,
+        "width": 111.6,
+        "height": 89.7,
+        "z_index": 3,
+        "content": "Learn how to live\nwith wind power\nand become\nenvironmentally\nfriendly",
+        "font_size": 11.6,
+        "font_family": "Solstice Sans",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left",
+        "line_height": 1.38,
+        "letter_spacing": 0.86
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 49.0,
+        "y": 20.5,
+        "width": 86,
+        "height": 54,
+        "z_index": 4,
+        "content": "WIND\nENERGY",
+        "font_size": 20.8,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left"
+      },
+      {
+        "id": "cta_label",
+        "type": "text",
+        "x": 49.0,
+        "y": 75.0,
+        "width": 100.8,
+        "height": 16,
+        "z_index": 5,
+        "content": "Check the updates",
+        "font_size": 10.3,
+        "font_family": "Solstice Sans",
+        "font_weight": "bold",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left",
+        "line_height": 1.0,
+        "group_id": "cta"
+      },
+      {
+        "id": "body_2",
+        "type": "text",
+        "x": 18.2,
+        "y": 558.3,
+        "width": 135.0,
+        "height": 17,
+        "z_index": 6,
+        "content": "www.energypower.com",
+        "font_size": 11.4,
+        "font_family": "Solstice Sans",
+        "color": "rgba(255,255,255,1)",
+        "text_align": "left",
+        "line_height": 1.0
+      }
+    ]
+  }
+}

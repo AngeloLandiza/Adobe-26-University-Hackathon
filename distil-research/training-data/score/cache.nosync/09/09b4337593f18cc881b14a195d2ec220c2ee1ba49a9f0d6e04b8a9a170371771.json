@@ -1,0 +1,1 @@
+{"overall": 6, "collisions": 8, "readable": 6, "on_brand": 8, "intentional": 6, "adapts": 5, "fatal_issue": null, "reason": "Faithful but just a scaled copy; headline and CTA small for tall canvas with lots of empty space; dot touches CTA end.", "model": "claude-sonnet-5-5", "effort": "low", "size": 512, "k": 4, "rubric_version": "abs1-ed20c072", "ts": 1792694983}

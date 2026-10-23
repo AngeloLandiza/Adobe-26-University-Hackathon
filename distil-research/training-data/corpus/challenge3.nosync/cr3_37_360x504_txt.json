@@ -1,0 +1,63 @@
+{
+  "task_id": "cr3_37_360x504_txt",
+  "split": "challenge3",
+  "origin": "crello",
+  "brand": "crello",
+  "expects_missing_asset": false,
+  "notes": "Crello ad template (challenge3) (Flayer), converted; 3 elements.",
+  "features": [
+    "tall",
+    "text-only"
+  ],
+  "crello_id": "5954bdf495a7a863ddce14fc",
+  "crello_format": "Flayer",
+  "source": {
+    "canvas": {
+      "width": 360,
+      "height": 504
+    },
+    "elements": [
+      {
+        "id": "deco_1",
+        "type": "image",
+        "x": 21.0,
+        "y": 19.0,
+        "width": 320.0,
+        "height": 326.0,
+        "z_index": 0,
+        "asset_id": "cr3_37_360x504_txt_deco_1.png",
+        "fit": "contain"
+      },
+      {
+        "id": "body_1",
+        "type": "text",
+        "x": 66.1,
+        "y": 463.6,
+        "width": 229,
+        "height": 28,
+        "z_index": 1,
+        "content": "Friday / December 1 / 2 PM - 9 PM\nWeir National Resort / 5002 Killingsworth Ln",
+        "font_size": 10.6,
+        "font_family": "Solstice Sans",
+        "color": "rgba(65,64,66,1)",
+        "text_align": "center"
+      },
+      {
+        "id": "headline",
+        "type": "text",
+        "x": 30.1,
+        "y": 382.5,
+        "width": 301,
+        "height": 72,
+        "z_index": 2,
+        "content": "GEORGETOWN ANIMAL FESTIVAL\nLET THE FUN BEGIN!\nFREE ENTRY",
+        "font_size": 18.3,
+        "font_family": "Solstice Sans",
+        "color": "rgba(65,64,66,1)",
+        "text_align": "center",
+        "line_height": 1.25,
+        "letter_spacing": 0.69
+      }
+    ]
+  }
+}
