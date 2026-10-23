@@ -1,0 +1,16 @@
+{
+  "team": "fashton28",
+  "split": "samples",
+  "variant": "ext_fashton28_smp",
+  "cells": 39,
+  "missing": 0,
+  "gatefail_cells": 33,
+  "gates": {
+    "G10_layers": 3,
+    "G7_text_fit": 33,
+    "G9_hidden": 3
+  },
+  "differ_from_base": 39,
+  "sec_per_case": 0.38,
+  "sec_max": 1.6
+}

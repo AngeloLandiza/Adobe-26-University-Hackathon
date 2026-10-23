@@ -1,0 +1,16 @@
+{
+  "team": "tailsgit",
+  "split": "holdout",
+  "variant": "ext_tailsgit",
+  "cells": 192,
+  "missing": 0,
+  "gatefail_cells": 34,
+  "gates": {
+    "G10_layers": 19,
+    "G6_frozen": 16,
+    "G7_text_fit": 4
+  },
+  "differ_from_base": 192,
+  "sec_per_case": 3.26,
+  "sec_max": 12.1
+}

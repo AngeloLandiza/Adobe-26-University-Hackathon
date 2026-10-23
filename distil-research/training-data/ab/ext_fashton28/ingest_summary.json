@@ -1,0 +1,17 @@
+{
+  "team": "fashton28",
+  "split": "holdout",
+  "variant": "ext_fashton28",
+  "cells": 192,
+  "missing": 0,
+  "gatefail_cells": 169,
+  "gates": {
+    "G10_layers": 55,
+    "G7_text_fit": 147,
+    "G8_groups": 16,
+    "G9_hidden": 11
+  },
+  "differ_from_base": 192,
+  "sec_per_case": 0.46,
+  "sec_max": 3.15
+}

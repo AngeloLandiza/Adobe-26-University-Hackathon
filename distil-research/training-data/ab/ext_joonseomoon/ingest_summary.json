@@ -1,0 +1,15 @@
+{
+  "team": "joonseomoon",
+  "split": "holdout",
+  "variant": "ext_joonseomoon",
+  "cells": 192,
+  "missing": 0,
+  "gatefail_cells": 52,
+  "gates": {
+    "G10_layers": 45,
+    "G7_text_fit": 8
+  },
+  "differ_from_base": 192,
+  "sec_per_case": 0.1,
+  "sec_max": 1.41
+}

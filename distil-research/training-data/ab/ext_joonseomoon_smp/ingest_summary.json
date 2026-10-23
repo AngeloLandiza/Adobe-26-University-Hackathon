@@ -1,0 +1,14 @@
+{
+  "team": "joonseomoon",
+  "split": "samples",
+  "variant": "ext_joonseomoon_smp",
+  "cells": 39,
+  "missing": 0,
+  "gatefail_cells": 1,
+  "gates": {
+    "G8_groups": 1
+  },
+  "differ_from_base": 39,
+  "sec_per_case": 0.09,
+  "sec_max": 1.33
+}

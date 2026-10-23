@@ -1,0 +1,16 @@
+{
+  "team": "benso10-uw",
+  "split": "holdout",
+  "variant": "ext_benso10-uw",
+  "cells": 192,
+  "missing": 0,
+  "gatefail_cells": 183,
+  "gates": {
+    "G10_layers": 47,
+    "G7_text_fit": 180,
+    "G8_groups": 16
+  },
+  "differ_from_base": 192,
+  "sec_per_case": 0.01,
+  "sec_max": 0.75
+}

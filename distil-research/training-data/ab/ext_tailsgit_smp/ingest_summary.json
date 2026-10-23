@@ -1,0 +1,15 @@
+{
+  "team": "tailsgit",
+  "split": "samples",
+  "variant": "ext_tailsgit_smp",
+  "cells": 39,
+  "missing": 0,
+  "gatefail_cells": 3,
+  "gates": {
+    "G6_frozen": 2,
+    "G7_text_fit": 1
+  },
+  "differ_from_base": 39,
+  "sec_per_case": 4.45,
+  "sec_max": 9.29
+}

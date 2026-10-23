@@ -1,0 +1,14 @@
+{
+  "team": "benso10-uw",
+  "split": "samples",
+  "variant": "ext_benso10-uw_smp",
+  "cells": 39,
+  "missing": 0,
+  "gatefail_cells": 37,
+  "gates": {
+    "G7_text_fit": 37
+  },
+  "differ_from_base": 39,
+  "sec_per_case": 0.02,
+  "sec_max": 0.54
+}
